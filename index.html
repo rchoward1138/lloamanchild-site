@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life Lessons of a Man-Child - R.C. Howard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,18 +13,15 @@
         }
 
         body {
-            font-family: 'Georgia', serif;
-            line-height: 1.6;
-            color: #333;
+            font-family: 'Roboto', sans-serif;
             background: url('Book-Cover.png') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
+            overflow-x: hidden;
         }
 
+        /* Synthwave background overlay */
         body::before {
             content: '';
             position: fixed;
@@ -31,114 +29,333 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: -1;
-        }
-
-        .container {
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 3rem;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-            text-align: center;
-            margin: 2rem;
-            position: relative;
+            background: 
+                linear-gradient(rgba(20, 0, 40, 0.85), rgba(40, 0, 80, 0.85)),
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 150, 0.1) 0%, transparent 50%);
             z-index: 1;
         }
 
-        h1 {
+        /* Animated grid overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Scanline effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 255, 0.03) 2px,
+                rgba(0, 255, 255, 0.03) 4px
+            );
+            z-index: 3;
+            pointer-events: none;
+            animation: scanlineFlicker 0.1s linear infinite;
+        }
+
+        @keyframes scanlineFlicker {
+            0% { opacity: 1; }
+            99% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-content {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.5),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            animation: borderGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.1); }
+            100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.8), inset 0 0 30px rgba(0, 255, 255, 0.2); }
+        }
+
+        .title {
+            font-family: 'Orbitron', monospace;
             font-size: 2.5rem;
-            color: #2c3e50;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff;
             margin-bottom: 0.5rem;
-            font-weight: 700;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
 
         .subtitle {
-            font-size: 1.2rem;
-            color: #7f8c8d;
-            margin-bottom: 2rem;
-            font-style: italic;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.8rem;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
         }
 
         .author {
-            font-size: 1.1rem;
-            color: #34495e;
-            margin-bottom: 2rem;
-            font-weight: 600;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            color: #ffff00;
+            text-shadow: 0 0 5px #ffff00;
+            margin-bottom: 2.5rem;
         }
 
         .intro {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #555;
-            margin-bottom: 2.5rem;
-            text-align: left;
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
 
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(45deg, #f39c12, #e67e22);
-            color: white;
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .arcade-button {
+            display: block;
+            background: linear-gradient(45deg, #1a0033, #330066);
+            border: 3px solid #00ffff;
+            border-radius: 15px;
+            padding: 1.5rem;
             text-decoration: none;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            color: #00ffff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            text-align: center;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 
+                0 0 15px rgba(0, 255, 255, 0.3),
+                inset 0 0 15px rgba(0, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(45deg, #e67e22, #d35400);
+        .arcade-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .arcade-button:hover::before {
+            animation: shine 0.6s ease-in-out;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+
+        .arcade-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 10px 25px rgba(0, 255, 255, 0.5),
+                inset 0 0 25px rgba(0, 255, 255, 0.2);
+            border-color: #ff00ff;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        .button-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .button-title {
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .button-desc {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.6rem;
+            color: #cccccc;
+            line-height: 1.4;
+        }
+
+        .amazon-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6600, #ff3300);
+            border: 2px solid #ffff00;
+            border-radius: 25px;
+            padding: 1rem 2rem;
+            color: #ffffff;
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            box-shadow: 
+                0 0 15px rgba(255, 102, 0, 0.5),
+                inset 0 0 15px rgba(255, 255, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: amazonPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes amazonPulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 102, 0, 0.5), inset 0 0 15px rgba(255, 255, 0, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(255, 102, 0, 0.8), inset 0 0 25px rgba(255, 255, 0, 0.3); }
+        }
+
+        .amazon-button:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 
+                0 10px 30px rgba(255, 102, 0, 0.7),
+                inset 0 0 25px rgba(255, 255, 0, 0.3);
         }
 
         .quote {
+            color: #00ffff;
             font-style: italic;
-            color: #7f8c8d;
+            font-size: 0.9rem;
             margin-top: 2rem;
             padding-top: 2rem;
-            border-top: 1px solid #ecf0f1;
+            border-top: 2px solid rgba(0, 255, 255, 0.3);
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
         }
 
         @media (max-width: 768px) {
             .container {
+                padding: 1rem;
+            }
+            
+            .main-content {
                 padding: 2rem;
-                margin: 1rem;
             }
-
-            h1 {
-                font-size: 2rem;
+            
+            .title {
+                font-size: 1.8rem;
             }
+            
+            .subtitle {
+                font-size: 0.6rem;
+            }
+            
+            .nav-buttons {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .arcade-button {
+                padding: 1.2rem;
+            }
+        }
 
+        @media (max-width: 480px) {
+            .title {
+                font-size: 1.4rem;
+            }
+            
+            .subtitle {
+                font-size: 0.5rem;
+            }
+            
             .intro {
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
-<body>
+<<body>
+    <div class="scanlines"></div>
     <div class="container">
-        <h1>Life Lessons of a Man-Child</h1>
-        <div class="subtitle">A Memoir?</div>
-        <div class="author">by R.C. Howard</div>
-        
-        <div class="intro">
-            Every story has a beginning. For R.C. Howard, it began with eight dusty, forgotten tales—stories he wrote when life was simpler, dreams were bigger, and the world was filled with pure imagination, not digital domination.
-            <br><br>
-            What happens when those stories call out to him decades later, begging to be revisited, aching to be rewritten and demanding to be shared... who is he to say no to something unexpected?
-            <br><br>
-            Life Lessons of a Man-Child takes you back to where it all started, as Howard returns to his childhood, his love for Star Wars, his passion for writing, and the moments that shaped him. What he discovers isn't just nostalgia—it's a reminder of what matters most: to be creative, to be fearless, to be foolish enough to believe.
-        </div>
+        <div class="main-content">
+            <h1 class="title">LIFE LESSONS OF A MAN-CHILD</h1>
+            <div class="subtitle">A MEMOIR?</div>
+            <div class="author">BY R.C. HOWARD</div>
+            
+            <div class="intro">
+                Every story has a beginning. For R.C. Howard, it began with eight dusty, forgotten tales—stories he wrote when life was simpler, dreams were bigger, and the world was filled with pure imagination, not digital domination.
+            </div>
 
-        <a href="https://www.amazon.com/dp/placeholder-link" class="cta-button">
-            Buy on Amazon
-        </a>
+            <div class="nav-buttons">
+                <a href="cryptogram.html" class="arcade-button">
+                    <span class="button-icon">🧩</span>
+                    <div class="button-title">CRYPTOGRAM PUZZLE</div>
+                    <div class="button-desc">Decode hidden messages and unlock secrets from the stories within</div>
+                </a>
 
-        <div class="quote">
-            "Howard invites you to laugh, cry, and rekindle the wonder of growing up... or perhaps, never growing up at all."
+                <a href="stories.html" class="arcade-button">
+                    <span class="button-icon">📖</span>
+                    <div class="button-title">READ THE 8 CORE STORIES</div>
+                    <div class="button-desc">Dive into the original tales that started it all</div>
+                </a>
+
+                <a href="about.html" class="arcade-button">
+                    <span class="button-icon">👨‍💻</span>
+                    <div class="button-title">ABOUT THE AUTHOR</div>
+                    <div class="button-desc">Meet the man-child behind the memories</div>
+                </a>
+            </div>
+
+            <a href="https://www.amazon.com/dp/placeholder-link" class="amazon-button">
+                BUY ON AMAZON
+            </a>
+
+            <div class="quote">
+                "Howard invites you to laugh, cry, and rekindle the wonder of growing up... or perhaps, never growing up at all."
+            </div>
         </div>
     </div>
 </body>
