@@ -124,6 +124,16 @@
                 0 0 30px #00ffff;
             margin-bottom: 0.5rem;
             animation: titlePulse 3s ease-in-out infinite;
+            text-align: center;
+        }
+
+        .title-line {
+            display: block;
+            line-height: 1.1;
+        }
+
+        .title-line:first-child {
+            margin-bottom: 0.2rem;
         }
 
         @keyframes titlePulse {
@@ -148,12 +158,18 @@
             margin-bottom: 2.5rem;
         }
 
-        .intro {
+        .book-description {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.7);
+            border-radius: 10px;
+            border: 1px solid #00ffff33;
             color: #ffffff;
-            font-size: 1rem;
             line-height: 1.6;
-            margin-bottom: 3rem;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            font-size: 0.95rem;
+            text-align: left;
+            box-shadow: 0 0 15px rgba(0,255,255,0.2);
         }
 
         .nav-buttons {
@@ -161,6 +177,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
             width: 100%;
+            max-width: 1000px;
             margin-bottom: 2rem;
         }
 
@@ -292,6 +309,12 @@
                 font-size: 0.6rem;
             }
             
+            .book-description {
+                font-size: 0.85rem;
+                padding: 1rem;
+                margin: 1.5rem auto;
+            }
+            
             .nav-buttons {
                 grid-template-columns: 1fr;
                 gap: 1.5rem;
@@ -311,8 +334,10 @@
                 font-size: 0.5rem;
             }
             
-            .intro {
-                font-size: 0.9rem;
+            .book-description {
+                font-size: 0.8rem;
+                padding: 0.8rem;
+                margin: 1rem auto;
             }
         }
     </style>
@@ -321,12 +346,25 @@
     <div class="scanlines"></div>
     <div class="container">
         <div class="main-content">
-            <h1 class="title">LIFE LESSONS OF A MAN-CHILD</h1>
+            <h1 class="title">
+                <div class="title-line">LIFE LESSONS</div>
+                <div class="title-line">OF A MAN-CHILD</div>
+            </h1>
             <div class="subtitle">A MEMOIR?</div>
             <div class="author">BY R.C. HOWARD</div>
             
-            <div class="intro">
-                Every story has a beginning. For R.C. Howard, it began with eight dusty, forgotten tales—stories he wrote when life was simpler, dreams were bigger, and the world was filled with pure imagination, not digital domination.
+            <div class="book-description">
+                <strong></strong>Every story has a beginning.</strong>
+                <br><br>
+                For R.C. Howard, it began with eight dusty, forgotten tales—stories he wrote when life was simpler, dreams were bigger, and the world was filled with pure imagination, not digital domination.
+                <br><br>
+                What happens when those stories call out to him decades later, begging to be revisited, aching to be rewritten and demanding to be shared—only to lead him somewhere unexpected?
+                <br><br>
+                Life Lessons of a Man-Child takes you back to where it all started, as Howard returns to his childhood, his love for Star Wars, his passion for writing, and the moments that shaped him. What he discovers isn't just nostalgia—it's a reminder of what matters most: to be creative, to be selfless, to be fearless...and above all, to believe.
+                <br><br>
+                Howard invites you to laugh, cry, and rekindle the wonder of growing up—or perhaps, never growing up at all. Life Lessons of a Man-Child is a journey through the heart, where the smallest stories lead to the biggest revelations, one of them being...
+                <br><br>
+                <strong>Not every story has to end.</strong>
             </div>
 
             <div class="nav-buttons">
@@ -346,6 +384,12 @@
                     <span class="button-icon">👨‍💻</span>
                     <div class="button-title">ABOUT THE AUTHOR</div>
                     <div class="button-desc">Meet the man-child behind the memories</div>
+                </a>
+
+                <a href="#" class="arcade-button">
+                    <span class="button-icon">🚀</span>
+                    <div class="button-title">MY JOURNEY</div>
+                    <div class="button-desc">Follow the path that led to this memoir</div>
                 </a>
             </div>
 

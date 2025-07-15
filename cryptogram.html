@@ -1,0 +1,411 @@
+<!DOCTYPE html><html lang="en"><head> KWSX XWW JZE YIT EW HIO SIBW SJQX QY FZP
+
+WOLZFWR SJQX MZZB UTZAW FZP EWTW JWTW KWIAWeta charset="UTF-8">  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Shall We Play a Game? - Cryptogram</title>  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">  <style>    * {      margin: 0;      padding: 0;      box-sizing: border-box;    }    body {      font-family: 'Roboto', sans-serif;      background: url('Book-Cover.png') no-repeat center center fixed;      background-size: cover;      min-height: 100vh;      position: relative;      overflow-x: hidden;    }    /* Synthwave background overlay */    body::before {      content: '';      position: fixed;      top: 0; left: 0; width: 100%; height: 100%;      background: linear-gradient(rgba(20,0,40,0.85), rgba(40,0,80,0.85)),                   radial-gradient(circle at 50% 50%, rgba(255,0,150,0.1) 0%, transparent 50%);      z-index: 1;    }    /* Animated grid overlay */    body::after {      content: '';      position: fixed;      top: 0; left: 0; width: 100%; height: 100%;      background-image: linear-gradient(rgba(0,255,255,0.1) 1px, transparent 1px),                         linear-gradient(90deg, rgba(0,255,255,0.1) 1px, transparent 1px);      background-size: 50px 50px;      animation: gridMove 20s linear infinite;      z-index: 2;      pointer-events: none;    }    @keyframes gridMove {       0% { transform: translate(0,0); }       100% { transform: translate(50px,50px); }     }    .scanlines {      position: fixed;       top: 0; left: 0; width: 100%; height: 100%;      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.03) 2px, rgba(0,255,255,0.03) 4px);      z-index: 3;       pointer-events: none;      animation: scanlineFlicker 0.1s linear infinite;    }    @keyframes scanlineFlicker {       0%,99%{opacity:1;}       100%{opacity:0.98;}     }    .container {      position: relative;       z-index: 10;      max-width: min(95vw, 1000px);       margin: 0 auto;       padding: 1rem;      min-height: 100vh;       display: flex;       flex-direction: column;       justify-content: center;       align-items: center;    }    .main-content {      background: rgba(0,0,0,0.9);      border: 2px solid #00ffff;      border-radius: 10px;      padding: 2rem;      text-align: center;      box-shadow: 0 0 20px rgba(0,255,255,0.5), inset 0 0 20px rgba(0,255,255,0.1);      backdrop-filter: blur(5px);      animation: borderGlow 2s ease-in-out infinite alternate;      width: 100%;    }    @keyframes borderGlow {       0%{box-shadow:0 0 20px rgba(0,255,255,0.5),inset 0 0 20px rgba(0,255,255,0.1);}       100%{box-shadow:0 0 30px rgba(0,255,255,0.8),inset 0 0 30px rgba(0,255,255,0.2);}     }    .title {      font-family: 'Orbitron', monospace;      font-size: 2.2rem;      font-weight: 900;      color: #00ffff;      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;      margin-bottom: 0.5rem;      animation: titlePulse 3s ease-in-out infinite;    }    @keyframes titlePulse {       0%,100%{transform:scale(1);}       50%{transform:scale(1.02);}     }    .subtitle {      font-family: 'Press Start 2P', monospace;      font-size: 0.9rem;      color: #ff00ff;      text-shadow: 0 0 10px #ff00ff;      margin-bottom: 2rem;      font-style: italic;      letter-spacing: 1px;    }    .controls {      margin-bottom: 2rem;      display: flex;      flex-wrap: wrap;      justify-content: center;      gap: 1rem;    }    .control-button {      background: linear-gradient(45deg, #ff0066, #ff3399);      border: 2px solid #ff00ff;      border-radius: 20px;      padding: 0.8rem 2rem;      color: #ffffff;      font-family: 'Press Start 2P', monospace;      font-size: 0.7rem;      cursor: pointer;      text-decoration: none;      text-align: center;      box-shadow: 0 0 15px rgba(255,0,255,0.5);      transition: all 0.3s ease;    }    .control-button:hover {      transform: translateY(-2px);      box-shadow: 0 5px 20px rgba(255,0,255,0.8);    }    .sound-button {      background: linear-gradient(45deg, #1a0033, #330066);      border: 2px solid #00ffff;      color: #00ffff;      box-shadow: 0 0 15px rgba(0,255,255,0.5);    }    .sound-button:hover {      transform: translateY(-2px);      box-shadow: 0 5px 20px rgba(0,255,255,0.8);    }    .cryptogram-container {      width: 100%;      max-width: 100%;      overflow: hidden;      margin: 2rem 0;      padding: 1rem;      background: rgba(0,0,0,0.7);      border-radius: 8px;      border: 2px solid #00ffff99;      box-shadow: 0 0 15px rgba(0,255,255,0.3);    }    .cryptogram {      display: flex;      flex-direction: column;      align-items: flex-start;      gap: 0.8rem;      font-family: 'Press Start 2P', monospace;      font-size: 0.6rem;      line-height: 1.2;      width: 100%;      overflow: hidden;    }    .puzzle-line {      display: flex;      flex-wrap: wrap;      justify-content: flex-start;      text-align: left;      gap: 0.3rem;      margin-bottom: 1rem;      width: 100%;      line-height: 1.8;      overflow: hidden;    }    .puzzle-word {      display: flex;      gap: 0.05rem;      margin: 0.1rem 0.2rem;      flex-shrink: 1;      flex-wrap: wrap;      max-width: 100%;    }    .letter-tile {      display: flex;      flex-direction: column;      align-items: center;      margin: 0.05rem;    }    .cipher-letter {      color: #00ffff;      font-size: 0.9rem;      margin-bottom: 0.3rem;      text-shadow: 0 0 5px #00ffff;      min-height: 1.2rem;      display: flex;      align-items: center;      justify-content: center;    }    .letter-input {      width: 1.4rem;      height: 1.4rem;      text-align: center;      font-family: 'Press Start 2P', monospace;      font-size: 0.45rem;      color: #00ffff;      background: #1a0033;      border: 2px solid #00ffff;      border-radius: 6px;      box-shadow: 0 0 8px rgba(0,255,255,0.5);      outline: none;      transition: all 0.3s ease;      text-transform: uppercase;    }    .letter-input:focus {      border-color: #ff00ff;      box-shadow: 0 0 12px rgba(255,0,255,0.8);    }    .letter-input.correct {      background: #003300;      border-color: #00ff00;      color: #00ff00;      box-shadow: 0 0 10px rgba(0,255,0,0.7);      pointer-events: none;    }    .letter-input.incorrect {      animation: flashRed 0.3s ease-in-out;    }    @keyframes flashRed {      0%, 100% {         border-color: #00ffff;         box-shadow: 0 0 8px rgba(0,255,255,0.5);       }      50% {         border-color: #ff0000;         box-shadow: 0 0 15px rgba(255,0,0,0.9);         background: #330000;      }    }    .space-tile {      width: 0.5rem;      height: 1.5rem;    }    .cipher-letter {      color: #00ffff;      font-size: 0.5rem;      margin-bottom: 0.1rem;      text-shadow: 0 0 5px #00ffff;      min-height: 0.8rem;      display: flex;      align-items: center;      justify-content: center;    }  </style></head><body>  <div class="scanlines"></div>  <div class="container">    <div class="main-content">      <h1 class="title">Shall We Play a Game?</h1>      <div class="subtitle"><em>You already know the 'two letters' you need to begin this cryptogram…don't you?</em></div>            <div class="controls">        <button class="control-button" id="restart-btn">Restart Puzzle</button>        <button class="control-button sound-button" id="sound-btn">Play Sound</button>      </div>            <div class="cryptogram-container">        <div class="cryptogram" id="cryptogram-puzzle">          <!-- Puzzle will be generated here -->
+        </div>
+      </div>
+
+      <div class="success-popup" id="success-popup">
+        <div>EXCELLENT WORK, USER!</div>
+        <div style="font-size: 1rem; margin: 1rem 0;">You cracked the code.</div>
+        <a href="https://www.amazon.com/dp/placeholder-link" class="amazon-button">Leave an Amazon Review</a>
+      </div>
+
+      <a href="index.html" class="back-link">&#8592; Back to Home</a>
+    </div>
+  </div>
+
+  <!-- Audio element for WarGames sound -->
+  <audio id="wargames-audio" preload="auto" autoplay muted>
+    <source src="shallweplay.mp3" type="audio/mpeg">
+    <!-- Fallback sound URL -->
+  </audio>
+
+  <script>
+    // Substitution key - when you see cipher letter (key), enter solution letter (value)
+    // Updated key code from latest attachment
+    const substitutionKey = {
+      "F": "Y", "H": "C", "Z": "O", "O": "N", "D": "G",
+      "T": "R", "I": "A", "S": "T", "P": "U", "K": "L", 
+      "Q": "I", "X": "S", "Y": "F", "W": "E", "B": "K", 
+      "R": "D", "J": "H", "C": "M", "U": "P", "A": "V", 
+      "E": "W", "L": "J", "M": "B", "N": "Z"
+    };
+
+    // Cryptogram text - EXACT match to user's typed letters
+    const cryptogramText = `HZODTISPKISQZOX, YTQWOR! FZP HTIHBWR SJW HZRW.
+
+CZXS IPSJZTX TWKF ZO CITBWSQOD SWICX, XZHQIK CWRQI, IOR YKIXJF UTZCZSQZOX. CW? Q JIAW FZP.
+
+KWSX XWW JZE YIT EW HIO SIBW SJQX. QY FZP WOLZFWR SJQX MZZB, UTZAW FZP EWTW JWTW. KWIAW IO JZOWXS TWAQWE ZO ICINZO IOR XJITW QS EQSJ FZPT YTQWORX. OZ IOOZFQOD SQBSZBX JWTW, LPXS FZP IOR CW, BQR.
+
+KWSX DZ ZKR XHJZZK IOR CIBW SJQX I MWXS XWKKWT XQCUKF MF EZTR ZY CZPSJ. CIF SJW YZTHW MW EQSJ FZP IKEIFX, IOR RZOS YZTDWS...
+
+MWXPTWSZRTQOBFZPTZAIKSQOW`;
+
+    let puzzleState = {};
+    let allInputs = [];
+
+    // Initialize the puzzle
+    function initializePuzzle() {
+      const puzzleContainer = document.getElementById('cryptogram-puzzle');
+      puzzleContainer.innerHTML = '';
+      puzzleState = {};
+      allInputs = [];
+
+      // Split by lines and handle each line
+      const lines = cryptogramText.split('\n');
+      
+      lines.forEach((line, lineIndex) => {
+        if (line.trim() === '') {
+          // Empty line - add extra space
+          const emptyLine = document.createElement('div');
+          emptyLine.className = 'puzzle-line';
+          emptyLine.style.height = '2rem';
+          puzzleContainer.appendChild(emptyLine);
+          return;
+        }
+
+        // Create line container
+        const lineContainer = document.createElement('div');
+        lineContainer.className = 'puzzle-line';
+        
+        const words = line.split(' ');
+        
+        words.forEach((word, wordIndex) => {
+          // Create word container
+          const wordContainer = document.createElement('div');
+          wordContainer.className = 'puzzle-word';
+
+          // Process each character in the word
+          for (let i = 0; i < word.length; i++) {
+            const char = word[i];
+            
+            if (/[A-Z]/.test(char)) {
+              // Create letter tile for alphabetic characters
+              const tile = document.createElement('div');
+              tile.className = 'letter-tile';
+              
+              // Cipher letter (above)
+              const cipherLetter = document.createElement('div');
+              cipherLetter.className = 'cipher-letter';
+              cipherLetter.textContent = char;
+              tile.appendChild(cipherLetter);
+              
+              // Input field (below)
+              const input = document.createElement('input');
+              input.className = 'letter-input';
+              input.type = 'text';
+              input.maxLength = 1;
+              input.dataset.cipher = char;
+              input.dataset.correct = substitutionKey[char] || '';
+              
+              // Add event listeners
+              input.addEventListener('input', handleInput);
+              input.addEventListener('keydown', handleKeydown);
+              
+              tile.appendChild(input);
+              wordContainer.appendChild(tile);
+              allInputs.push(input);
+              
+              // Initialize puzzle state
+              if (!puzzleState[char]) {
+                puzzleState[char] = [];
+              }
+              puzzleState[char].push(input);
+              
+            } else {
+              // Create punctuation tile for non-alphabetic characters
+              const tile = document.createElement('div');
+              tile.className = 'punctuation-tile';
+              
+              const punctChar = document.createElement('div');
+              punctChar.className = 'punctuation-char';
+              punctChar.textContent = char;
+              tile.appendChild(punctChar);
+              
+              wordContainer.appendChild(tile);
+            }
+          }
+          
+          // Add word to line
+          lineContainer.appendChild(wordContainer);
+        });
+        
+        // Add line to puzzle
+        puzzleContainer.appendChild(lineContainer);
+      });
+    }
+
+    // Handle input events
+    function handleInput(event) {
+      const input = event.target;
+      
+      // Prevent input on already correct fields
+      if (input.classList.contains('correct') || input.readOnly) {
+        input.value = input.dataset.correctValue || '';
+        return;
+      }
+      
+      const enteredLetter = input.value.toUpperCase();
+      const cipherLetter = input.dataset.cipher;
+      const correctLetter = input.dataset.correct;
+
+      // Clear the input first
+      input.value = '';
+
+      if (enteredLetter === correctLetter) {
+        // Correct letter entered
+        fillAllMatchingLetters(cipherLetter, correctLetter);
+        // Auto-navigate to next empty field
+        focusNextEmptyField();
+        checkCompletion();
+      } else if (enteredLetter) {
+        // Incorrect letter entered
+        showIncorrectAnimation(input);
+      }
+    }
+
+    // Focus on the next empty field
+    function focusNextEmptyField() {
+      const emptyInputs = allInputs.filter(input => 
+        !input.classList.contains('correct') && !input.readOnly
+      );
+      
+      if (emptyInputs.length > 0) {
+        emptyInputs[0].focus();
+      }
+    }
+
+    // Handle keydown for better UX
+    function handleKeydown(event) {
+      if (event.key === 'Backspace' || event.key === 'Delete') {
+        const input = event.target;
+        const cipherLetter = input.dataset.cipher;
+        clearAllMatchingLetters(cipherLetter);
+      }
+    }
+
+    // Fill all matching letters across the puzzle
+    function fillAllMatchingLetters(cipherLetter, correctLetter) {
+      if (puzzleState[cipherLetter]) {
+        puzzleState[cipherLetter].forEach(input => {
+          input.value = correctLetter;
+          input.dataset.correctValue = correctLetter;
+          input.classList.add('correct');
+          input.readOnly = true;
+          // Prevent any further input events
+          input.setAttribute('tabindex', '-1');
+        });
+      }
+    }
+
+    // Clear all matching letters
+    function clearAllMatchingLetters(cipherLetter) {
+      if (puzzleState[cipherLetter]) {
+        puzzleState[cipherLetter].forEach(input => {
+          input.value = '';
+          delete input.dataset.correctValue;
+          input.classList.remove('correct');
+          input.readOnly = false;
+          // Re-enable tabbing
+          input.removeAttribute('tabindex');
+        });
+      }
+    }
+
+    // Show incorrect animation
+    function showIncorrectAnimation(input) {
+      input.classList.add('incorrect');
+      setTimeout(() => {
+        input.classList.remove('incorrect');
+      }, 300);
+    }
+
+    // Check if puzzle is completed
+    function checkCompletion() {
+      const allCorrect = allInputs.every(input => 
+        input.classList.contains('correct')
+      );
+      
+      if (allCorrect) {
+        setTimeout(() => {
+          showSuccessPopup();
+          playCompletionSound();
+        }, 500);
+      }
+    }
+
+    // Show success popup
+    function showSuccessPopup() {
+      const popup = document.getElementById('success-popup');
+      popup.classList.add('show');
+      
+      // Create confetti effect
+      createConfetti();
+    }
+
+    // Create confetti animation
+    function createConfetti() {
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.width = confetti.style.height = Math.random() * 10 + 5 + 'px';
+        confetti.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        confetti.style.borderRadius = '50%';
+        confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+        confetti.style.zIndex = '9999';
+        confetti.style.pointerEvents = 'none';
+        document.body.appendChild(confetti);
+        
+        setTimeout(() => {
+          document.body.removeChild(confetti);
+        }, 5000);
+      }
+    }
+
+    // Restart puzzle
+    function restartPuzzle() {
+      initializePuzzle();
+      const popup = document.getElementById('success-popup');
+      popup.classList.remove('show');
+    }
+
+    // Play sound
+    function playSound() {
+      const audio = document.getElementById('wargames-audio');
+      
+      // Unmute the audio (in case it was muted for autoplay)
+      audio.muted = false;
+      
+      // Reset audio to beginning
+      audio.currentTime = 0;
+      
+      // Try to play the audio
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Audio played successfully');
+        }).catch(e => {
+          console.log('Audio play failed:', e);
+          // Fallback: create a simple beep sound
+          createBeepSound();
+        });
+      }
+    }
+
+    // Play completion sound
+    function playCompletionSound() {
+      const audio = document.getElementById('wargames-audio');
+      
+      // Unmute the audio (in case it was muted)
+      audio.muted = false;
+      
+      // Reset audio to beginning
+      audio.currentTime = 0;
+      
+      // Try to play the MP3 audio
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Completion audio played successfully');
+        }).catch(e => {
+          console.log('Completion audio play failed:', e);
+          // Fallback: create a simple beep sound
+          createBeepSound(800, 0.5);
+        });
+      } else {
+        // Fallback if play() doesn't return a promise
+        createBeepSound(800, 0.5);
+      }
+    }
+
+    // Create a simple beep sound using Web Audio API
+    function createBeepSound(frequency = 440, duration = 0.2) {
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.log('Web Audio API not supported');
+      }
+    }
+
+    // Add confetti CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes confetti-fall {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Event listeners
+    document.getElementById('restart-btn').addEventListener('click', restartPuzzle);
+    document.getElementById('sound-btn').addEventListener('click', playSound);
+
+    // Initialize puzzle when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+      initializePuzzle();
+      
+      // Try multiple approaches to play audio on page load
+      const audio = document.getElementById('wargames-audio');
+      
+      // Approach 1: Try immediate play after unmuting
+      setTimeout(() => {
+        audio.muted = false;
+        playSound();
+      }, 100);
+      
+      // Approach 2: Try again after a longer delay
+      setTimeout(() => {
+        playSound();
+      }, 1000);
+      
+      // Approach 3: Listen for when audio can play
+      audio.addEventListener('canplaythrough', () => {
+        if (!audio.hasPlayedOnce) {
+          audio.muted = false;
+          playSound();
+          audio.hasPlayedOnce = true;
+        }
+      });
+      
+      // Backup: If all auto-play fails, try again on first user interaction
+      let hasPlayedOnInteraction = false;
+      
+      function playOnInteraction() {
+        if (!hasPlayedOnInteraction) {
+          playSound();
+          hasPlayedOnInteraction = true;
+          // Remove the event listeners after first play
+          document.removeEventListener('click', playOnInteraction);
+          document.removeEventListener('keydown', playOnInteraction);
+          document.removeEventListener('touchstart', playOnInteraction);
+        }
+      }
+      
+      document.addEventListener('click', playOnInteraction);
+      document.addEventListener('keydown', playOnInteraction);
+      document.addEventListener('touchstart', playOnInteraction);
+    });
+  </script>
+</body>
+</html>
