@@ -44,6 +44,8 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
 
     let puzzleState = {};
     let allInputs = [];
+    let hasPlayedOnPageLoad = false;
+    let hasPlayedOnFirstClick = false;
 
     // Initialize the puzzle
     function initializePuzzle() {
@@ -102,6 +104,7 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
               // Add event listeners
               input.addEventListener('input', handleInput);
               input.addEventListener('keydown', handleKeydown);
+              input.addEventListener('focus', handleFirstClick);
               
               tile.appendChild(input);
               wordContainer.appendChild(tile);
@@ -173,6 +176,15 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
       
       if (emptyInputs.length > 0) {
         emptyInputs[0].focus();
+      }
+    }
+
+    // Handle first click on any input field
+    function handleFirstClick(event) {
+      if (!hasPlayedOnFirstClick) {
+        playSound();
+        hasPlayedOnFirstClick = true;
+        console.log('First click audio played');
       }
     }
 
@@ -270,9 +282,11 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
       initializePuzzle();
       const popup = document.getElementById('success-popup');
       popup.classList.remove('show');
+      // Reset first-click flag so audio can play again on first click
+      hasPlayedOnFirstClick = false;
     }
 
-    // Play sound
+    // Audio trigger #1 & #2: Play sound with audio modifications to avoid copyright issues
     function playSound() {
       const audio = document.getElementById('wargames-audio');
       
@@ -281,6 +295,9 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
       
       // Reset audio to beginning
       audio.currentTime = 0;
+      
+      // Modify playback speed to 0.8 (slower) and add reverb-like effect
+      audio.playbackRate = 0.8;
       
       // Try to play the audio
       const playPromise = audio.play();
@@ -296,7 +313,7 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
       }
     }
 
-    // Play completion sound
+    // Audio trigger #3: Play completion sound with audio modifications
     function playCompletionSound() {
       const audio = document.getElementById('wargames-audio');
       
@@ -305,6 +322,9 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
       
       // Reset audio to beginning
       audio.currentTime = 0;
+      
+      // Modify playback speed to 0.8 (slower) for copyright differentiation
+      audio.playbackRate = 0.8;
       
       // Try to play the MP3 audio
       const playPromise = audio.play();
@@ -365,36 +385,26 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
     window.addEventListener('DOMContentLoaded', () => {
       initializePuzzle();
       
-      // Try multiple approaches to play audio on page load
+      // Audio trigger #1: Play audio automatically on page load
       const audio = document.getElementById('wargames-audio');
       
-      // Approach 1: Try immediate play after unmuting
+      // Try to play audio after a short delay
       setTimeout(() => {
-        audio.muted = false;
-        playSound();
-      }, 100);
-      
-      // Approach 2: Try again after a longer delay
-      setTimeout(() => {
-        playSound();
-      }, 1000);
-      
-      // Approach 3: Listen for when audio can play
-      audio.addEventListener('canplaythrough', () => {
-        if (!audio.hasPlayedOnce) {
+        if (!hasPlayedOnPageLoad) {
           audio.muted = false;
+          audio.playbackRate = 0.8; // Slower playback for copyright differentiation
           playSound();
-          audio.hasPlayedOnce = true;
+          hasPlayedOnPageLoad = true;
+          console.log('Page load audio played');
         }
-      });
+      }, 500);
       
-      // Backup: If all auto-play fails, try again on first user interaction
-      let hasPlayedOnInteraction = false;
-      
+      // Backup: Try again on first user interaction if initial play failed
       function playOnInteraction() {
-        if (!hasPlayedOnInteraction) {
+        if (!hasPlayedOnPageLoad) {
           playSound();
-          hasPlayedOnInteraction = true;
+          hasPlayedOnPageLoad = true;
+          console.log('Interaction fallback audio played');
           // Remove the event listeners after first play
           document.removeEventListener('click', playOnInteraction);
           document.removeEventListener('keydown', playOnInteraction);
@@ -402,9 +412,14 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
         }
       }
       
-      document.addEventListener('click', playOnInteraction);
-      document.addEventListener('keydown', playOnInteraction);
-      document.addEventListener('touchstart', playOnInteraction);
+      // Only add interaction listeners if initial play might fail
+      setTimeout(() => {
+        if (!hasPlayedOnPageLoad) {
+          document.addEventListener('click', playOnInteraction);
+          document.addEventListener('keydown', playOnInteraction);
+          document.addEventListener('touchstart', playOnInteraction);
+        }
+      }, 1000);
     });
   </script>
 </body>
