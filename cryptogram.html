@@ -57,6 +57,36 @@ WOLZFWR SJQX MZZB UTZAW FZP EWTW JWTW KWIAWeta charset="UTF-8">  <meta name="vie
         padding: 0.8rem;
       }
     }
+  </style>
+  <!-- Overrides to let the cover image pop more and prefer the new asset -->
+  <style>
+    body {
+      background-image: url('PaperbackCoverFinal.png'), url('Book-Cover.png');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: cover;
+    }
+    body::before {
+      background: linear-gradient(rgba(20,0,40,0.55), rgba(40,0,80,0.55)),
+                  radial-gradient(circle at 50% 50%, rgba(255,0,150,0.05) 0%, transparent 50%);
+    }
+    body::after {
+      background-image: linear-gradient(rgba(0,255,255,0.06) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0,255,255,0.06) 1px, transparent 1px);
+    }
+    .scanlines {
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.02) 2px, rgba(0,255,255,0.02) 4px);
+    }
+    .main-content {
+      background: rgba(0,0,0,0.65);
+      box-shadow: 0 0 20px rgba(0,255,255,0.35), inset 0 0 20px rgba(0,255,255,0.08);
+      backdrop-filter: blur(2px);
+    }
+    .cryptogram-container {
+      background: rgba(0,0,0,0.55);
+      box-shadow: 0 0 15px rgba(0,255,255,0.25);
+    }
   </style></head><body>  <div class="scanlines"></div>  <div class="container">    <div class="main-content">      <h1 class="title">Shall We Play a Game?</h1>      <div class="subtitle"><em>You already know the 'two letters' you need to begin this cryptogram…don't you?</em></div>            <div class="controls">        <button class="control-button" id="restart-btn">Restart Puzzle</button>        <button class="control-button sound-button" id="sound-btn">
           Play Sound
           <!-- Disclaimer for Audio Use -->
