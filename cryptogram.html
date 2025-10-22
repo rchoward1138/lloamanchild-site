@@ -87,6 +87,34 @@ WOLZFWR SJQX MZZB UTZAW FZP EWTW JWTW KWIAWeta charset="UTF-8">  <meta name="vie
       background: rgba(0,0,0,0.55);
       box-shadow: 0 0 15px rgba(0,255,255,0.25);
     }
+  </style>
+  <!-- Match About page button style for consistency -->
+  <style>
+    .back-link,
+    .amazon-button {
+      display: inline-block;
+      margin-top: 1.2rem;
+      padding: 0.8rem 2rem;
+      background: linear-gradient(45deg, #1a0033, #330066);
+      border: 2px solid #00ffff;
+      border-radius: 25px;
+      color: #00ffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.8rem;
+      text-decoration: none;
+      text-align: center;
+      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+      transition: all 0.3s ease;
+    }
+    .back-link:hover,
+    .amazon-button:hover {
+      background: linear-gradient(45deg, #ff00ff, #330066);
+      color: #ff00ff;
+      border-color: #ff00ff;
+      box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+    }
+    /* In the success popup, keep spacing tight */
+    .success-popup .amazon-button { margin-top: 0.6rem; }
   </style></head><body>  <div class="scanlines"></div>  <div class="container">    <div class="main-content">      <h1 class="title">Shall We Play a Game?</h1>      <div class="subtitle"><em>You already know the 'two letters' you need to begin this cryptogram…don't you?</em></div>            <div class="controls">        <button class="control-button" id="restart-btn">Restart Puzzle</button>        <button class="control-button sound-button" id="sound-btn">
           Play Sound
           <!-- Disclaimer for Audio Use -->

@@ -182,7 +182,8 @@
 
         .nav-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            /* Force a 2x2 layout on wider screens so tiles map left-to-right, then wrap */
+            grid-template-columns: repeat(2, minmax(280px, 1fr));
             gap: 2rem;
             width: 100%;
             max-width: 1000px;
@@ -387,6 +388,8 @@
                     <div class="button-title">ABOUT THE AUTHOR</div>
                     <div class="button-desc">Meet the man-child behind the memories</div>
                 </a>
+
+                
             </div>
 
             <a href="https://www.amazon.com/dp/placeholder-link" class="amazon-button">
