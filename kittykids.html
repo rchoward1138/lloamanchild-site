@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitty Kids - R.C. Howard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('PaperbackCoverFinal.png'), url('Book-Cover.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(20, 0, 40, 0.55), rgba(40, 0, 80, 0.55)),
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 150, 0.05) 0%, transparent 50%);
+            z-index: 1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 255, 0.02) 2px,
+                rgba(0, 255, 255, 0.02) 4px
+            );
+            z-index: 3;
+            pointer-events: none;
+            animation: scanlineFlicker 0.1s linear infinite;
+        }
+
+        @keyframes scanlineFlicker {
+            0% { opacity: 1; }
+            99% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 2.5rem;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.35),
+                inset 0 0 20px rgba(0, 255, 255, 0.08);
+            backdrop-filter: blur(2px);
+            animation: borderGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.35), inset 0 0 20px rgba(0, 255, 255, 0.08); }
+            100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 30px rgba(0, 255, 255, 0.12); }
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff;
+            margin-bottom: 1rem;
+            text-align: center;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .instruction-text {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.65rem;
+            color: #ff00ff;
+            text-shadow: 0 0 8px #ff00ff;
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+            letter-spacing: 1px;
+        }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .cat-card {
+            perspective: 1000px;
+            height: 280px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .cat-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), inset 0 0 15px rgba(0, 255, 255, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-front {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, rgba(26, 0, 51, 0.95), rgba(51, 0, 102, 0.95));
+            transform: rotateY(180deg);
+            padding: 1.5rem;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .cat-name {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.85rem;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            margin-bottom: 0.75rem;
+        }
+
+        .cat-bio {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.85rem;
+            color: #ffffff;
+            line-height: 1.5;
+        }
+
+        .back-row {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            background: linear-gradient(45deg, #1a0033, #330066);
+            border: 2px solid #00ffff;
+            border-radius: 25px;
+            padding: 1rem 2rem;
+            color: #00ffff;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), inset 0 0 15px rgba(0, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.5), inset 0 0 25px rgba(0, 255, 255, 0.2);
+            border-color: #ff00ff;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .cat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .instruction-text {
+                font-size: 0.55rem;
+            }
+
+            .cat-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+
+            .cat-card {
+                height: 260px;
+            }
+
+            .card-back {
+                padding: 1rem;
+            }
+
+            .cat-name {
+                font-size: 0.75rem;
+            }
+
+            .cat-bio {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="container">
+        <div class="main-content">
+            <h1 class="page-title">KITTY KIDS</h1>
+            <p class="instruction-text">✨ CLICK ANY PHOTO TO READ MORE ✨</p>
+
+            <div class="cat-grid">
+                <!-- Garfield -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Garfield - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Garfield.jpg" alt="Garfield the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Garfield</h3>
+                            <p class="cat-bio">The orange fluff philosopher. Believes all problems can be solved with naps and passive judgment. His meow is oddly delicate for a cat who looks like he could bench press a ferret.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Snowy -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Snowy - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Snowy.jpg" alt="Snowy the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Snowy</h3>
+                            <p class="cat-bio">The flame-point sweetheart with eyes big enough to guilt you into sharing dinner. Once lost his voice as a kitten under a couch, then returned meowing like he'd unlocked a new superpower.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Punkin' -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Punkin' - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Punkin.jpg" alt="Punkin' the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Punkin'</h3>
+                            <p class="cat-bio">The bold explorer who hates thunderstorms and loves head pats only on <em>his</em> schedule. He's pretty sure he's in charge of the porch, the yard, and possibly all of Arkansas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daisy -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Daisy - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Daisy.jpg" alt="Daisy the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Daisy</h3>
+                            <p class="cat-bio">The matriarch. Small, scrappy, and wise, with a left eye that's seen too much nonsense. She looks gentle, but she runs the feline underground with quiet authority.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Camo -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Camo - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Camo.jpg" alt="Camo the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Camo</h3>
+                            <p class="cat-bio">The tortie mom and self-appointed hunter. Has a stare that says, "I could take you down, but I'll let you pet me instead." Proud mother of the four inside cats.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tom -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Tom - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Tom.jpg" alt="Tom the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Tom</h3>
+                            <p class="cat-bio">The social grandpa of the group. Walks around meowing like a barking seal and demands head bumps as payment for his company.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loki -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Loki - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Loki.jpg" alt="Loki the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Loki</h3>
+                            <p class="cat-bio">The skittish ghost cat. Once traumatized by a vet visit, now rules the shadows like a furry ninja. Appears only for treats or profound spiritual moments.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stormy -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Stormy - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Stormy.jpg" alt="Stormy the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Stormy</h3>
+                            <p class="cat-bio">Sweet, gray-striped cuddlebug with a heart of gold. Loves belly rubs and doesn't understand personal space—proof that pure souls exist.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zorro -->
+                <div class="cat-card" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="Zorro - Click to flip card">
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <img src="Kitty%20Kid%20Pics/Zorro.jpg" alt="Zorro the cat" loading="lazy">
+                        </div>
+                        <div class="card-face card-back">
+                            <h3 class="cat-name">Zorro</h3>
+                            <p class="cat-bio">The dark-furred gentleman thief. Big, social, and slightly plump from his nightly warm-cream ritual. He thinks he's mysterious, but he's mostly just spoiled.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="back-row">
+                <a href="index.html" class="back-link">◀ BACK TO HOME</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add keyboard accessibility for Enter key
+        document.querySelectorAll('.cat-card').forEach(card => {
+            card.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.classList.toggle('flipped');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
