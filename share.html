@@ -75,7 +75,8 @@
         <input type="text" id="name" name="name" placeholder="Your name (optional)" maxlength="60" 
                style="display:block; width:100%; max-width:640px; margin:0 auto 1rem; padding:.6rem; border-radius:8px; border:1px solid #00ffff; background:#0a0a0a; color:#e9f9ff;">
         <textarea id="message" name="message" placeholder="Your life lesson…" maxlength="1000" required
-               style="display:block; width:100%; max-width:640px; height:140px; margin:0 auto 1.2rem; padding:.6rem; border-radius:8px; border:1px solid #00ffff; background:#0a0a0a; color:#e9f9ff;"></textarea>
+               style="display:block; width:100%; max-width:640px; height:140px; margin:0 auto .4rem; padding:.6rem; border-radius:8px; border:1px solid #00ffff; background:#0a0a0a; color:#e9f9ff;"></textarea>
+        <div id="charCount" style="text-align:center; font-size:.75rem; color:#888; margin:0 auto 1rem; max-width:640px;">Characters: 0 / 1000</div>
         <input type="text" id="website" name="website" autocomplete="off" style="position:absolute; left:-9999px; top:auto; width:1px; height:1px;">
         <button type="submit" class="back-link" id="submitBtn">Submit Lesson</button>
         <div id="formMsg" class="note" style="margin-top:.6rem; display:none;"></div>
@@ -101,6 +102,21 @@
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('formMsg');
         const list = document.getElementById('lessons-list');
+        const messageInput = document.getElementById('message');
+        const charCount = document.getElementById('charCount');
+
+        // Update character counter
+        messageInput.addEventListener('input', () => {
+          const len = messageInput.value.length;
+          charCount.textContent = `Characters: ${len} / 1000`;
+          if (len > 900) {
+            charCount.style.color = '#ff6666';
+          } else if (len > 800) {
+            charCount.style.color = '#ffaa00';
+          } else {
+            charCount.style.color = '#888';
+          }
+        });
 
         if (notConfigured) {
           form.style.display = 'none';
@@ -142,6 +158,9 @@
               text.style.whiteSpace = 'pre-wrap';
               text.style.lineHeight = '1.5';
               text.style.color = '#e9f9ff';
+              text.style.wordWrap = 'break-word';
+              text.style.overflowWrap = 'break-word';
+              text.style.wordBreak = 'break-word';
               text.textContent = data.message || '';
               item.appendChild(who);
               item.appendChild(text);
