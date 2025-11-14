@@ -4,14 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life Lessons of a Man-Child - R.C. Howard</title>
+    <!-- Social/OG meta -->
+    <meta name="description" content="Life Lessons of a Man-Child — the official site of author R.C. Howard. Explore the story, bonus cryptogram, and more.">
+    <meta property="og:title" content="Life Lessons of a Man-Child - R.C. Howard">
+    <meta property="og:description" content="The official site of R.C. Howard — book details, cryptogram bonus, and more.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="Book-Cover.png">
+    <meta property="og:image:alt" content="Life Lessons of a Man-Child book cover">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Life Lessons of a Man-Child - R.C. Howard">
+    <meta name="twitter:description" content="Explore the book and bonus cryptogram on the official site.">
+    <meta name="twitter:image" content="Book-Cover.png">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="PaperbackCoverFinal.png">
+    <link rel="preload" as="image" href="Book-Cover.png">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Roboto', sans-serif;
             /* Try new cover first; gracefully fall back to existing PNG */
@@ -349,6 +364,12 @@
                 margin: 1rem auto;
             }
         }
+
+        /* Accessibility: respect users who prefer reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
+            body::after, .scanlines { animation: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -383,16 +404,16 @@
                     <div class="button-desc">Decode hidden messages and unlock secrets from the stories within</div>
                 </a>
 
-                <a href="about.html" class="arcade-button">
-                    <span class="button-icon">👨‍💻</span>
-                    <div class="button-title">ABOUT THE AUTHOR</div>
-                    <div class="button-desc">Meet the man-child behind the memories</div>
-                </a>
-
                 <a href="kittykids.html" class="arcade-button">
                     <span class="button-icon">🐱</span>
                     <div class="button-title">KITTY KIDS</div>
                     <div class="button-desc">Meet the nine whiskered wonders who run the show</div>
+                </a>
+
+                <a href="tictactoe.html" class="arcade-button">
+                    <span class="button-icon">❌⭕</span>
+                    <div class="button-title">TIC‑TAC‑TOE</div>
+                    <div class="button-desc">Lose to Joshua, Review on Amazon</div>
                 </a>
 
                 <a href="mimaw.html" class="arcade-button">
@@ -400,9 +421,21 @@
                     <div class="button-title">MIMAW</div>
                     <div class="button-desc">Watch rare interviews and memories from 1998</div>
                 </a>
+
+                <a href="share.html" class="arcade-button">
+                    <span class="button-icon">💬</span>
+                    <div class="button-title">SHARE YOUR LIFE LESSONS</div>
+                    <div class="button-desc">Leave a lesson for other readers</div>
+                </a>
+
+                <a href="about.html" class="arcade-button">
+                    <span class="button-icon">👨‍💻</span>
+                    <div class="button-title">ABOUT THE AUTHOR</div>
+                    <div class="button-desc">Meet the man-child behind the memories</div>
+                </a>
             </div>
 
-            <a href="https://www.amazon.com/dp/B0FP6ZZX63" class="amazon-button">
+            <a href="https://www.amazon.com/dp/B0FP6ZZX63" class="amazon-button" target="_blank" rel="noopener noreferrer">
                 BUY ON AMAZON
             </a>
 
