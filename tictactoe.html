@@ -96,6 +96,7 @@
 
   <script>
     const AMAZON_URL = 'https://www.amazon.com/dp/B0FP6ZZX63';
+    const WARGAMES_VHS_URL = 'https://www.amazon.com/WarGames-VHS-Matthew-Broderick/dp/6304112262/ref=sr_1_1?crid=2NTUIBUGI341V&dib=eyJ2IjoiMSJ9.T3HSFPUmwFlmJjcFDPK1wQlaJvzwtEEmPjGtiXJqiasfT_77-tW91kZbm5GZ2UbatpdJCpMmmvbbfp33DjMHjh0KmcNI8VCtcMG1PfADKrxy1_7CfqDdg5mzWP85tiL9d6lUJ4znE3cYrMPy-2dpfoBr1mhsQzOi5wLBtFClmumTrydQhEGaAYvtVfTcG849hC1CxgYcLNvNaMROaPqgNHR5Fn1PLNC54exdeVFBPC4.iFFILwwcbpL09mDuuW9EoXLj_7k_CqL8o1NcqglH0KA&dib_tag=se&keywords=war+games+VHS&qid=1763161513&sprefix=war+games+vhs%2Caps%2C152&sr=8-1';
     const HUMAN = 'X';
     const AI = 'O';
 
@@ -105,6 +106,7 @@
 
     let board = Array(9).fill(null);
     let gameOver = false;
+    let gamesPlayed = parseInt(localStorage.getItem('tictactoe_games') || '0', 10);
 
     const lines = [
       [0,1,2],[3,4,5],[6,7,8], // rows
@@ -116,7 +118,9 @@
       boardEl.innerHTML = '';
       board = Array(9).fill(null);
       gameOver = false;
-      statusEl.textContent = 'You are X. Joshua is O.';
+      gamesPlayed++;
+      localStorage.setItem('tictactoe_games', gamesPlayed);
+      updateStatus();
       for(let i=0;i<9;i++){
         const cell = document.createElement('button');
         cell.className = 'cell';
@@ -126,6 +130,15 @@
         cell.addEventListener('click', onHumanMove);
         cell.addEventListener('keydown', (e)=>{ if((e.key==='Enter'||e.key===' ')&&!gameOver){ e.preventDefault(); onHumanMove({target:cell}); } });
         boardEl.appendChild(cell);
+      }
+    }
+
+    function updateStatus(){
+      const remaining = Math.max(0, 26 - gamesPlayed);
+      if(remaining > 0){
+        statusEl.textContent = `You are X. Joshua is O. Games until victory: ${remaining}`;
+      } else {
+        statusEl.textContent = 'You are X. Joshua is O. Joshua will let you win this time!';
       }
     }
 
@@ -189,14 +202,23 @@
         // Clear out the current board
         boardEl.innerHTML = '';
       } else if(outcome === HUMAN){
-        statusEl.textContent = 'You win! Resetting…';
-        setTimeout(()=>init(), 800);
+        statusEl.textContent = 'You win! Redirecting to WarGames VHS on Amazon…';
+        setTimeout(()=>{
+          try { window.open(WARGAMES_VHS_URL, '_blank', 'noopener,noreferrer'); } catch(e) {}
+          init();
+        }, 1200);
       }
       return true;
     }
 
-    // Minimax for perfect play
+    // Minimax for perfect play (unless it's time to let the player win)
     function bestMove(b, player){
+      // After 25 games, Joshua lets you win by playing poorly
+      if(gamesPlayed >= 26){
+        const empty = [];
+        for(let i=0;i<9;i++) if(!b[i]) empty.push(i);
+        return empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
+      }
       let best = { score: -Infinity, move: null };
       for(let i=0;i<9;i++){
         if(!b[i]){
