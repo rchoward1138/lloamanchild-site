@@ -228,13 +228,16 @@
       gameOver = true;
       if(outcome === AI){
         statusEl.textContent = 'Joshua wins! Opening Amazon in a new tab…';
+        // Reset counter when Joshua wins (player needs to start over)
+        gamesPlayed = 0;
+        localStorage.setItem('tictactoe_games', gamesPlayed);
         // Open Amazon in a new tab only; do not navigate current page
         try { window.open(AMAZON_URL, '_blank', 'noopener,noreferrer'); } catch(e) {}
-        // Clear out the current board
-        boardEl.innerHTML = '';
+        // Reset the board after a delay
+        setTimeout(()=>init(), 1200);
       } else if(outcome === HUMAN){
         statusEl.textContent = 'You win! Watch WarGames — opening JustWatch…';
-        // Reset the counter so they have to earn another 25 losses
+        // Reset the counter so they have to earn another 25 draws
         gamesPlayed = 0;
         localStorage.setItem('tictactoe_games', gamesPlayed);
         setTimeout(()=>{
@@ -307,12 +310,15 @@
     }
 
     resetBtn.addEventListener('click', () => {
+      // Reset counter when Restart button is clicked
       gamesPlayed = 0;
       localStorage.setItem('tictactoe_games', gamesPlayed);
       init();
     });
     window.addEventListener('DOMContentLoaded', () => {
-      // Initialize the game (do NOT reset counter - let it persist)
+      // Reset counter when page loads (including when returning from index.html)
+      gamesPlayed = 0;
+      localStorage.setItem('tictactoe_games', gamesPlayed);
       init();
     });
   </script>
