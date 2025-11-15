@@ -158,18 +158,27 @@
     }
 
     function playClickSound(){
-      // Create a short beep using Web Audio API
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      oscillator.frequency.value = 800; // Hz
-      oscillator.type = 'square';
-      gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + 0.1);
+      try {
+        // Create a short beep using Web Audio API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.frequency.value = 800; // Hz
+        oscillator.type = 'square';
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.1);
+        
+        // Clean up audio context after sound completes
+        setTimeout(() => {
+          audioCtx.close().catch(() => {});
+        }, 200);
+      } catch(e) {
+        // Silently fail if audio context fails
+      }
     }
 
     function winner(b){
@@ -212,12 +221,35 @@
 
     // Minimax for perfect play (unless it's time to let the player win)
     function bestMove(b, player){
-      // After 25 Joshua wins, let the player win on the next game
+      // After 25 draws, Joshua plays suboptimally (avoids winning/blocking moves)
       if(gamesPlayed >= 25){
         const empty = [];
         for(let i=0;i<9;i++) if(!b[i]) empty.push(i);
-        return empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
+        if(!empty.length) return null;
+        
+        // Filter out moves that would win for Joshua or block player from winning
+        const safe = empty.filter(i => {
+          // Check if this move wins for Joshua
+          b[i] = AI;
+          const aiWins = winner(b);
+          b[i] = null;
+          if(aiWins === AI) return false; // Don't take winning moves
+          
+          // Check if this move blocks player from winning
+          b[i] = HUMAN;
+          const humanWins = winner(b);
+          b[i] = null;
+          if(humanWins === HUMAN) return false; // Don't block player wins
+          
+          return true; // This move is "safe" (bad play)
+        });
+        
+        // If all moves are strategic, pick any random move (shouldn't happen often)
+        const choices = safe.length ? safe : empty;
+        return choices[Math.floor(Math.random() * choices.length)];
       }
+      
+      // First 25 games: Use minimax for perfect play (Joshua never loses)
       let best = { score: -Infinity, move: null };
       for(let i=0;i<9;i++){
         if(!b[i]){
@@ -254,9 +286,7 @@
       init();
     });
     window.addEventListener('DOMContentLoaded', () => {
-      // Reset counter when page loads (fresh start each visit)
-      gamesPlayed = 0;
-      localStorage.setItem('tictactoe_games', gamesPlayed);
+      // Initialize the game (do NOT reset counter - let it persist)
       init();
     });
   </script>
