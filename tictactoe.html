@@ -181,12 +181,16 @@
       }
     }
 
-    function winner(b){
-      for(const [a,b1,c] of lines){
-        if(b[a] && b[a]===b[b1] && b[a]===b[c]) return b[a];
+    function winner(board){
+      // Check all winning combinations (3 in a row: horizontal, vertical, or diagonal)
+      for(const [pos1, pos2, pos3] of lines){
+        if(board[pos1] && board[pos1] === board[pos2] && board[pos1] === board[pos3]){
+          return board[pos1]; // Return 'X' or 'O'
+        }
       }
-      if(b.every(Boolean)) return 'draw';
-      return null;
+      // Check for draw (all cells filled, no winner)
+      if(board.every(cell => cell !== null)) return 'draw';
+      return null; // Game still in progress
     }
 
     function handleEnd(outcome){
