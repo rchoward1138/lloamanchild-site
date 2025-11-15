@@ -43,12 +43,12 @@
       animation: scanlineFlicker 0.1s linear infinite; }
     @keyframes scanlineFlicker { 0%,99%{opacity:1} 100%{opacity:0.98} }
 
-    .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 2rem; min-height: 100vh;
+    .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 1rem; min-height: 100vh;
       display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
-    .main-content { background: rgba(0,0,0,0.6); border: 2px solid #00ffff; border-radius: 10px; padding: 2rem; text-align: center;
+    .main-content { background: rgba(0,0,0,0.6); border: 2px solid #00ffff; border-radius: 10px; padding: 1.5rem; text-align: center;
       box-shadow: 0 0 20px rgba(0,255,255,0.35), inset 0 0 20px rgba(0,255,255,0.08); backdrop-filter: blur(2px);
-      animation: borderGlow 2s ease-in-out infinite alternate; width: 100%; }
+      animation: borderGlow 2s ease-in-out infinite alternate; width: 100%; max-width: 100%; }
     @keyframes borderGlow { 0%{box-shadow:0 0 20px rgba(0,255,255,0.35), inset 0 0 20px rgba(0,255,255,0.08)} 100%{box-shadow:0 0 30px rgba(0,255,255,0.6), inset 0 0 30px rgba(0,255,255,0.12)} }
 
     .title { font-family: 'Orbitron', monospace; font-size: 2.2rem; font-weight: 900; color: #00ffff;
@@ -57,22 +57,44 @@
 
     .subtitle { font-family: 'Press Start 2P', monospace; font-size: .7rem; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; margin-bottom: 1.5rem; letter-spacing: 1px; }
 
-    .board { width: 320px; max-width: 90vw; margin: 0 auto 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; }
+    .board { width: min(320px, calc(100vw - 4rem)); margin: 0 auto 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
     .cell { position: relative; aspect-ratio: 1 / 1; background: rgba(0,0,0,0.75); border: 2px solid #00ffff; border-radius: 10px;
       box-shadow: 0 0 12px rgba(0,255,255,0.35), inset 0 0 10px rgba(0,255,255,0.08); display: flex; align-items: center; justify-content: center;
       font-family: 'Press Start 2P', monospace; font-size: 2.2rem; color: #00ffff; cursor: pointer; user-select: none; transition: transform .1s ease; }
     .cell:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,255,255,0.45), inset 0 0 14px rgba(0,255,255,0.15); }
     .cell[aria-disabled="true"] { cursor: default; opacity: .75; }
 
-    .status { color: #ffffff; font-family: 'Roboto', sans-serif; margin: .6rem 0 1rem; min-height: 1.2rem; }
+    .status { color: #ffffff; font-family: 'Roboto', sans-serif; margin: .6rem 0 1rem; min-height: 1.2rem; font-size: 0.9rem; }
 
-    .controls { display: flex; gap: 1rem; justify-content: center; margin-top: .5rem; }
+    .controls { display: flex; gap: .8rem; justify-content: center; margin-top: .5rem; flex-wrap: wrap; }
     .control-button, .back-link { display: inline-block; padding: 0.7rem 1.6rem; background: linear-gradient(45deg, #1a0033, #330066);
       border: 2px solid #00ffff; border-radius: 25px; color: #00ffff; font-family: 'Press Start 2P', monospace; font-size: .75rem; text-decoration: none;
-      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; transition: all .25s ease; }
+      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; transition: all .25s ease; white-space: nowrap; }
     .control-button:hover, .back-link:hover { background: linear-gradient(45deg, #ff00ff, #330066); color: #ff00ff; border-color: #ff00ff; box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
 
-    @media (max-width: 480px){ .title{font-size:1.5rem} .subtitle{font-size:.55rem} .cell{font-size:1.8rem} }
+    /* Responsive styles for narrow screens (folded phones) */
+    @media (max-width: 480px){ 
+      .container { padding: 0.5rem; }
+      .main-content { padding: 1rem; }
+      .title { font-size: 1.5rem; }
+      .subtitle { font-size: .55rem; }
+      .board { width: min(280px, calc(100vw - 3rem)); gap: .5rem; }
+      .cell { font-size: 1.6rem; border-width: 1.5px; }
+      .status { font-size: 0.8rem; }
+      .control-button, .back-link { padding: 0.6rem 1.2rem; font-size: .65rem; }
+    }
+    
+    /* Extra narrow screens (very small phones, folded devices) */
+    @media (max-width: 360px){ 
+      .container { padding: 0.25rem; }
+      .main-content { padding: 0.75rem; }
+      .title { font-size: 1.2rem; }
+      .subtitle { font-size: .5rem; margin-bottom: 1rem; }
+      .board { width: min(240px, calc(100vw - 2rem)); gap: .4rem; }
+      .cell { font-size: 1.4rem; border-width: 1px; border-radius: 8px; }
+      .status { font-size: 0.75rem; }
+      .control-button, .back-link { padding: 0.5rem 1rem; font-size: .6rem; }
+    }
 
     /* Reduced motion preference */
     @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} body::after,.scanlines{animation:none !important} }
