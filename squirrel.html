@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Secret Squirrel - Life Lessons of a Man-Child</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #0a0015;
+      color: #00ffff;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(20,0,40,0.5), rgba(40,0,80,0.5)),
+                  radial-gradient(circle at 50% 50%, rgba(255,0,150,0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(rgba(0,255,255,0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0,255,255,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 1;
+      animation: grid-shift 20s linear infinite;
+    }
+
+    @keyframes grid-shift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.03) 2px, rgba(0,255,255,0.03) 4px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .container {
+      position: relative;
+      z-index: 3;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.6);
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.3);
+    }
+
+    .title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #ff00ff;
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      color: #ff00ff;
+      text-shadow: 0 0 5px #ff00ff;
+    }
+
+    .chapter-card {
+      background: rgba(0,0,0,0.7);
+      border: 2px solid #00ffff;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 0 30px rgba(0,255,255,0.4), inset 0 0 20px rgba(0,255,255,0.1);
+      margin-bottom: 2rem;
+    }
+
+    .chapter-label {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+      color: #ff00ff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 5px #ff00ff;
+    }
+
+    .chapter-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #00ffff;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .chapter-subtitle {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1rem;
+      color: #ff00ff;
+      font-style: italic;
+      margin-bottom: 1.5rem;
+    }
+
+    .chapter-body {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #e0e0e0;
+      text-align: left;
+    }
+
+    .chapter-body p {
+      margin-bottom: 1.2rem;
+    }
+
+    .chapter-body em {
+      font-style: italic;
+      color: #00ffff;
+    }
+
+    .back-row {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      background: linear-gradient(45deg, #1a0033, #330066);
+      border: 2px solid #00ffff;
+      border-radius: 25px;
+      padding: 0.9rem 2rem;
+      color: #00ffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.75rem;
+      text-decoration: none;
+      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .back-link:hover {
+      background: linear-gradient(45deg, #ff00ff, #330066);
+      color: #ff00ff;
+      border-color: #ff00ff;
+      box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .title {
+        font-size: 1.8rem;
+      }
+
+      .subtitle {
+        font-size: 0.5rem;
+      }
+
+      .chapter-card {
+        padding: 1.5rem;
+      }
+
+      .chapter-title {
+        font-size: 1.5rem;
+      }
+
+      .chapter-body {
+        font-size: 1rem;
+      }
+
+      .back-link {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.65rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .title {
+        font-size: 1.5rem;
+      }
+
+      .subtitle {
+        font-size: 0.45rem;
+      }
+
+      .chapter-card {
+        padding: 1.2rem;
+      }
+
+      .chapter-title {
+        font-size: 1.3rem;
+      }
+
+      .chapter-body {
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .title {
+        font-size: 1.3rem;
+      }
+
+      .chapter-card {
+        padding: 1rem;
+      }
+
+      .chapter-title {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="container">
+    <header>
+      <h1 class="title">SUPER SECRET SQUIRREL</h1>
+      <div class="subtitle">A bonus chapter from <span style="white-space:nowrap;">Life Lessons of a Man-Child</span></div>
+    </header>
+
+    <main class="chapter-card" aria-label="Super Secret Squirrel chapter">
+      <div class="chapter-label">BONUS CHAPTER</div>
+      <h2 class="chapter-title">Super Secret Squirrel</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div class="chapter-body">
+        <p>My dad used to talk about his Marine days with the same tone most men reserve for their first car or that high school game where they swear they "almost set a record." But every now and then, if the moon was right and the coffee was strong, he'd mention the radios. And his voice would drop just a hair, like the walls might start listening.</p>
+        <p>Not the war stories.<br>Not the planes.<br>The radios.</p>
+        <p>"Back then, this stuff was classified," he'd say, tapping the table with two fingers like he was sending Morse code to the memory. "You didn't even say the model number unless somebody outranked you."</p>
+        <p>And because I was a kid, and kids are naturally dense, I just nodded like, <em>Wow, Dad worked on the Death Star</em>, while he quietly moved on to telling me how to gap a spark plug correctly.</p>
+        <p>But the man wasn't exaggerating. He was a Marine in the 60s, working on avionics that were cutting-edge at the time—gear flown on the F-4 Phantom, the Rhino that ruled the skies louder than my grandma ruled Christmas dinner. He was elbow-deep in circuitry that could make or break missions. Stuff you absolutely did not chat about at the grocery store while comparing watermelons.</p>
+        <p>Fast-forward a few decades, and now that I'm writing my memoir and digging up every ghost from my past, I figured I'd do a little research. Just a quick curiosity check. Nothing crazy.<br>Just typing "RT-546/ASQ-19" into Google.</p>
+        <p>I half expected alarms.<br>A warning.<br>A military lawyer to materialize in my living room.</p>
+        <p>Instead?<br>A PDF.</p>
+        <p>A big, dusty, full-spec, Cold War-era government PDF.</p>
+        <p>Schematics.<br>Cooling curves.<br>Environmental stress tests.<br>Thing reads like someone dropped a radio on the floor and transcribed every piece that fell out.</p>
+        <p>So much for "super secret." Turns out Dad's mysterious classified cube is now public reading material, sandwiched between lawnmower manuals and UFO conspiracy blogs. Whatever ceiling of secrecy it once lived under got blown off in 1996 when the military officially retired it.</p>
+        <p>But even in that dry government file filled with technical jargon and unloved punctuation, I could see my dad. Not literally—he never autographed the capacitors—but I could feel his fingerprints in the work. That man lived for precision. Ask him to eyeball something and he'd look at you like you'd just confessed to microwaving a fork.</p>
+        <p>And suddenly, this tech wasn't just tech.<br>It was a window into who he is.</p>
+        <p>This radio wasn't your standard AM/FM box with a coat hanger taped to the top. This thing was the brainstem of the F-4 Phantom's communication system—pilots depending on it the same way a heart depends on electricity. And Dad's job? Keep the heartbeat steady.</p>
+        <p>You'd never catch him bragging about it, though. Marines don't brag. They just… state facts with slightly heroic undertones.</p>
+        <p>But the truth is, every time a Phantom took off—one of those loud, bone-rattling beasts that went practically straight upward out of pure spite—the pilots were trusting men like my dad. Men who'd soldered wires in the quiet while other people made the headlines.</p>
+        <p>Dad never saw the men he kept alive. Never knew their names. Never got a thank you note. That's not how it works. Trust ran through circuit boards instead of handshakes. Faith in the unseen, carried over copper traces.</p>
+        <p>Funny how that tracks with the rest of life.</p>
+        <p>Most of the meaningful stuff is invisible.<br>You don't see the love holding a family together until something shakes it loose.<br>You don't see faith working until things fall apart.<br>You don't see God in the room until you've run out of ways to rescue yourself.</p>
+        <p>Even my dad's silence about his work taught me something without meaning to: sacred things often come wrapped in quiet. And important work rarely announces itself.</p>
+        <p>That's probably why I ended up attaching such weight to that moment in <em>God Tags</em>—the scene where a little girl on a plane asks if her cross helps me "talk to God." Kids don't have to be briefed. They don't need schematics or clearances. They just ask what matters.</p>
+        <p>Dad wasn't on that plane with me, but he was in the story. The man who taught me to trust the unseen because sometimes that's all you've got. The man who taught me that fear is real, courage is quieter than Hollywood says, and faith is mostly maintenance work—checking connections you hope never fail.</p>
+        <p>When I was little, I thought my dad was a superhero because he fixed things. Radios. Cars. Toys I personally destroyed. As an adult, I understand it better: he didn't fix things because he loved tools… he fixed things because he loved people. People needed working cars, working radios, working faith. And he showed his love the way many men of his generation did: by keeping the unseen parts steady.</p>
+        <p>It's wild thinking about that now—how the RT-546 he whispered about is just a Cold War artifact now, archived, declassified, forgotten by everyone except hobbyists and a few surviving Marines who still know what it means to keep a pilot alive from fifty feet below.</p>
+        <p>But the older I get, the more I've learned this:</p>
+        <p>"Classified" is just another word for "You won't understand it until later."</p>
+        <p>And I do understand now.<br>What Dad did.<br>Why it mattered.<br>Why he carried it like it still did.</p>
+        <p>Maybe the biggest secret wasn't in the radio.<br>Maybe it was in the man who worked on it.</p>
+        <p>Dad taught me that meaning hides in the wiring.<br>That purpose hums in the background.<br>That faith isn't the noise—it's the signal.</p>
+        <p>And if life has a "super secret squirrel" code to it, I think it's this:<br>Do the work no one sees.<br>Carry the weight no one applauds.<br>Hold the line so someone else can make it home.</p>
+        <p>Dad did that.<br>Quietly.<br>Faithfully.<br>Always.</p>
+        <p>Semper Fi, Dad.<br>The clearance may have expired,<br>but the legacy didn't.</p>
+      </div>
+    </main>
+
+    <div class="back-row">
+      <a href="more.html" class="back-link">◀ BACK TO MORE LIFE LESSONS</a>
+    </div>
+  </div>
+</body>
+</html>
