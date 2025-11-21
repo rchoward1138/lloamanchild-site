@@ -71,6 +71,10 @@
       border: 2px solid #00ffff; border-radius: 25px; color: #00ffff; font-family: 'Press Start 2P', monospace; font-size: .75rem; text-decoration: none;
       box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; transition: all .25s ease; white-space: nowrap; }
     .control-button:hover, .back-link:hover { background: linear-gradient(45deg, #ff00ff, #330066); color: #ff00ff; border-color: #ff00ff; box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+    .back-row {
+      text-align: center;
+      margin-top: 2rem;
+    }
 
     /* Responsive styles for narrow screens (folded phones) */
     @media (max-width: 480px){ 
@@ -111,6 +115,8 @@
       <div id="status" class="status" aria-live="polite"></div>
       <div class="controls">
         <button id="reset" class="control-button" type="button">Restart</button>
+      </div>
+      <div class="back-row">
         <a href="index.html" class="back-link">◀ BACK TO HOME</a>
       </div>
     </div>
