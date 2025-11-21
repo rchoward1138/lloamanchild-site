@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currents - More Life Lessons</title>
+  <meta name="description" content="Currents — a bonus chapter from Life Lessons of a Man-Child by R.C. Howard.">
+  <meta property="og:title" content="Currents - More Life Lessons">
+  <meta property="og:description" content="A bonus chapter from Life Lessons of a Man-Child by R.C. Howard.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="Book-Cover.png">
+  <meta property="og:image:alt" content="Life Lessons of a Man-Child book cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Currents - More Life Lessons">
+  <meta name="twitter:description" content="A bonus chapter from Life Lessons of a Man-Child by R.C. Howard.">
+  <meta name="twitter:image" content="Book-Cover.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:'Roboto',sans-serif;
+      background-image:url('PaperbackCoverFinal.png'),url('Book-Cover.png');
+      background-repeat:no-repeat;background-position:center center;background-attachment:fixed;background-size:cover;
+      min-height:100vh;position:relative;overflow-x:hidden;color:#e9f9ff;
+    }
+    body::before{content:'';position:fixed;inset:0;z-index:1;
+      background:linear-gradient(rgba(20,0,40,.7),rgba(40,0,80,.7)),
+                 radial-gradient(circle at 50% 50%,rgba(255,0,150,.08)0%,transparent 55%);
+    }
+    body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;
+      background-image:linear-gradient(rgba(0,255,255,.06)1px,transparent 1px),
+                       linear-gradient(90deg,rgba(0,255,255,.06)1px,transparent 1px);
+      background-size:50px 50px;animation:gridMove 20s linear infinite;
+    }
+    @keyframes gridMove{0%{transform:translate(0,0)}100%{transform:translate(50px,50px)}}
+    .scanlines{position:fixed;inset:0;z-index:3;pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,255,.02)2px,rgba(0,255,255,.02)4px);
+      animation:scanlineFlicker .1s linear infinite;
+    }
+    @keyframes scanlineFlicker{0%,99%{opacity:1}100%{opacity:.98}}
+
+    .container{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:2rem 1.5rem 3rem;}
+
+    .header{text-align:center;margin-bottom:1.75rem;}
+    .title{font-family:'Orbitron',monospace;font-size:2.1rem;font-weight:900;color:#00ffff;
+      text-shadow:0 0 10px #00ffff,0 0 20px #00ffff,0 0 30px #00ffff;margin-bottom:.4rem;}
+    .subtitle{font-family:'Press Start 2P',monospace;font-size:.68rem;color:#ff8cff;text-shadow:0 0 8px #ff00ff;}
+
+    .chapter-card{
+      background:rgba(0,0,0,.7);
+      border:2px solid #00ffff;
+      border-radius:12px;
+      box-shadow:0 0 25px rgba(0,255,255,.4),inset 0 0 18px rgba(0,255,255,.12);
+      padding:1.75rem 1.5rem 1.9rem;
+      backdrop-filter:blur(3px);
+    }
+
+    .chapter-label{font-family:'Press Start 2P',monospace;font-size:.7rem;color:#ffdfef;margin-bottom:.75rem;letter-spacing:.12em;}
+    .chapter-title{font-family:'Orbitron',monospace;font-size:1.4rem;color:#00ffff;margin-bottom:.5rem;}
+    .chapter-subtitle{font-family:'Roboto',sans-serif;font-size:.95rem;color:#ffdfef;margin-bottom:1.2rem;font-style:italic;}
+
+    .chapter-body{font-size:1rem;line-height:1.7;color:#e9f9ff;}
+    .chapter-body p{margin-bottom:1rem;}
+    .chapter-body p:last-child{margin-bottom:0;}
+
+    .back-row{margin-top:2rem;text-align:center;}
+    .back-link{display:inline-block;padding:.8rem 1.9rem;border-radius:999px;border:2px solid #00ffff;
+      background:linear-gradient(45deg,#1a0033,#330066);color:#00ffff;font-family:'Press Start 2P',monospace;font-size:.7rem;
+      text-decoration:none;box-shadow:0 0 12px #00ffff,0 0 24px #00ffff;transition:all .25s ease;}
+    .back-link:hover{background:linear-gradient(45deg,#ff00ff,#330066);color:#ffccff;border-color:#ff00ff;
+      box-shadow:0 0 18px #ff00ff,0 0 36px #ff00ff;}
+
+    @media(max-width:600px){
+      .container{padding:1.5rem 1rem 2.5rem;}
+      .title{font-size:1.7rem;}
+      .chapter-card{padding:1.4rem 1.1rem 1.6rem;}
+      .chapter-title{font-size:1.25rem;}
+      .chapter-body{font-size:.95rem;}
+    }
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}body::after,.scanlines{animation:none!important}}
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">CURRENTS</h1>
+      <div class="subtitle">A bonus chapter from <span style="white-space:nowrap;">Life Lessons of a Man-Child</span></div>
+    </header>
+
+    <main class="chapter-card" aria-label="Currents chapter">
+      <div class="chapter-label">BONUS CHAPTER</div>
+      <h2 class="chapter-title">Currents</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div class="chapter-body">
+        <p>I said to turn the page. Thankfully, you did—again.</p>
+        <p>What you’ll find here isn’t another costume or clever reference, but an assignment: learn to feel without flinching. My first impressions hopefully struck a nerve, but the words that follow will strike like a bolt of lightning.</p>
+        <p>I used to think my job as a writer was to notice things. The right detail, the clean transition, the hidden thread. Pay attention long enough and the world eventually hands you a secret, maybe even a revelation. That’s true. But noticing is only half the miracle. The other half is letting what you notice pass through you and change you, even when it shocks you.</p>
+        <p>Call it electricity. Call it empathy. Either way, it’s a current.</p>
+        <p>Some of us are blessed or cursed with thin insulation. A look across a room hits like static in dry air. A stranger’s bad news finds a place in your throat and won’t move. A stray dog limps by and your bones ache where its bones ache. You can call that fragility, weakness, or sensitivity. I’ve learned to call it a kind of power. Not the kind with switches and dials. The kind that measures how willing you are to be moved.</p>
+        <p>It doesn’t feel like power when you’re young. It feels like being a lightning rod. You catch charge. You spark. You burn. People who don’t want to feel will try to make you the problem. So you suit up. Jokes for armor. Trivia for camouflage. A spaceship on a T-shirt like a door you can step through when the room gets loud.</p>
+        <p>Life kept asking for more. It kept handing me proofs that connection isn’t optional if you want to be fully alive. It isn’t an accessory. It’s a necessity.</p>
+        <p>There’s a ’90s film, <em>Powder</em>, about a lightning-struck kid who could feel everything. His pasty-white appearance is the hook, but the dangerous part isn’t how he looks. It’s how his heart works like a live wire. He doesn’t just sympathize; he conducts—an empathy orchestra. In one scene he makes a hunter feel, cell by cell, the terror and pain of a dying deer. The man drops his rifle, sobbing, swearing never to hunt again. That moment always stunned me. I’ve never liked hunting—most people say it’s for food, yet we can buy food at a store—but I also know I’m a hypocrite, a meat eater who owes his meals to unseen sacrifices. <em>Powder</em> drags that hidden cost into the light. Throughout the film he forces the whole town to feel the pain it prefers to outsource. That makes him a problem, then a mirror, then a mystery too bright to stare at for long. I recognized him. Not the powers. The loneliness. If you rewatch it, you might see a fable about “being different.” I see a dare: practice radical empathy in a world that profits from numbness.</p>
+        <p>When Mimaw promised one last ring and kept it, God’s love surged through me. A few words bridged a dark gap no argument could win. I carry that proof like a fuse. It reminds me that love outlasts the noise. It reminds me who’s got the power.</p>
+        <p>I must confess, some days I want thicker skin—more insulation. That’s when the cats do their best teaching. They don’t try to overpower the weather; they find a sunbeam and settle. They don’t explain their presence; they practice it. A slow blink can be a lighthouse in an outhouse day. I learned to live like that. To reroute lightning through a page instead of a rage. The charge doesn’t stop coming, but it stops owning you.</p>
+        <p>Empathy isn’t agreement. It isn’t surrender either. It’s a brave, inconvenient curiosity: what would this feel like if it were mine? Hold that question too long and it burns your hands. That’s not a reason to drop it. It’s a reason to learn where to set it down so it doesn’t scorch the table.</p>
+        <p>The hardest place to practice is the kitchen table. Family shares your face and knows where your soft places live, especially when you’re drowning in truth serum. You arrive wanting “I’m proud of you.” You get a pop quiz on how the world works. You want a parade. You get a list of questions instead of fanfare. Part of you wants to walk away and build a clubhouse where only soft people are allowed. Love sends you back with two Long Islands, a deep breath, and one line of wisdom that rarely fails: people get louder when they’re scared and soused.</p>
+        <p>Sometimes the person who’s scared is me. Pride has its own volume. It sounds like certainty. It sounds like the part of me that would rather be clever than kind. That’s when humility becomes more than a Sunday sermon. Humility is wonder with its shoes on. It asks better questions. It takes the mask off and says, “Try again.”</p>
+        <p>I used to want to be understood. It sounded like relief. Lately I’m working harder to understand. That costs more. It means meeting a look with a better look, replacing the perfect comeback with the softer sentence: “Tell me what you’re afraid of.” Sometimes there’s no answer. That’s fine. You changed the weather by asking.</p>
+        <p>It’s about becoming grounded. You don’t cancel your strength; you aim it. You don’t deny your pride; you trade it for presence. You don’t dim your light; you learn to conduct it. If you want a companion piece to this chapter, watch <em>Powder</em> again. Not for answers, but for current. Let its question arc into your own life: what if we truly felt what others feel?</p>
+        <p>I’m proud of this book for a simple reason. I wrote it with a body that attracts lightning and I refused to crack. I let the charge move through and, when it hurt, I rested. When it healed, I said thank you and didn’t ruin the moment by explaining it to death.</p>
+        <p>If first impressions are the trailer, this is the part after the credits when the room is almost empty and the lights come up. You stand. You feel the seat spring back. You realize the story followed you out. That’s how I want this to land. Not loud, but lasting.</p>
+        <p>I won’t hand you a moral wrapped in ribbon. Life offers weather, not forecasts. Here’s what I can offer instead: a promise to keep choosing connection over applause, love over noise, and the kind of power that doesn’t need an outlet to be real.</p>
+        <p>Let’s recharge and carry this current forward.</p>
+      </div>
+    </main>
+
+    <div class="back-row">
+      <a href="more.html" class="back-link">◀ BACK TO MORE LIFE LESSONS</a>
+    </div>
+  </div>
+  <div class="scanlines"></div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Meaning of Life - R.C. Howard</title>
+  <meta name="description" content="A missing chapter from Life Lessons of a Man-Child: The Meaning of Life (Or Whatever You Call That Buzzing Under Your Ribs).">
+  <meta property="og:title" content="The Meaning of Life - R.C. Howard">
+  <meta property="og:description" content="A missing chapter from Life Lessons of a Man-Child by R.C. Howard.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="Book-Cover.png">
+  <meta property="og:image:alt" content="Life Lessons of a Man-Child book cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Meaning of Life - R.C. Howard">
+  <meta name="twitter:description" content="A missing chapter from Life Lessons of a Man-Child by R.C. Howard.">
+  <meta name="twitter:image" content="Book-Cover.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:'Roboto',sans-serif;
+      background-image:url('PaperbackCoverFinal.png'),url('Book-Cover.png');
+      background-repeat:no-repeat;background-position:center center;background-attachment:fixed;background-size:cover;
+      min-height:100vh;position:relative;overflow-x:hidden;color:#e9f9ff;
+    }
+    body::before{content:'';position:fixed;inset:0;z-index:1;
+      background:linear-gradient(rgba(20,0,40,.7),rgba(40,0,80,.7)),
+                 radial-gradient(circle at 50% 50%,rgba(255,0,150,.08)0%,transparent 55%);
+    }
+    body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;
+      background-image:linear-gradient(rgba(0,255,255,.06)1px,transparent 1px),
+                       linear-gradient(90deg,rgba(0,255,255,.06)1px,transparent 1px);
+      background-size:50px 50px;animation:gridMove 20s linear infinite;
+    }
+    @keyframes gridMove{0%{transform:translate(0,0)}100%{transform:translate(50px,50px)}}
+    .scanlines{position:fixed;inset:0;z-index:3;pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,255,.02)2px,rgba(0,255,255,.02)4px);
+      animation:scanlineFlicker .1s linear infinite;
+    }
+    @keyframes scanlineFlicker{0%,99%{opacity:1}100%{opacity:.98}}
+
+    .container{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:2rem 1.5rem 3rem;}
+
+    .header{text-align:center;margin-bottom:1.75rem;}
+    .title{font-family:'Orbitron',monospace;font-size:2.1rem;font-weight:900;color:#00ffff;
+      text-shadow:0 0 10px #00ffff,0 0 20px #00ffff,0 0 30px #00ffff;margin-bottom:.4rem;}
+    .subtitle{font-family:'Press Start 2P',monospace;font-size:.68rem;color:#ff8cff;text-shadow:0 0 8px #ff00ff;}
+
+    .chapter-card{
+      background:rgba(0,0,0,.7);
+      border:2px solid #00ffff;
+      border-radius:12px;
+      box-shadow:0 0 25px rgba(0,255,255,.4),inset 0 0 18px rgba(0,255,255,.12);
+      padding:1.75rem 1.5rem 1.9rem;
+      backdrop-filter:blur(3px);
+    }
+
+    .chapter-title{font-family:'Orbitron',monospace;font-size:1.4rem;color:#00ffff;margin-bottom:.75rem;}
+    .chapter-subtitle{font-family:'Roboto',sans-serif;font-size:.95rem;color:#ffdfef;margin-bottom:1.5rem;font-style:italic;}
+
+    .chapter-body{font-size:1rem;line-height:1.7;color:#e9f9ff;}
+    .chapter-body p{margin-bottom:1rem;}
+    .chapter-body p:last-child{margin-bottom:0;}
+
+    .chapter-body .section-break{margin:1.5rem 0;font-size:.9rem;color:#8fe8ff;text-transform:uppercase;letter-spacing:.08em;}
+
+    .back-row{margin-top:2rem;text-align:center;}
+    .back-link{display:inline-block;padding:.8rem 1.9rem;border-radius:999px;border:2px solid #00ffff;
+      background:linear-gradient(45deg,#1a0033,#330066);color:#00ffff;font-family:'Press Start 2P',monospace;font-size:.7rem;
+      text-decoration:none;box-shadow:0 0 12px #00ffff,0 0 24px #00ffff;transition:all .25s ease;}
+    .back-link:hover{background:linear-gradient(45deg,#ff00ff,#330066);color:#ffccff;border-color:#ff00ff;
+      box-shadow:0 0 18px #ff00ff,0 0 36px #ff00ff;}
+
+    @media(max-width:600px){
+      .container{padding:1.5rem 1rem 2.5rem;}
+      .title{font-size:1.7rem;}
+      .chapter-card{padding:1.4rem 1.1rem 1.6rem;}
+      .chapter-title{font-size:1.25rem;}
+      .chapter-body{font-size:.95rem;}
+    }
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}body::after,.scanlines{animation:none!important}}
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">THE MEANING OF LIFE</h1>
+      <div class="subtitle">A missing chapter from <span style="white-space:nowrap;">Life Lessons of a Man-Child</span></div>
+    </header>
+
+    <main class="chapter-card" aria-label="The Meaning of Life chapter">
+      <h2 class="chapter-title">The Meaning of Life</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div class="chapter-body">
+        <p>If you ever want to lose a couple of weeks of your life, start Googling “meaning of life” at 2 a.m. You’ll go in thinking you’re looking for clarity and come out wondering if you need a nap, a pastor, or a therapist who charges by the hour instead of the existential crisis.</p>
+        <p>I didn’t mean to go that far down the rabbit hole. It started like most things in my life: boredom mixed with curiosity and a dash of “I wonder what happens if I press this button.” Before long, I had ancient philosophers, quantum physicists, theologians, monks, and one surprisingly cheerful YouTuber trying to explain the point of being alive.</p>
+        <p>If life had a syllabus, it would be written entirely in pencil and most of it smudged.</p>
+        <p>Somewhere between Aristotle and an algorithmically-generated TED Talk, it hit me that I wasn’t actually searching for answers. I was trying to validate something I’d felt all along but never trusted myself enough to write down:</p>
+        <p>Life isn’t solved.<br>Life is lived.<br>And usually not gracefully.</p>
+        <p>I kept thinking about my dad. The man’s walked through fire more than once, and he never labeled any of it “a lesson.” He just kept going. Quietly. With grit. With faith that didn’t need a microphone. He’s the kind of Marine who didn’t talk about meaning so much as he demonstrated it by showing up.</p>
+        <p>And then I thought about Mom. Her last years stripped away everything except what mattered: love given freely, even when memory faltered. Her meaning of life was simple and fierce and somehow still bigger than the rest of us.</p>
+        <p>Funny thing: every deep dive I did brought me back to these two people. Two humans who lived the same life I was desperately trying to diagram like a crime scene on a whiteboard.</p>
+          <p>Turns out the meaning of life isn’t hidden.<br>It’s inconveniently obvious.</p>
+          <p>It’s in the way your heart drops when your phone rings once at 3 a.m.<br>
+            It’s in the way your dad calls you “son” so casually you almost miss the weight of it.<br>
+            It’s in the way your cats somehow know when you need a warm body pressed against you.<br>
+            It’s in a strip pit rescue in the 50s and a family that learned courage the loud way.<br>
+            It’s in the quiet moments you almost scroll past.</p>
+          <p>It’s in forgiveness you didn’t think you were mature enough to offer.<br>
+            And maybe the grace you didn’t think you deserved.</p>
+          <p>My faith—whatever shape it’s taken over the years—kept nudging me while I did all this research. Not loudly. Not in a “special revelation” kind of way. More like a soft tap on the shoulder: Hey. You already know this. Why are you overcomplicating it?</p>
+          <p>Every tradition, every philosopher, every armchair guru eventually comes back to the same place:<br>
+            We’re here to love. To learn. To lift.<br>
+            To remember we’re not the main character in anyone else’s story, but we still matter in all of them.</p>
+          <p>Life isn’t about collecting things or achievements or titles. It’s about becoming someone worth remembering by the people in the room when the lights go out.</p>
+        <p>The meaning is in the mess.<br>
+           In the moments.<br>
+           In the inch-by-inch becoming.</p>
+        <p>When my research spiral finally burned out, I shut the laptop and realized something I’ve always known but never said this plainly: God doesn’t hide meaning from us like some cosmic scavenger hunt. We hide it from ourselves because we’re scared it’s too simple.</p>
+        <p>But the truth is simple.<br>
+           Painfully, beautifully simple.</p>
+        <p>Here it is:<br>
+           The meaning of life is to leave more love behind than you found when you got here.<br>
+           Everything else is details. Some good, some interesting, some downright ridiculous.<br>
+           But love is the only thing that sticks.</p>
+          <p>And if you’re lucky—really lucky—you figure that out before the end credits start rolling.</p>
+          <p>I don’t always get it right. Nobody does. But I’m trying. And maybe that’s the point too.</p>
+          <p>Trying.<br>
+            Learning.<br>
+            Loving.<br>
+            Becoming.</p>
+          <p>That’s the whole thing.</p>
+          <p>And if this chapter had made it into the memoir, it probably would’ve sat somewhere between faith and nostalgia, holding hands with both. But maybe it fits better here, out in the open, where new people can stumble across it and find whatever they need in it.</p>
+          <p>Because if there’s one thing I’ve learned, it’s this:<br>
+            The meaning of life isn’t something you discover.<br>
+            It’s something you practice.</p>
+      </div>
+    </main>
+
+    <div class="back-row">
+      <a href="index.html" class="back-link">◀ BACK TO HOME</a>
+    </div>
+  </div>
+  <div class="scanlines"></div>
+</body>
+</html>
