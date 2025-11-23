@@ -75,48 +75,29 @@
             );
             z-index: 3;
             pointer-events: none;
-            animation: scanlineFlicker 0.1s linear infinite;
-        }
-        @keyframes scanlineFlicker {
-            0% { opacity: 1; }
-            99% { opacity: 1; }
-            100% { opacity: 0.98; }
         }
         .container {
             position: relative;
-            z-index: 10;
-            max-width: 800px;
+            z-index: 4;
+            max-width: 900px;
             margin: 0 auto;
             padding: 2rem;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
         .main-content {
-            background: rgba(0, 0, 0, 0.6);
+            background: linear-gradient(135deg, rgba(20, 0, 40, 0.75), rgba(40, 0, 80, 0.75));
             border: 2px solid #00ffff;
-            border-radius: 10px;
-            padding: 2.5rem 2rem;
-            text-align: left;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.35), inset 0 0 20px rgba(0, 255, 255, 0.08);
-            backdrop-filter: blur(2px);
-            animation: borderGlow 2s ease-in-out infinite alternate;
-        }
-        .back-row { text-align: center; }
-        @keyframes borderGlow {
-            0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.35), inset 0 0 20px rgba(0, 255, 255, 0.08); }
-            100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 30px rgba(0, 255, 255, 0.12); }
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 30px rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
         }
         .title {
-            font-family: 'Orbitron', monospace;
-            font-size: 2rem;
-            font-weight: 900;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.8rem;
             color: #00ffff;
-            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
-            margin-bottom: 1.5rem;
             text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
             animation: titlePulse 3s ease-in-out infinite;
         }
         @keyframes titlePulse {
@@ -140,6 +121,10 @@
             border: 2px solid #00ffff;
             border-radius: 10px;
             box-shadow: 0 0 12px rgba(0,255,255,0.5), inset 0 0 10px rgba(0,255,255,0.15);
+        }
+        .back-row {
+            text-align: center;
+            margin-top: 2rem;
         }
         .back-link {
             display: inline-block;
@@ -194,47 +179,8 @@
         </div>
     </div>
 
-    <!-- Background music continuation -->
-    <audio id="bgMusic" loop>
-        <source src="Music and Sounds/Meditating Beat.mp3" type="audio/mpeg">
-    </audio>
     <script>
-        (function() {
-            const bgMusic = document.getElementById('bgMusic');
-            const MUSIC_TIME_KEY = 'bgMusicTime';
-            const MUSIC_PLAYING_KEY = 'bgMusicPlaying';
-            const savedTime = sessionStorage.getItem(MUSIC_TIME_KEY);
-
-            if (savedTime) {
-                const time = parseFloat(savedTime);
-                if (bgMusic.readyState >= 1) {
-                    bgMusic.currentTime = time;
-                } else {
-                    bgMusic.addEventListener('loadedmetadata', () => {
-                        bgMusic.currentTime = time;
-                    }, { once: true });
-                }
-            }
-
-            // Only keep playing if it was already playing
-            const wasPlaying = sessionStorage.getItem(MUSIC_PLAYING_KEY);
-            if (wasPlaying === 'true') {
-                bgMusic.volume = 0.3;
-                bgMusic.play().catch(() => {});
-            }
-
-            setInterval(() => {
-                if (!bgMusic.paused) {
-                    sessionStorage.setItem(MUSIC_TIME_KEY, bgMusic.currentTime.toString());
-                    sessionStorage.setItem(MUSIC_PLAYING_KEY, 'true');
-                }
-            }, 500);
-
-            window.addEventListener('beforeunload', () => {
-                sessionStorage.setItem(MUSIC_TIME_KEY, bgMusic.currentTime.toString());
-                sessionStorage.setItem(MUSIC_PLAYING_KEY, (!bgMusic.paused).toString());
-            });
-        })();
+        // No background music on this page.
     </script>
 </body>
 </html>

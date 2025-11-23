@@ -444,46 +444,8 @@
         });
     </script>
 
-    <!-- Background music continuation -->
-    <audio id="bgMusic" loop>
-        <source src="Music and Sounds/Meditating Beat.mp3" type="audio/mpeg">
-    </audio>
     <script>
-        (function() {
-            const bgMusic = document.getElementById('bgMusic');
-            const MUSIC_TIME_KEY = 'bgMusicTime';
-            const MUSIC_PLAYING_KEY = 'bgMusicPlaying';
-            const savedTime = sessionStorage.getItem(MUSIC_TIME_KEY);
-
-            if (savedTime) {
-                const time = parseFloat(savedTime);
-                if (bgMusic.readyState >= 1) {
-                    bgMusic.currentTime = time;
-                } else {
-                    bgMusic.addEventListener('loadedmetadata', () => {
-                        bgMusic.currentTime = time;
-                    }, { once: true });
-                }
-            }
-
-            const wasPlaying = sessionStorage.getItem(MUSIC_PLAYING_KEY);
-            if (wasPlaying === 'true') {
-                bgMusic.volume = 0.3;
-                bgMusic.play().catch(() => {});
-            }
-
-            setInterval(() => {
-                if (!bgMusic.paused) {
-                    sessionStorage.setItem(MUSIC_TIME_KEY, bgMusic.currentTime.toString());
-                    sessionStorage.setItem(MUSIC_PLAYING_KEY, 'true');
-                }
-            }, 500);
-
-            window.addEventListener('beforeunload', () => {
-                sessionStorage.setItem(MUSIC_TIME_KEY, bgMusic.currentTime.toString());
-                sessionStorage.setItem(MUSIC_PLAYING_KEY, (!bgMusic.paused).toString());
-            });
-        })();
+        // No background music on this page.
     </script>
 </body>
 </html>

@@ -488,7 +488,7 @@
     </div>
 
     <!-- Cat paw Easter egg trigger -->
-    <button class="cat-paw-trigger" type="button" aria-label="Jumpin' Punkin' game" onclick="stopMusicAndNavigate('cat-library-runner.html')">
+    <button class="cat-paw-trigger" type="button" aria-label="Jumpin' Punkin' game" onclick="window.location.href='cat-library-runner.html'">
         <svg class="cat-paw-icon" viewBox="0 0 64 64" aria-hidden="true">
             <!-- Main pad -->
             <circle cx="32" cy="38" r="14" />
@@ -500,83 +500,8 @@
         </svg>
     </button>
 
-    <!-- Background music -->
-    <audio id="bgMusic" loop autoplay>
-        <source src="Music and Sounds/Meditating Beat.mp3" type="audio/mpeg">
-    </audio>
-
     <script>
-        const bgMusic = document.getElementById('bgMusic');
-        const MUSIC_TIME_KEY = 'bgMusicTime';
-        const MUSIC_PLAYING_KEY = 'bgMusicPlaying';
-        const catPawBtn = document.querySelector('.cat-paw-trigger');
-
-        // -------------------------------------------------------
-        // 1. Music Logic
-        // -------------------------------------------------------
-        function initMusic() {
-            const savedTime = sessionStorage.getItem(MUSIC_TIME_KEY);
-            const fromGame = sessionStorage.getItem(MUSIC_PLAYING_KEY) === 'false';
-
-            // Restore time if we have it and aren't coming from the game
-            if (savedTime && !fromGame) {
-                const time = parseFloat(savedTime);
-                if (bgMusic.readyState >= 1) {
-                    bgMusic.currentTime = time;
-                } else {
-                    bgMusic.addEventListener('loadedmetadata', () => {
-                        bgMusic.currentTime = time;
-                    }, { once: true });
-                }
-            }
-
-            // Attempt immediate playback
-            bgMusic.volume = 0.5;
-            const playPromise = bgMusic.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    // Auto-play was prevented. Wait for user interaction.
-                    const playOnInteraction = () => {
-                        bgMusic.play().catch(() => {});
-                        // Remove listeners once played
-                        ['click', 'keydown', 'touchstart', 'scroll'].forEach(evt => 
-                            document.removeEventListener(evt, playOnInteraction)
-                        );
-                    };
-                    
-                    ['click', 'keydown', 'touchstart', 'scroll'].forEach(evt => 
-                        document.addEventListener(evt, playOnInteraction, { once: true })
-                    );
-                });
-            }
-        }
-
-        // Initialize music on load
-        window.addEventListener('DOMContentLoaded', initMusic);
-
-        // Save current time periodically
-        setInterval(() => {
-            if (!bgMusic.paused) {
-                sessionStorage.setItem(MUSIC_TIME_KEY, bgMusic.currentTime.toString());
-                sessionStorage.setItem(MUSIC_PLAYING_KEY, 'true');
-            }
-        }, 500);
-
-        // Save state before unloading (navigating away)
-        window.addEventListener('beforeunload', () => {
-            if (!bgMusic.paused) {
-                sessionStorage.setItem(MUSIC_TIME_KEY, bgMusic.currentTime.toString());
-                sessionStorage.setItem(MUSIC_PLAYING_KEY, 'true');
-            }
-        });
-
-        // Special handling for game navigation - stop music
-        window.stopMusicAndNavigate = function(url) {
-            sessionStorage.setItem(MUSIC_PLAYING_KEY, 'false');
-            bgMusic.pause();
-            window.location.href = url;
-        };
+        // No background music logic; cat paw simply navigates to the game page.
     </script>
 </body>
 </html>
