@@ -234,11 +234,37 @@
         align-items: flex-start;
         gap: 0.25rem;
       }
+      /* On small screens, make the overlay fixed to cover the whole viewport
+         so there's enough room for text and buttons even if the game shell is short. */
       .overlay {
-        font-size: 0.6rem;
+        position: fixed;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.92);
+        padding: 2rem;
+      }
+      .overlay-inner {
+        max-width: 100%;
+      }
+      .overlay-title {
+        font-size: 1rem;
+        margin-bottom: 1rem;
       }
       .overlay-text {
-        font-size: 0.55rem;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+      }
+      .btn {
+        font-size: 0.75rem;
+        padding: 0.8rem 1.5rem;
+        width: 100%; /* Stack buttons full width on mobile */
+        text-align: center;
+      }
+      .btn-row {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
       }
     }
 
