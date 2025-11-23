@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jumpin' Punkin' - Cat Library Runner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: radial-gradient(circle at top, #2c1a4a 0%, #050010 55%, #020006 100%);
+      color: #00ffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      overflow-x: hidden;
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 255, 0.03) 2px, rgba(0, 255, 255, 0.03) 4px);
+      mix-blend-mode: soft-light;
+      z-index: 1;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .frame {
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid #00ffff;
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem 1.75rem;
+      box-shadow: 0 0 24px rgba(0, 255, 255, 0.4), inset 0 0 18px rgba(0, 255, 255, 0.15);
+    }
+
+    .title-row {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .game-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem;
+      color: #ffdf6b;
+      text-shadow: 0 0 6px #ffdf6b;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.75rem 0 0.5rem;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.55rem;
+      color: #00ffff;
+    }
+
+    .hud span.label {
+      color: #ff00ff;
+    }
+
+    .game-shell {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      background: transparent;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: transparent;
+      position: relative;
+      z-index: 10;
+    }
+
+    .library-backdrop {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: url('Library Background.jpg');
+      background-repeat: repeat-x;
+      background-size: auto 100%;
+      background-position: 0 0;
+      opacity: 0.85;
+      will-change: background-position;
+    }
+
+    .shelves-layer {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(0,0,0,0.15) 0, transparent 50%),
+                  linear-gradient(to bottom, transparent 0, rgba(0,0,0,0.35) 80%, rgba(0,0,0,0.8) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .ground-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 16%;
+      height: 3px;
+      background: linear-gradient(90deg, rgba(0, 255, 255, 0.4), rgba(255, 0, 255, 0.7));
+      box-shadow: 0 0 6px rgba(0, 255, 255, 0.7);
+      pointer-events: none;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.85));
+      color: #00ffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      text-align: center;
+      padding: 1.5rem;
+      z-index: 20;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .overlay-inner {
+      max-width: 420px;
+    }
+
+    .overlay-title {
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      color: #ffdf6b;
+      text-shadow: 0 0 8px #ffdf6b;
+    }
+
+    .overlay-text {
+      font-size: 0.6rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
+      border: 2px solid #00ffff;
+      background: linear-gradient(45deg, #1a0033, #330066);
+      color: #00ffff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      border-color: #ffdf6b;
+      color: #ffdf6b;
+      box-shadow: 0 0 14px rgba(255, 223, 107, 0.8);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 18px rgba(0, 255, 255, 0.9);
+      border-color: #ff00ff;
+      color: #ff00ff;
+    }
+
+    .btn.primary:hover {
+      box-shadow: 0 0 20px rgba(255, 223, 107, 1);
+      border-color: #ff8800;
+      color: #ff8800;
+      background: linear-gradient(45deg, #3a1020, #552000);
+    }
+
+    .footer-hint {
+      margin-top: 0.75rem;
+      font-size: 0.55rem;
+      font-family: 'Press Start 2P', monospace;
+      color: #88ffff;
+      opacity: 0.9;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .frame {
+        padding: 1rem 0.9rem 1.25rem;
+      }
+      .game-title {
+        font-size: 1.4rem;
+      }
+      .hud {
+        font-size: 0.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+      }
+      .overlay {
+        font-size: 0.6rem;
+      }
+      .overlay-text {
+        font-size: 0.55rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="wrapper">
+    <div class="frame">
+      <div class="title-row">
+        <div class="game-title">JUMPIN' PUNKIN'</div>
+      </div>
+
+      <div class="hud" style="justify-content: center;">
+        <div><span class="label">Stacks cleared:</span> <span id="stackCounter">0</span></div>
+      </div>
+
+      <div class="game-shell">
+        <div class="library-backdrop"></div>
+        <div class="shelves-layer"></div>
+        <div class="ground-line"></div>
+        <canvas id="gameCanvas" width="800" height="300" aria-label="Jumpin' Punkin' endless runner game"></canvas>
+
+        <!-- Start / Game Over / Win overlay -->
+        <div id="overlay" class="overlay">
+          <div class="overlay-inner" id="overlayInner">
+            <div class="overlay-title" id="overlayTitle">Welcome to Jumpin' Punkin'</div>
+            <div class="overlay-text" id="overlayText">
+              You're an orange cat sprinting through a grand European library,
+              dodging towering stacks of books and late fees.
+              <br /><br />
+              Press <strong>SPACE</strong> or tap inside the game area to jump.
+            </div>
+            <div class="btn-row" id="overlayButtons">
+              <button class="btn primary" id="startButton" type="button">Start Running</button>
+              <a class="btn" href="index.html">Back to Home</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-hint">Tip: Try to find a rhythm—Punkin loves a good tempo.</div>
+    </div>
+  </div>
+
+  <!-- Audio assets from Music and Sounds/ -->
+  <audio id="jumpSound" preload="auto">
+    <source src="Music and Sounds/jump-sound-14839.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="hitSound" preload="auto">
+    <source src="Music and Sounds/cat-meow-sound-383823.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="musicLoop" preload="auto" loop>
+    <source src="Music and Sounds/Vivace Momentum.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    // ---------------------
+    // Core game state
+    // ---------------------
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const libraryBackdropEl = document.querySelector('.library-backdrop');
+
+    const GRAVITY = 0.5;               // downward acceleration (slightly softer for higher airtime)
+    const BASE_JUMP = -13.5;           // base jump impulse (stronger leap)
+    const MAX_EXTRA_JUMP = -6;         // extra impulse from holding
+    const HOLD_TIME_FOR_MAX = 260;     // ms needed to reach max extra jump
+    const GROUND_Y = canvas.height * 0.84;
+
+    const OBSTACLE_SPEED = 6;          // horizontal speed of book stacks
+    const OBSTACLE_INTERVAL = 1200;    // ms between spawns
+    const MIN_GAP = 170;               // minimum gap between cat and next stack
+
+    const TARGET_STACKS = 237;
+
+    let cat = {
+      x: 90,
+      y: GROUND_Y - 48,
+      width: 52,
+      height: 48,
+      vy: 0,
+      onGround: true
+    };
+
+    let obstacles = [];
+    let lastSpawn = 0;
+    let lastTime = 0;
+    let stacksCleared = 0;
+    let jumpsMade = 0;
+    let running = false;
+    let gameOver = false;
+    let gameWon = false;
+
+    // Simple leg animation & background parallax timing
+    let legPhase = 0;
+    const LEG_ANIM_SPEED = 0.015; // higher = faster leg cycling
+    let bgOffset = 0;
+    const BG_SCROLL_SPEED = 0.06; // pixels per ms for background parallax
+
+    // Input handling helpers
+    let jumpHeld = false;
+    let jumpStartTime = 0;
+    let jumpConsumedThisPress = false;
+
+    const stackCounterEl = document.getElementById('stackCounter');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayText = document.getElementById('overlayText');
+    const overlayButtons = document.getElementById('overlayButtons');
+    const startButton = document.getElementById('startButton');
+
+    // Audio elements (very small placeholder blips; replace sources as desired)
+    const jumpSound = document.getElementById('jumpSound');
+    const hitSound = document.getElementById('hitSound');
+    const musicLoop = document.getElementById('musicLoop');
+
+    // ---------------------
+    // Game control
+    // ---------------------
+    function startGame() {
+      resetGame();
+      running = true;
+      overlay.classList.add('hidden');
+      // start background loop once user has interacted
+      if (musicLoop && musicLoop.paused) {
+        musicLoop.volume = 0.4;
+        musicLoop.play().catch(() => {});
+      }
+      requestAnimationFrame(gameLoop);
+      // Blur any focused button so spacebar doesn't re-trigger it
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+    }
+
+    function resetGame() {
+      obstacles = [];
+      stacksCleared = 0;
+      jumpsMade = 0;
+      stackCounterEl.textContent = '0';
+      lastSpawn = 0;
+      lastTime = 0;
+      running = false;
+      gameOver = false;
+      gameWon = false;
+      cat.x = 90;
+      cat.y = GROUND_Y - cat.height;
+      cat.vy = 0;
+      cat.onGround = true;
+      jumpHeld = false;
+      jumpConsumedThisPress = false;
+      draw();
+    }
+
+    function showGameOver() {
+      running = false;
+      gameOver = true;
+      overlay.classList.remove('hidden');
+      overlayTitle.textContent = 'Ouch! Punkin Hit the Stacks';
+      overlayText.innerHTML =
+        "You clipped a tower of books and sent pages flying everywhere. " +
+        "Take a breath, straighten those shelves in your mind, and try again.";
+      overlayButtons.innerHTML = '';
+
+      const retryBtn = document.createElement('button');
+      retryBtn.className = 'btn primary';
+      retryBtn.type = 'button';
+      retryBtn.textContent = 'Play Again';
+      retryBtn.onclick = () => {
+        overlay.classList.add('hidden');
+        startGame();
+      };
+
+      const homeBtn = document.createElement('a');
+      homeBtn.className = 'btn';
+      homeBtn.href = 'index.html';
+      homeBtn.textContent = 'Back to Home';
+
+      overlayButtons.appendChild(retryBtn);
+      overlayButtons.appendChild(homeBtn);
+      
+      // Auto-focus the primary action
+      setTimeout(() => retryBtn.focus(), 50);
+    }
+
+    function showWin() {
+      running = false;
+      gameWon = true;
+      // Silent win: open the movie reference page in a new tab
+      window.open('https://www.justwatch.com/us/movie/the-shining', '_blank', 'noopener');
+
+      // Show congratulations overlay
+      overlay.classList.remove('hidden');
+      overlayTitle.textContent = 'Congratulations!';
+      overlayText.innerHTML =
+        'Congratulations for jumping over 237 stacks of books! <br><br>' +
+        'Jack Torrence would have been proud and tell you "All Work and No Play Makes Jack a Dull Boy".';
+      overlayButtons.innerHTML = '';
+
+      const restartBtn = document.createElement('button');
+      restartBtn.className = 'btn primary';
+      restartBtn.type = 'button';
+      restartBtn.textContent = 'Restart';
+      restartBtn.onclick = () => {
+        window.location.reload();
+      };
+
+      const homeBtn = document.createElement('a');
+      homeBtn.className = 'btn';
+      homeBtn.href = 'index.html';
+      homeBtn.textContent = 'Back to Home';
+
+      overlayButtons.appendChild(restartBtn);
+      overlayButtons.appendChild(homeBtn);
+
+      // Auto-focus the primary action
+      setTimeout(() => restartBtn.focus(), 50);
+    }
+
+    // ---------------------
+    // Obstacle management
+    // ---------------------
+    function spawnObstacle() {
+      // Vary height and width a bit to suggest different book stacks
+      const minHeight = 40;
+      const maxHeight = 120;
+      const height = minHeight + Math.random() * (maxHeight - minHeight);
+      const width = 26 + Math.random() * 22;
+
+      obstacles.push({
+        x: canvas.width + 40,
+        y: GROUND_Y - height,
+        width,
+        height,
+        passed: false,
+        color: randomBookColor()
+      });
+    }
+
+    function randomBookColor() {
+      // Rich, saturated spine colors so stacks read clearly over the photo background
+      const palette = ['#ff3b3b', '#ffb300', '#3ddc97', '#3b82ff', '#b833ff', '#ff7f50', '#ffd447'];
+      return palette[Math.floor(Math.random() * palette.length)];
+    }
+
+    // ---------------------
+    // Input handling
+    // ---------------------
+    function beginJump() {
+      if (!running) {
+        // If overlay visible and game not over yet, treat as start.
+        if (!gameOver && !gameWon) {
+          startGame();
+        }
+        return;
+      }
+
+      if (cat.onGround && !jumpConsumedThisPress) {
+        jumpHeld = true;
+        jumpStartTime = performance.now();
+        jumpConsumedThisPress = true;
+
+        // apply base jump immediately
+        cat.vy = BASE_JUMP;
+        cat.onGround = false;
+
+        // count this jump
+        jumpsMade++;
+        if (jumpSound) {
+          jumpSound.currentTime = 0;
+          jumpSound.play().catch(() => {});
+        }
+      }
+    }
+
+    function endJump() {
+      if (!running) return;
+      if (!jumpHeld) return;
+
+      const heldMs = performance.now() - jumpStartTime;
+      const clamped = Math.min(heldMs, HOLD_TIME_FOR_MAX);
+      const ratio = clamped / HOLD_TIME_FOR_MAX;
+      const extra = MAX_EXTRA_JUMP * ratio; // negative value, stronger jump when closer to -4
+
+      // Slight boost if still moving upward
+      if (cat.vy < 0) {
+        cat.vy += extra * 0.6;
+      }
+
+      jumpHeld = false;
+    }
+
+    // Keyboard
+    window.addEventListener('keydown', (e) => {
+      // If overlay is visible, handle navigation
+      if (!overlay.classList.contains('hidden')) {
+        const focusable = Array.from(overlayButtons.querySelectorAll('button, a'));
+        if (focusable.length === 0) return;
+
+        const currentIndex = focusable.indexOf(document.activeElement);
+
+        if (e.code === 'ArrowRight') {
+          e.preventDefault();
+          const nextIndex = (currentIndex + 1) % focusable.length;
+          focusable[nextIndex].focus();
+        } else if (e.code === 'ArrowLeft') {
+          e.preventDefault();
+          const prevIndex = (currentIndex - 1 + focusable.length) % focusable.length;
+          focusable[prevIndex].focus();
+        } else if (e.code === 'Space' || e.code === 'Enter') {
+          // If a button is focused, let the default action happen (click)
+          // If nothing focused, maybe focus the first one?
+          if (currentIndex === -1) {
+            e.preventDefault();
+            focusable[0].focus();
+            // Optional: click it immediately?
+            // focusable[0].click();
+          }
+          // If something IS focused, do NOT prevent default so the button clicks.
+          return;
+        }
+        return;
+      }
+
+      // Game controls (only if overlay hidden)
+      if (e.code === 'Space') {
+        e.preventDefault(); // stop page scroll
+        if (!jumpConsumedThisPress) {
+          beginJump();
+        }
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        jumpConsumedThisPress = false;
+        endJump();
+      }
+    });
+
+    // Pointer / touch (tap anywhere on the game shell)
+    const gameShell = document.querySelector('.game-shell');
+
+    function pointerDownHandler(e) {
+      // If the user clicked a button or link, let the default action happen
+      // and do NOT start the jump/game.
+      if (e.target.closest('button') || e.target.closest('a')) {
+        return;
+      }
+      e.preventDefault();
+      beginJump();
+    }
+
+    function pointerUpHandler(e) {
+      if (e.target.closest('button') || e.target.closest('a')) {
+        return;
+      }
+      e.preventDefault();
+      jumpConsumedThisPress = false;
+      endJump();
+    }
+
+    gameShell.addEventListener('mousedown', pointerDownHandler);
+    gameShell.addEventListener('mouseup', pointerUpHandler);
+    gameShell.addEventListener('mouseleave', pointerUpHandler);
+
+    gameShell.addEventListener('touchstart', pointerDownHandler, { passive: false });
+    gameShell.addEventListener('touchend', pointerUpHandler, { passive: false });
+    gameShell.addEventListener('touchcancel', pointerUpHandler, { passive: false });
+
+    // Start button
+    startButton.addEventListener('click', () => {
+      startGame();
+    });
+    
+    // Initial focus
+    window.addEventListener('DOMContentLoaded', () => {
+       setTimeout(() => startButton.focus(), 100);
+    });
+
+    // ---------------------
+    // Game loop
+    // ---------------------
+    function gameLoop(timestamp) {
+      if (!running) {
+        draw();
+        return;
+      }
+
+      if (!lastTime) lastTime = timestamp;
+      const delta = timestamp - lastTime;
+      lastTime = timestamp;
+
+      update(delta);
+      draw();
+
+      if (running) {
+        requestAnimationFrame(gameLoop);
+      }
+    }
+
+    function update(delta) {
+      // advance leg animation phase
+      legPhase += delta * LEG_ANIM_SPEED;
+      // scroll background for parallax effect (wrap to avoid large numbers)
+      bgOffset = (bgOffset + delta * BG_SCROLL_SPEED) % canvas.width;
+      if (libraryBackdropEl) {
+        libraryBackdropEl.style.backgroundPosition = `-${bgOffset}px 0px`;
+      }
+
+      // spawn obstacles at set interval with a bit of randomness
+      if (lastSpawn === 0) lastSpawn = performance.now();
+      const now = performance.now();
+      if (now - lastSpawn > OBSTACLE_INTERVAL) {
+        // ensure at least MIN_GAP distance from last obstacle
+        const last = obstacles[obstacles.length - 1];
+        if (!last || last.x < canvas.width - MIN_GAP) {
+          spawnObstacle();
+          lastSpawn = now;
+        }
+      }
+
+      // update cat physics
+      cat.vy += GRAVITY;
+      cat.y += cat.vy;
+
+      if (cat.y + cat.height >= GROUND_Y) {
+        cat.y = GROUND_Y - cat.height;
+        cat.vy = 0;
+        cat.onGround = true;
+      }
+
+      // move obstacles and check collisions
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        const o = obstacles[i];
+        o.x -= OBSTACLE_SPEED;
+
+        // collision detection (AABB)
+        if (
+          cat.x < o.x + o.width &&
+          cat.x + cat.width > o.x &&
+          cat.y < o.y + o.height &&
+          cat.y + cat.height > o.y
+        ) {
+          if (hitSound) {
+            hitSound.currentTime = 0;
+            hitSound.play().catch(() => {});
+          }
+          showGameOver();
+          return;
+        }
+
+        // count cleared ones
+        if (!o.passed && o.x + o.width < cat.x) {
+          o.passed = true;
+          stacksCleared++;
+          stackCounterEl.textContent = String(stacksCleared);
+
+          if (stacksCleared >= TARGET_STACKS) {
+            showWin();
+            return;
+          }
+        }
+
+        // remove off-screen
+        if (o.x + o.width < -50) {
+          obstacles.splice(i, 1);
+        }
+      }
+    }
+
+    // ---------------------
+    // Drawing
+    // ---------------------
+    function drawCat() {
+      // Body - solid, bright orange with neon outline so Punkin stands out clearly
+      ctx.save();
+      ctx.globalAlpha = 1.0;
+      ctx.fillStyle = '#ff9a1f';
+      ctx.strokeStyle = '#00ffff';
+      ctx.lineWidth = 2;
+
+      const bodyX = cat.x;
+      const bodyY = cat.y + 8;
+      const bodyW = cat.width - 8;
+      const bodyH = cat.height - 12;
+
+      ctx.beginPath();
+      ctx.roundRect(bodyX, bodyY, bodyW, bodyH, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      // Head
+      const headSize = 22;
+      const headX = bodyX + bodyW - headSize + 2;
+      const headY = cat.y - 2;
+      ctx.beginPath();
+      ctx.roundRect(headX, headY, headSize, headSize, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      // Ears
+      ctx.beginPath();
+      ctx.moveTo(headX + 4, headY + 6);
+      ctx.lineTo(headX + 9, headY - 2);
+      ctx.lineTo(headX + 14, headY + 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(headX + headSize - 4, headY + 6);
+      ctx.lineTo(headX + headSize - 9, headY - 2);
+      ctx.lineTo(headX + headSize - 14, headY + 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Tail
+      ctx.beginPath();
+      ctx.moveTo(bodyX + 6, bodyY + 8);
+      ctx.quadraticCurveTo(bodyX - 10, bodyY, bodyX - 8, bodyY - 14);
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.lineWidth = 2;
+
+      // Running legs (simple 2-frame cycle)
+      const legOffset = Math.sin(legPhase) * 3;
+      const legBaseY = bodyY + bodyH - 2;
+      const legWidth = 4;
+      const legHeight = 10;
+      ctx.strokeStyle = '#c96b1e';
+      ctx.lineWidth = 3;
+
+      // front leg
+      ctx.beginPath();
+      ctx.moveTo(bodyX + bodyW - 10, legBaseY + legOffset);
+      ctx.lineTo(bodyX + bodyW - 10, legBaseY + legHeight + legOffset);
+      ctx.stroke();
+
+      // back leg (opposite phase)
+      const backOffset = Math.sin(legPhase + Math.PI) * 3;
+      ctx.beginPath();
+      ctx.moveTo(bodyX + 10, legBaseY + backOffset);
+      ctx.lineTo(bodyX + 10, legBaseY + legHeight + backOffset);
+      ctx.stroke();
+      ctx.lineWidth = 2;
+
+      // Facial details
+      ctx.fillStyle = '#1a0b00';
+      ctx.beginPath();
+      ctx.arc(headX + 8, headY + 11, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawObstacles() {
+      ctx.save();
+      ctx.globalAlpha = 1.0;
+      for (const o of obstacles) {
+        const spineColor = o.color;
+        const edgeColor = '#00ffff';
+
+        // main stack block (solid dark body with neon outline so it's obvious)
+        ctx.fillStyle = '#050514';
+        ctx.strokeStyle = edgeColor;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(o.x, o.y, o.width, o.height, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // draw horizontal "shelves" of books inside the stack
+        const rows = Math.max(2, Math.floor(o.height / 14));
+        const rowHeight = o.height / rows;
+
+        for (let i = 0; i < rows; i++) {
+          const rowY = o.y + i * rowHeight + 3;
+          const rowH = rowHeight - 4;
+
+          // each row is a strip of individual books laid horizontally
+          const booksInRow = Math.max(2, Math.floor(o.width / 10));
+          const bookWidth = (o.width - 6) / booksInRow;
+
+          for (let j = 0; j < booksInRow; j++) {
+            const bookX = o.x + 3 + j * bookWidth + 0.5;
+            const bookColorIndex = (j + i) % 3;
+            let bookColor = spineColor;
+            if (bookColorIndex === 1) bookColor = '#fef08a';
+            if (bookColorIndex === 2) bookColor = '#93c5fd';
+
+            ctx.fillStyle = bookColor;
+            ctx.strokeStyle = '#020617';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.roundRect(bookX, rowY, bookWidth - 1.5, rowH, 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // spine line to suggest pages vs spine
+            ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+            ctx.beginPath();
+            ctx.moveTo(bookX + 2, rowY);
+            ctx.lineTo(bookX + 2, rowY + rowH);
+            ctx.stroke();
+          }
+        }
+      }
+      ctx.restore();
+    }
+
+    function draw() {
+      // clear just the canvas (background image lives behind it)
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // draw cat and obstacles directly (canvas z-index ensures they are on top)
+      drawObstacles();
+      drawCat();
+    }
+
+    // initial static draw so canvas isn't empty before starting
+    draw();
+  </script>
+</body>
+</html>

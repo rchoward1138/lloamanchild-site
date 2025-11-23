@@ -370,6 +370,40 @@
             * { animation: none !important; transition: none !important; }
             body::after, .scanlines { animation: none !important; }
         }
+
+        /* Hidden cat paw Easter egg trigger */
+        .cat-paw-trigger {
+            position: fixed;
+            right: 1.25rem;
+            bottom: 1.25rem;
+            width: 40px;
+            height: 40px;
+            z-index: 20;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.75;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .cat-paw-trigger:hover {
+            opacity: 1;
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        .cat-paw-icon {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 0 4px rgba(0,255,255,0.8));
+        }
+
+        .cat-paw-icon circle,
+        .cat-paw-icon ellipse {
+            fill: #ffb347; /* soft orange */
+            stroke: #ff8800;
+            stroke-width: 1.2;
+        }
     </style>
 </head>
 <body>
@@ -452,5 +486,18 @@
             </div>
         </div>
     </div>
+
+    <!-- Cat paw Easter egg trigger -->
+    <button class="cat-paw-trigger" type="button" aria-label="Jumpin' Punkin' game" onclick="window.location.href='cat-library-runner.html'">
+        <svg class="cat-paw-icon" viewBox="0 0 64 64" aria-hidden="true">
+            <!-- Main pad -->
+            <circle cx="32" cy="38" r="14" />
+            <!-- Toes -->
+            <ellipse cx="20" cy="24" rx="5" ry="7" />
+            <ellipse cx="28" cy="20" rx="5" ry="7" />
+            <ellipse cx="36" cy="20" rx="5" ry="7" />
+            <ellipse cx="44" cy="24" rx="5" ry="7" />
+        </svg>
+    </button>
 </body>
 </html>
