@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Belief Collector - Mini Game</title>
+    <style>
+        :root {
+            --leaf-green: #6aa84f;
+            --bee-yellow: #f1c232;
+            --sky-blue: #c9daf8;
+            --wood-brown: #783f04;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: var(--wood-brown);
+            margin-bottom: 5px;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 15px;
+            font-style: italic;
+            text-align: center;
+            padding: 0 1rem;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 500px;
+            background: linear-gradient(to bottom, #c9daf8, #e1eeff);
+            border: 4px solid var(--wood-brown);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+            cursor: default;
+            touch-action: none; /* prevent scroll/gestures during play */
+        }
+
+        /* Hide cursor only during gameplay */
+        #gameContainer.playing {
+            cursor: none;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            background: rgba(255, 255, 255, 0.98);
+            text-align: center;
+            z-index: 10;
+            cursor: default;
+            padding: 18px 16px;
+            overflow-y: auto;
+        }
+
+        .overlay h2 {
+            margin: 0 0 10px;
+            line-height: 1.1;
+        }
+
+        .overlay p {
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button {
+            background-color: var(--leaf-green);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, background-color 0.2s;
+            margin-top: 14px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background-color: #568c3e;
+        }
+
+        #scoreBoard {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--wood-brown);
+            z-index: 5;
+            background: rgba(255,255,255,0.6);
+            padding: 5px 10px;
+            border-radius: 10px;
+        }
+
+        /* Prevent scoreboard from bleeding through the start/gameover overlays */
+        #gameContainer:not(.playing) #scoreBoard {
+            display: none;
+        }
+
+        .instructions {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        .instructions p {
+            margin: 6px 0;
+        }
+
+        .footer-row {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .link {
+            color: var(--wood-brown);
+            text-decoration: underline;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 640px) {
+            #gameContainer { height: 520px; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>The Belief Collector</h1>
+    <p>Gather the sweetness, avoid the storms.</p>
+
+    <audio id="bgMusic" preload="auto" loop>
+        <source src="Bee%20Leaf/soft-background-music-432715.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="gameContainer">
+        <div id="scoreBoard">Belief: 0</div>
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="startScreen" class="overlay">
+            <h2 style="color: var(--wood-brown); font-size: 2rem;">Ready, Bee?</h2>
+            <div class="instructions">
+                <p>🍯 <strong>Catch Honey</strong> to grow your Belief.</p>
+                <p>🍃 <strong>Catch Leaves</strong> for a shield.</p>
+                <p>⛈️ <strong>Avoid Storms</strong> or you'll lose faith!</p>
+
+                <hr style="border:none;border-top:1px solid rgba(120,63,4,.2);margin:12px 0;width:80%;">
+                <p><strong>Game Effects</strong></p>
+                <p>🍯 Honey is sticky: it <strong>slows the game down</strong> a bit.</p>
+                <p>🍃 Leaves give a shield (up to <strong>5</strong>), but they also <strong>speed the game up</strong> a bit.</p>
+                <p>🌸 Flowers make the <strong>sun brighter</strong> (+2% each) and also <strong>speed the game up</strong> a bit.</p>
+                <p>🛡️ If you have a shield and hit a storm, you survive… but the storm will <strong>dim the sun</strong> (-4%).</p>
+            </div>
+            <button onclick="startGame()">Start Flying</button>
+
+            <div class="footer-row">
+                <a class="link" href="bee-leaf.html">Back to Bee-Leaf</a>
+                <a class="link" href="index.html">Home</a>
+            </div>
+        </div>
+
+        <div id="gameOverScreen" class="overlay hidden">
+            <h2 style="color: var(--wood-brown); font-size: 2rem;">Stormy Skies!</h2>
+            <p>But faith means trying again.</p>
+            <p id="finalScore" style="font-size: 1.5rem; font-weight: bold;">Belief Collected: 0</p>
+            <button onclick="startGame()">Believe Again</button>
+
+            <div class="footer-row">
+                <a class="link" href="bee-leaf.html">Back to Bee-Leaf</a>
+                <a class="link" href="index.html">Home</a>
+            </div>
+        </div>
+
+        <div id="winScreen" class="overlay hidden">
+            <h2 style="color: var(--wood-brown); font-size: 2rem;">You Did It!</h2>
+            <p style="max-width:520px; line-height:1.6; padding:0 1rem;">
+                You believed in yourself and made the sun shine brightly.
+            </p>
+            <p id="winScore" style="font-size: 1.5rem; font-weight: bold;">Belief Collected: 0</p>
+            <p style="max-width:520px; line-height:1.6; padding:0 1rem;">
+                <strong>Mark 9:23 (KJV)</strong> — “If thou canst believe, all things are possible to him that believeth.”
+            </p>
+            <button onclick="startGame()">Play Again</button>
+
+            <div class="footer-row">
+                <a class="link" href="bee-leaf.html">Back to Bee-Leaf</a>
+                <a class="link" href="index.html">Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('gameContainer');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreBoard = document.getElementById('scoreBoard');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const winScreen = document.getElementById('winScreen');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const winScoreDisplay = document.getElementById('winScore');
+        const bgMusic = document.getElementById('bgMusic');
+
+        // Game State
+        let isPlaying = false;
+        let score = 0;
+        let frames = 0;
+        let gameSpeed = 3;
+        let shieldCount = 0;
+        const maxShields = 5;
+
+        // Sun / "glory" level: 0 (hidden) -> 1 (bright)
+        let sunLevel = 0;
+        const sunStepUp = 0.02;   // +2% per flower
+        const sunStepDown = 0.04; // -4% per shielded storm
+
+        // Speed tuning
+        const minSpeed = 2.0;
+        const maxSpeed = 6.0;
+        const honeySlow = 0.45;
+        const leafSpeedUp = 0.40;
+        const flowerSpeedUp = 0.25;
+
+        // Audio (procedural SFX; no extra files needed)
+        let audioCtx = null;
+
+        function ensureAudioContext() {
+            if (audioCtx) return audioCtx;
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return null;
+            audioCtx = new Ctx();
+            return audioCtx;
+        }
+
+        function playTone({ type = 'sine', freq = 440, duration = 0.12, gain = 0.10, detune = 0 } = {}) {
+            const ctx = ensureAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now);
+            if (detune) osc.detune.setValueAtTime(detune, now);
+
+            g.gain.setValueAtTime(0.0001, now);
+            g.gain.exponentialRampToValueAtTime(gain, now + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+            osc.connect(g);
+            g.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + duration + 0.02);
+        }
+
+        function playNoise({ duration = 0.25, gain = 0.08, filterType = 'bandpass', filterFreq = 900, q = 0.8 } = {}) {
+            const ctx = ensureAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+
+            const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1);
+
+            const src = ctx.createBufferSource();
+            src.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = filterType;
+            filter.frequency.setValueAtTime(filterFreq, now);
+            filter.Q.setValueAtTime(q, now);
+
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.0001, now);
+            g.gain.exponentialRampToValueAtTime(gain, now + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+            src.connect(filter);
+            filter.connect(g);
+            g.connect(ctx.destination);
+            src.start(now);
+            src.stop(now + duration + 0.02);
+        }
+
+        function sfxFlower() {
+            // Soft chime
+            playTone({ type: 'sine', freq: 659.25, gain: 0.08, duration: 0.12 });
+            playTone({ type: 'sine', freq: 880.00, gain: 0.06, duration: 0.10, detune: -10 });
+        }
+
+        function sfxHoney() {
+            // "Sticky" plop
+            playTone({ type: 'square', freq: 170, gain: 0.06, duration: 0.08 });
+            playTone({ type: 'triangle', freq: 95, gain: 0.05, duration: 0.10 });
+        }
+
+        function sfxLeaf() {
+            // Light wind
+            playNoise({ duration: 0.22, gain: 0.06, filterType: 'highpass', filterFreq: 1000, q: 0.7 });
+        }
+
+        function sfxThunder() {
+            // Thunder rumble
+            playNoise({ duration: 0.35, gain: 0.08, filterType: 'lowpass', filterFreq: 260, q: 0.7 });
+            playTone({ type: 'sine', freq: 55, gain: 0.08, duration: 0.25 });
+        }
+
+        function updateHud() {
+            const sunPct = Math.round(sunLevel * 100);
+            scoreBoard.innerText = `Belief: ${score}  |  Shields: ${shieldCount}  |  Speed: ${gameSpeed.toFixed(1)}  |  Sun: ${sunPct}%`;
+        }
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function lerp(a, b, t) {
+            return a + (b - a) * t;
+        }
+
+        function lerpColor(c1, c2, t) {
+            return {
+                r: Math.round(lerp(c1.r, c2.r, t)),
+                g: Math.round(lerp(c1.g, c2.g, t)),
+                b: Math.round(lerp(c1.b, c2.b, t))
+            };
+        }
+
+        function rgb({ r, g, b }, a = 1) {
+            return `rgba(${r},${g},${b},${a})`;
+        }
+
+        function drawBackground() {
+            ctx.save();
+
+            // If we've hit the speed cap, flash the whole background red.
+            // This automatically returns to normal once speed drops below the cap.
+            if (gameSpeed >= maxSpeed - 0.001) {
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+                return;
+            }
+
+            // Start darker/gray; brighten toward a glorious sky as sunLevel grows.
+            const topDark = { r: 80, g: 95, b: 125 };
+            const topBright = { r: 201, g: 218, b: 248 }; // #c9daf8-ish
+            const bottomDark = { r: 120, g: 135, b: 155 };
+            const bottomBright = { r: 245, g: 248, b: 255 };
+
+            const top = lerpColor(topDark, topBright, sunLevel);
+            const bottom = lerpColor(bottomDark, bottomBright, sunLevel);
+
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, rgb(top, 1));
+            grad.addColorStop(1, rgb(bottom, 1));
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // A little fog + darkness at the beginning, fading as sunLevel rises.
+            const darkVeil = (1 - sunLevel) * 0.32;
+            if (darkVeil > 0.001) {
+                ctx.fillStyle = `rgba(0, 0, 0, ${darkVeil})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            const haze = (1 - sunLevel) * 0.12;
+            if (haze > 0.001) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${haze})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Sun glow (only visible as sunLevel increases)
+            if (sunLevel > 0.01) {
+                const sunX = canvas.width * 0.82;
+                const sunY = canvas.height * 0.18;
+                const baseRadius = canvas.width * 0.08;
+                const glowRadius = canvas.width * 0.22;
+                const glow = ctx.createRadialGradient(sunX, sunY, baseRadius * 0.2, sunX, sunY, glowRadius);
+
+                glow.addColorStop(0, `rgba(241, 194, 50, ${0.55 * sunLevel})`);
+                glow.addColorStop(0.45, `rgba(241, 194, 50, ${0.18 * sunLevel})`);
+                glow.addColorStop(1, 'rgba(241, 194, 50, 0)');
+
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(sunX, sunY, glowRadius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = `rgba(241, 194, 50, ${0.85 * sunLevel})`;
+                ctx.beginPath();
+                ctx.arc(sunX, sunY, baseRadius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Important: restore so background styles/alpha don't affect sprites/icons.
+            ctx.restore();
+        }
+
+        // Player (Bee)
+        const bee = {
+            x: 0,
+            y: 0,
+            size: 40,
+            emoji: "🐝"
+        };
+
+        // Falling Items
+        let items = [];
+
+        // Resize canvas to handle pixel density and size
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            bee.y = canvas.height - 80;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Input Handling (Mouse & Touch)
+        function updateBeePosition(clientX) {
+            const rect = canvas.getBoundingClientRect();
+            let newX = clientX - rect.left;
+
+            // Keep the entire bee inside the playfield.
+            // Since emoji is drawn centered at (bee.x, bee.y), we need padding.
+            const paddingX = Math.max(18, bee.size * 0.55);
+            bee.x = clamp(newX, paddingX, canvas.width - paddingX);
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isPlaying) updateBeePosition(e.clientX);
+        });
+
+        // Keep mouse control responsive even if the cursor drifts outside the canvas.
+        window.addEventListener('mousemove', (e) => {
+            if (isPlaying) updateBeePosition(e.clientX);
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (isPlaying) {
+                e.preventDefault();
+                updateBeePosition(e.touches[0].clientX);
+            }
+        }, { passive: false });
+
+        // Keep touch control responsive if finger drifts off the canvas.
+        window.addEventListener('touchmove', (e) => {
+            if (!isPlaying) return;
+            if (!e.touches || !e.touches.length) return;
+            e.preventDefault();
+            updateBeePosition(e.touches[0].clientX);
+        }, { passive: false });
+
+        function startGame() {
+            isPlaying = true;
+            if (gameContainer) gameContainer.classList.add('playing');
+            score = 0;
+            items = [];
+            frames = 0;
+            gameSpeed = 3;
+            shieldCount = 0;
+            sunLevel = 0;
+
+            // Start audio on user gesture (required by browsers)
+            try {
+                const ctx = ensureAudioContext();
+                if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+            } catch (_) {}
+            if (bgMusic) {
+                bgMusic.volume = 0.18;
+                const p = bgMusic.play();
+                if (p && typeof p.catch === 'function') p.catch(() => {});
+            }
+
+            updateHud();
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            if (winScreen) winScreen.classList.add('hidden');
+
+            bee.x = canvas.width / 2;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            if (gameContainer) gameContainer.classList.remove('playing');
+            finalScoreDisplay.innerText = "Belief Collected: " + score;
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        function winGame() {
+            isPlaying = false;
+            if (gameContainer) gameContainer.classList.remove('playing');
+            if (winScoreDisplay) winScoreDisplay.innerText = "Belief Collected: " + score;
+            if (winScreen) winScreen.classList.remove('hidden');
+        }
+
+        function spawnItem() {
+            // More leaves + allow stacking shields (up to maxShields)
+            const leafChance = (shieldCount >= maxShields) ? 0 : (shieldCount === 0 ? 0.18 : 0.12);
+            const r = Math.random();
+            let type;
+            if (r < leafChance) type = 'leaf';
+            else if (r < leafChance + 0.33) type = 'honey';
+            else if (r < leafChance + 0.33 + 0.22) type = 'flower';
+            else type = 'storm';
+            let emoji = "🍯";
+            let value = 10;
+            let speed = gameSpeed;
+
+            if (type === 'flower') { emoji = "🌸"; value = 15; }
+            if (type === 'leaf') { emoji = "🍃"; value = 0; }
+            if (type === 'storm') { emoji = "⛈️"; value = -1; speed = gameSpeed + 1; }
+
+            items.push({
+                x: Math.random() * (canvas.width - 40) + 20,
+                y: -50,
+                type,
+                emoji,
+                value,
+                speed
+            });
+        }
+
+        function gameLoop() {
+            if (!isPlaying) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBackground();
+
+            // Keep sprites/icons bold and fully visible regardless of background effects.
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = "#000";
+
+            if (frames % 50 === 0) spawnItem();
+            // Gradual difficulty increase over time, but capped.
+            if (frames % 600 === 0) {
+                gameSpeed = clamp(gameSpeed + 0.4, minSpeed, maxSpeed);
+                updateHud();
+            }
+
+            ctx.font = `${bee.size}px serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            if (shieldCount > 0) {
+                ctx.beginPath();
+                ctx.arc(bee.x, bee.y, 30, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(106, 168, 79, 0.35)";
+                ctx.fill();
+            }
+
+            // Reset after shield glow so emoji/text isn't dimmed.
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = "#000";
+
+            ctx.fillText(bee.emoji, bee.x, bee.y);
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                item.y += item.speed;
+
+                ctx.fillText(item.emoji, item.x, item.y);
+
+                const dist = Math.hypot(bee.x - item.x, bee.y - item.y);
+
+                if (dist < 40) {
+                    if (item.type === 'storm') {
+                        if (shieldCount > 0) {
+                            shieldCount -= 1;
+                            sunLevel = clamp(sunLevel - sunStepDown, 0, 1);
+                            updateHud();
+                            items.splice(i, 1);
+                            i--;
+                            sfxThunder();
+                            continue;
+                        } else {
+                            sfxThunder();
+                            gameOver();
+                            return;
+                        }
+                    } else if (item.type === 'leaf') {
+                        shieldCount = Math.min(maxShields, shieldCount + 1);
+                        gameSpeed = clamp(gameSpeed + leafSpeedUp, minSpeed, maxSpeed);
+                        updateHud();
+                        sfxLeaf();
+                    } else {
+                        score += item.value;
+                        if (item.type === 'honey') {
+                            gameSpeed = clamp(gameSpeed - honeySlow, minSpeed, maxSpeed);
+                        }
+                        if (item.type === 'flower') {
+                            sunLevel = clamp(sunLevel + sunStepUp, 0, 1);
+                            gameSpeed = clamp(gameSpeed + flowerSpeedUp, minSpeed, maxSpeed);
+                        }
+                        updateHud();
+                        if (item.type === 'flower') sfxFlower();
+                        if (item.type === 'honey') sfxHoney();
+                    }
+
+                    // Win condition: sun reaches 100%
+                    if (sunLevel >= 1) {
+                        winGame();
+                        return;
+                    }
+
+                    items.splice(i, 1);
+                    i--;
+                } else if (item.y > canvas.height + 50) {
+                    items.splice(i, 1);
+                    i--;
+                }
+            }
+
+            frames++;
+            requestAnimationFrame(gameLoop);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bee-Leaf - Interactive Adventure</title>
+    <meta name="description" content="Bee-Leaf — an interactive picture-book adventure by R.C. Howard.">
+    <meta property="og:title" content="Bee-Leaf - Interactive Adventure">
+    <meta property="og:description" content="An interactive picture-book adventure by R.C. Howard.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="Book-Cover.png">
+    <meta property="og:image:alt" content="Life Lessons of a Man-Child book cover">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Bee-Leaf - Interactive Adventure">
+    <meta name="twitter:description" content="An interactive picture-book adventure by R.C. Howard.">
+    <meta name="twitter:image" content="Book-Cover.png">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* Background to match the rest of the site */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('PaperbackCoverFinal.png'), url('Book-Cover.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background:
+                linear-gradient(rgba(20, 0, 40, 0.55), rgba(40, 0, 80, 0.55)),
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 150, 0.05) 0%, transparent 50%);
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        .scanlines {
+            position: fixed;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 255, 0.02) 2px,
+                rgba(0, 255, 255, 0.02) 4px
+            );
+            animation: scanlineFlicker 0.1s linear infinite;
+        }
+        @keyframes scanlineFlicker {
+            0%, 99% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panel {
+            width: 100%;
+            max-width: 760px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.35), inset 0 0 20px rgba(0, 255, 255, 0.08);
+            backdrop-filter: blur(2px);
+            animation: borderGlow 2s ease-in-out infinite alternate;
+        }
+        @keyframes borderGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.35), inset 0 0 20px rgba(0, 255, 255, 0.08); }
+            100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 30px rgba(0, 255, 255, 0.12); }
+        }
+
+        .title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            text-align: center;
+            margin-bottom: 1.25rem;
+        }
+
+        /* --- STORYBOOK STYLES (from your provided code) --- */
+        :root {
+            --leaf-green: #6aa84f;
+            --bee-yellow: #f1c232;
+            --sky-blue: #c9daf8;
+            --wood-brown: #783f04;
+            --text-color: #2c3e50;
+        }
+
+        .story-shell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .story-container {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+        }
+
+        .scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        .scene.active {
+            opacity: 1;
+            pointer-events: all;
+            z-index: 1;
+        }
+
+        .visual-area {
+            flex: 1;
+            background: var(--sky-blue);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #eee;
+        }
+
+        .bg-garden { background: linear-gradient(to bottom, #c9daf8 60%, #93c47d 60%); }
+        .bg-tree { background: linear-gradient(to bottom, #c9daf8 40%, #783f04 100%); }
+        .bg-sunset { background: linear-gradient(to bottom, #f6b26b, #e06666); }
+        .bg-night { background: linear-gradient(to bottom, #134f5c, #0c343d); }
+
+        .text-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-color);
+            padding: 0 20px;
+            font-family: 'Georgia', serif;
+        }
+
+        .text-area.longread {
+            align-items: flex-start;
+            justify-content: flex-start;
+            text-align: left;
+            overflow-y: auto;
+            padding: 14px 18px;
+        }
+        .text-area.longread h3 {
+            color: var(--wood-brown);
+            font-size: 1.05rem;
+            margin: 0 0 0.5rem;
+        }
+        .text-area.longread p {
+            margin: 0 0 0.85rem;
+        }
+        .text-area.longread p:last-child {
+            margin-bottom: 0;
+        }
+        .poem {
+            white-space: pre-wrap;
+            line-height: 1.7;
+        }
+
+        .emoji-char {
+            font-size: 4rem;
+            position: absolute;
+            user-select: none;
+        }
+
+        .sun {
+            top: 8%;
+            right: 10%;
+            font-size: 3.1rem;
+            animation: sunPulse 3.2s ease-in-out infinite;
+        }
+        @keyframes sunPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .cloud {
+            position: absolute;
+            top: 10%;
+            left: -35%;
+            font-size: 2.2rem;
+            opacity: 0.9;
+            animation: cloudDrift 26s linear infinite;
+            user-select: none;
+        }
+        .cloud.c2 {
+            top: 18%;
+            font-size: 1.8rem;
+            opacity: 0.85;
+            animation-duration: 34s;
+            animation-delay: -12s;
+        }
+        .cloud.c3 {
+            top: 6%;
+            font-size: 2.6rem;
+            opacity: 0.8;
+            animation-duration: 42s;
+            animation-delay: -24s;
+        }
+        @keyframes cloudDrift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(170%); }
+        }
+
+        .ant-carry {
+            position: absolute;
+            bottom: 10%;
+            left: 18%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+        .ant-emoji {
+            font-size: 1.35rem;
+            transform: translateY(2px);
+        }
+        .twig {
+            width: 68px;
+            height: 7px;
+            background: var(--wood-brown);
+            border-radius: 8px;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.15);
+            transform: rotate(-6deg);
+        }
+
+        .pollen {
+            position: absolute;
+            font-size: 1.3rem;
+            animation: pollenFloat 1.8s ease-in-out infinite;
+            user-select: none;
+        }
+        @keyframes pollenFloat {
+            0%, 100% { transform: translateY(0); opacity: 0.9; }
+            50% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        .tree-limb {
+            position: absolute;
+            top: 38%;
+            left: 52%;
+            width: 42%;
+            height: 14px;
+            background: var(--wood-brown);
+            border-radius: 14px;
+            transform: rotate(-10deg);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+            opacity: 0.95;
+        }
+        .tree-limb::after {
+            content: '';
+            position: absolute;
+            left: 16%;
+            top: -6px;
+            width: 18px;
+            height: 10px;
+            background: var(--wood-brown);
+            border-radius: 10px;
+            transform: rotate(22deg);
+        }
+
+        .bird {
+            position: absolute;
+            font-size: 1.6rem;
+            user-select: none;
+            animation: birdFloat 2.6s ease-in-out infinite;
+        }
+        .bird.b2 { font-size: 1.35rem; animation-duration: 3.1s; animation-delay: -0.9s; }
+        .bird.b3 { font-size: 1.2rem; animation-duration: 3.6s; animation-delay: -1.8s; }
+        @keyframes birdFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .bear-honey {
+            position: absolute;
+            bottom: 10%;
+            left: 12%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+        }
+        .bear-honey .bear { font-size: 2.9rem; }
+        .bear-honey .jar { font-size: 2.3rem; transform: rotate(-6deg); }
+        .bear-honey .lick { font-size: 1.1rem; opacity: 0.9; animation: lickPop 1.3s ease-in-out infinite; }
+        @keyframes lickPop {
+            0%, 100% { transform: translateY(0); opacity: 0.75; }
+            50% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .owl {
+            z-index: 3;
+        }
+        .sun-peek {
+            top: 7%;
+            right: 34%;
+            font-size: 3.3rem;
+            z-index: 2;
+        }
+        .perch-branch {
+            position: absolute;
+            top: 36%;
+            right: 8%;
+            width: 26%;
+            height: 12px;
+            background: var(--wood-brown);
+            border-radius: 14px;
+            transform: rotate(6deg);
+            box-shadow: 0 5px 0 rgba(0,0,0,0.12);
+            z-index: 2;
+            opacity: 0.95;
+        }
+        .speech-bubble {
+            position: absolute;
+            top: 12%;
+            right: 2.5%;
+            background: rgba(255,255,255,0.92);
+            color: #2c3e50;
+            border: 2px solid rgba(120,63,4,0.45);
+            border-radius: 14px;
+            padding: 8px 10px;
+            font-family: 'Georgia', serif;
+            font-weight: 700;
+            font-size: 1rem;
+            z-index: 4;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+        }
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            right: 18px;
+            bottom: -10px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-top-color: rgba(255,255,255,0.92);
+        }
+        .grass-strip {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 34%;
+            background: linear-gradient(to top, #6aa84f 0%, #93c47d 55%, rgba(147,196,125,0) 100%);
+            z-index: 1;
+            opacity: 0.95;
+        }
+        .sunflower {
+            position: absolute;
+            bottom: 10%;
+            font-size: 2.2rem;
+            z-index: 2;
+            user-select: none;
+        }
+
+        .cross-fade {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 64px;
+            height: 96px;
+            z-index: 1;
+            opacity: 0.18;
+            filter: blur(0.2px);
+            animation: crossGlow 4.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .cross-fade .v {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 96px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 10px;
+            box-shadow: 0 0 18px rgba(255,255,255,0.55);
+        }
+        .cross-fade .h {
+            position: absolute;
+            left: 50%;
+            top: 34px;
+            transform: translateX(-50%);
+            width: 64px;
+            height: 12px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 10px;
+            box-shadow: 0 0 18px rgba(255,255,255,0.55);
+        }
+        @keyframes crossGlow {
+            0%, 100% { opacity: 0.16; }
+            50% { opacity: 0.24; }
+        }
+
+        .bee {
+            top: 30%;
+            left: 20%;
+            animation: buzz 2s infinite ease-in-out;
+        }
+        @keyframes buzz {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        .leaf {
+            top: 40%;
+            right: 20%;
+            animation: sway 3s infinite ease-in-out;
+            color: var(--leaf-green);
+        }
+        @keyframes sway {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .bee-flying {
+            animation: flyAcross 4s linear infinite;
+            transform: scaleX(-1);
+        }
+        @keyframes flyAcross {
+            0% { left: -10%; top: 20%; }
+            50% { top: 40%; }
+            100% { left: 110%; top: 20%; }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 16px;
+            gap: 10px;
+        }
+
+        .controls button {
+            background-color: var(--wood-brown);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            transition: background-color 0.3s;
+            min-width: 120px;
+        }
+
+        .controls button:hover { background-color: #5b2f03; }
+        .controls button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        .page-indicator {
+            align-self: center;
+            color: #666;
+            font-family: 'Georgia', serif;
+            text-align: center;
+            flex: 1;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: .8rem 2rem;
+            background: linear-gradient(45deg, #1a0033, #330066);
+            border: 2px solid #00ffff;
+            border-radius: 25px;
+            color: #00ffff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: .8rem;
+            text-decoration: none;
+            box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            transition: all .25s ease;
+            text-align: center;
+        }
+        .back-link:hover {
+            background: linear-gradient(45deg, #ff00ff, #330066);
+            color: #ff00ff;
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+        }
+
+        @media (max-width: 650px) {
+            .panel { padding: 1.5rem; }
+            .story-container { height: 520px; }
+            .controls { flex-direction: column; }
+            .controls button { width: 100%; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
+            body::after, .scanlines { animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+
+    <audio id="bgMusic" preload="auto" loop autoplay>
+        <source src="Bee%20Leaf/soft-background-music-432715.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="pageTurnSfx" preload="auto">
+        <source src="Bee%20Leaf/turn-a-page-336933.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <div class="panel">
+            <h1 class="title">BEE-LEAF</h1>
+            <div class="subtitle">Interactive Adventure</div>
+
+            <div class="story-shell">
+                <div class="story-container" aria-label="Bee-Leaf interactive picture book">
+                    <div class="scene active">
+                        <div class="visual-area bg-garden">
+                            <div class="emoji-char sun">🌞</div>
+                            <div class="cloud">☁️</div>
+                            <div class="cloud c2">☁️</div>
+                            <div class="cloud c3">☁️</div>
+                            <div class="emoji-char bee">🐝</div>
+                            <div class="emoji-char" style="bottom: 10%; left: 10%; font-size: 2rem;">🌸</div>
+                            <div class="emoji-char" style="bottom: 10%; right: 10%; font-size: 2rem;">🌻</div>
+                            <div class="ant-carry" aria-label="Ants carrying a twig">
+                                <span class="ant-emoji">🐜</span>
+                                <span class="twig" aria-hidden="true"></span>
+                                <span class="ant-emoji">🐜</span>
+                            </div>
+                        </div>
+                        <div class="text-area">
+                            <p>In a garden so green and sweet, where flowers bloom and branches meet,<br>
+                            A curious honey bee named <strong>Bea</strong>, wondered what her life could be.<br>
+                            She watched the ants so brave and strong, but felt her tiny life was wrong.</p>
+                        </div>
+                    </div>
+
+                    <div class="scene">
+                        <div class="visual-area bg-garden">
+                            <div class="emoji-char sun">🌞</div>
+                            <div class="cloud">☁️</div>
+                            <div class="cloud c2">☁️</div>
+                            <div class="cloud c3">☁️</div>
+                            <div class="emoji-char bee" style="top: 26%; left: 58%;">🐝</div>
+                            <div class="emoji-char" style="bottom: 10%; right: 12%; font-size: 3.2rem;">🌻</div>
+                            <div class="pollen" style="top: 40%; left: 62%;">✨</div>
+                            <div class="pollen" style="top: 44%; left: 56%; animation-delay: -0.6s; font-size: 1.1rem;">✨</div>
+                            <div class="emoji-char" style="bottom: 10%; left: 10%; font-size: 2.4rem;">🍯</div>
+                        </div>
+                        <div class="text-area">
+                            <p>Bea felt small, unsure inside, "Am I enough?" she softly sighed.<br>
+                            "I make some honey, just a bit. Does my small life even fit?"<br>
+                            So Bea buzzed away, in search to see, what her tiny purpose might be.</p>
+                        </div>
+                    </div>
+
+                    <div class="scene">
+                        <div class="visual-area bg-tree">
+                            <div class="emoji-char sun">🌞</div>
+                            <div class="emoji-char bee" style="top: 20%; left: 20%;">🐝</div>
+                            <div class="tree-limb" aria-hidden="true"></div>
+                            <div class="emoji-char leaf" style="top: 30%; right: 30%; font-size: 5rem;">🍂</div>
+                        </div>
+                        <div class="text-area">
+                            <p>She landed tired, needing rest, on <strong>Leif</strong>, whose wisdom was the best.<br>
+                            An old, kind leaf, on an oak so tall, who’d seen the seasons change and fall.<br>
+                            He listened close as Bea confessed, her worried heart within her chest.</p>
+                        </div>
+                    </div>
+
+                    <div class="scene">
+                        <div class="visual-area bg-tree">
+                            <div class="emoji-char sun">🌞</div>
+                            <div class="bird" style="top: 14%; left: 12%;">🐦</div>
+                            <div class="bird b2" style="top: 22%; left: 28%;">🐤</div>
+                            <div class="bird b3" style="top: 12%; left: 44%;">🐦</div>
+                            <div class="emoji-char bee" style="top: 20%; right: 18%; left: auto;">🐝</div>
+                            <div class="emoji-char leaf" style="top: 20%; left: 40%; font-size: 6rem;">🍂</div>
+                            <div class="bear-honey" aria-label="Bear enjoying honey">
+                                <span class="bear">🐻</span>
+                                <span class="jar">🍯</span>
+                                <span class="lick" aria-hidden="true">✨</span>
+                            </div>
+                        </div>
+                        <div class="text-area">
+                            <p>Leif smiled warmly, calm and wise, with a gentle twinkle in his eyes.<br>
+                            "Honey is sweet, like gentle words. It feeds the bears, it feeds the birds.<br>
+                            Believe, dear Bea, in what you do—the garden grows because of you."</p>
+                        </div>
+                    </div>
+
+                    <div class="scene">
+                        <div class="visual-area bg-sunset">
+                            <div class="emoji-char sun sun-peek">🌞</div>
+                            <div class="speech-bubble" aria-hidden="true">Hoot</div>
+                            <div class="perch-branch" aria-hidden="true"></div>
+                            <div class="emoji-char owl" style="top: 10%; right: 10%; font-size: 4rem;">🦉</div>
+                            <div class="emoji-char bee" style="top: 50%; left: 40%;">🐝</div>
+                            <div class="grass-strip" aria-hidden="true"></div>
+                            <div class="sunflower" style="left: 10%;">🌻</div>
+                            <div class="sunflower" style="left: 22%; font-size: 2.0rem; bottom: 12%;">🌻</div>
+                            <div class="sunflower" style="right: 14%;">🌻</div>
+                        </div>
+                        <div class="text-area">
+                            <p>Old <strong>Solomon Owl</strong> from above, hooted kindly with pure love,<br>
+                            "Without you, Bea, no flowers bloom, the garden would lose its sweet perfume.<br>
+                            Faith is trusting what you cannot see—that you are exactly who you’re meant to be."</p>
+                        </div>
+                    </div>
+
+                    <div class="scene">
+                        <div class="visual-area bg-night">
+                            <div class="emoji-char sun">🌞</div>
+                            <div class="emoji-char bee-flying" style="top: 20%;">🐝</div>
+                            <div class="emoji-char leaf" style="bottom: 20%; right: 10%;">🍂</div>
+                        </div>
+                        <div class="text-area">
+                            <p>So Bea flew home with hopeful flight, her tiny wings shining bright.<br>
+                            She knew now, though she was small, she was part of something that held them all.<br>
+                            <strong>Bee-Leaf</strong> connects both you and me—a purpose we trust, but cannot always see.</p>
+                        </div>
+                    </div>
+
+                    <div class="scene">
+                        <div class="visual-area bg-garden">
+                            <div class="emoji-char sun" style="top: 6%; right: 6%; font-size: 3.6rem; z-index: 2;">🌞</div>
+                            <div class="cloud">☁️</div>
+                            <div class="cloud c2">☁️</div>
+                            <div class="cloud c3">☁️</div>
+
+                            <div class="cross-fade" aria-hidden="true">
+                                <div class="v"></div>
+                                <div class="h"></div>
+                            </div>
+
+                            <div class="bird" style="top: 18%; left: 14%;">🐦</div>
+                            <div class="bird b2" style="top: 26%; left: 30%;">🐤</div>
+                            <div class="bird b3" style="top: 16%; left: 46%;">🐦</div>
+
+                            <div class="perch-branch" style="top: 34%; right: 10%; width: 30%;" aria-hidden="true"></div>
+                            <div class="emoji-char owl" style="top: 8%; right: 12%; font-size: 4rem;">🦉</div>
+
+                            <div class="emoji-char bee" style="top: 38%; left: 44%;">🐝</div>
+                            <div class="emoji-char leaf" style="top: 26%; left: 64%; font-size: 4.8rem;">🍂</div>
+
+                            <div class="bear-honey" style="left: 10%;" aria-label="Bear enjoying honey">
+                                <span class="bear">🐻</span>
+                                <span class="jar">🍯</span>
+                                <span class="lick" aria-hidden="true">✨</span>
+                            </div>
+
+                            <div class="ant-carry" style="left: 54%; bottom: 12%;" aria-label="Ants carrying a twig">
+                                <span class="ant-emoji">🐜</span>
+                                <span class="twig" aria-hidden="true"></span>
+                                <span class="ant-emoji">🐜</span>
+                            </div>
+
+                            <div class="sunflower" style="left: 18%;">🌻</div>
+                            <div class="sunflower" style="left: 34%; font-size: 2.0rem; bottom: 12%;">🌻</div>
+                            <div class="sunflower" style="right: 14%;">🌻</div>
+                        </div>
+                        <div class="text-area longread">
+                            <div>
+                                <h3>Full Story</h3>
+                                <p>In a garden full of whispers and wonders, where the sun painted gold across every flower and leaf, lived a curious young honeybee named Beatrice—or Bea, as she was lovingly called. Bea was small, spirited, and buzzed with endless questions.</p>
+                                <p>One radiant morning, Bea found herself restless. Watching her hive buzz busily, she sighed deeply. Nearby, Samson the Ant carried crumbs with unwavering focus. Esther the Butterfly gracefully fluttered from bloom to bloom, whispering cheerful blessings. Even little Jonah the Caterpillar, who was unsure what he might become, trusted he had a grand purpose.</p>
+                                <p>"Everyone has a reason," Bea buzzed softly. "But what about me? Do my tiny wings really matter?"</p>
+                                <p>Deciding she must find answers, Bea journeyed deeper into the garden. She flew past vibrant marigolds and sunlit lilies, searching for wisdom, until exhaustion gently guided her to an enormous, ancient oak.</p>
+                                <p>Landing softly, she rested upon a wise old leaf named Leif. He wore his years with humble grace, veins mapping memories of countless seasons.</p>
+                                <p>"Hello, young one," whispered Leif kindly. "What troubles your wings today?"</p>
+                                <p>Bea hesitated, then murmured, "I wonder if I'm too small. Everyone seems to matter. I'm not sure I do."</p>
+                                <p>Leif chuckled gently, rustling warmly in the breeze. "Bea, do you know how important bees are?"</p>
+                                <p>Bea shrugged shyly. "We make honey. But honey seems small."</p>
+                                <p>"Small?" Leif’s laugh was warm as sunshine. "Honey is sweetness, nourishment, and healing. It is a gift, shared generously, touching lives in ways you may never see."</p>
+                                <p>Bea tilted her head thoughtfully. "But how can I trust that, Leif?"</p>
+                                <p>Leif's gentle voice wrapped around her like a comforting hug. "Trusting, Bea, is believing in something beyond yourself—even if you can't always see it clearly."</p>
+                                <p>Bea nodded slowly, though doubt lingered.</p>
+                                <p>"Let me tell you about seasons," continued Leif. "In spring, we awaken, full of hope. In summer, we thrive and grow. Autumn brings change and new colors. Winter teaches patience, trust, and faith. Each season has a purpose, each one needs belief."</p>
+                                <p>Bea listened closely. "Do you ever worry about falling, Leif?"</p>
+                                <p>"No," said Leif calmly. "I have faith that my life nourishes the tree, feeds the soil, and makes way for new leaves. Even when I fall, my purpose doesn't end."</p>
+                                <p>Bea felt comforted but still unsure. Just then, wise old Solomon the Owl perched above them. His deep voice gently broke their conversation. "Beatrice, have you considered the flowers you visit?"</p>
+                                <p>"What about them?" she asked curiously.</p>
+                                <p>"Without you," Solomon said kindly, "flowers couldn't bloom and fruits wouldn't grow. You help life flourish."</p>
+                                <p>Bea blinked in surprise. "Really?"</p>
+                                <p>Solomon nodded warmly. "Belief, young one, isn’t about seeing everything; it’s trusting you have a purpose, even when you doubt."</p>
+                                <p>Leif rustled softly, affirming Solomon’s wisdom. "We are connected, Bea. Every bee, leaf, owl—even the smallest ant—has purpose and meaning. We rely on faith, not just sight."</p>
+                                <p>Bea felt something powerful grow inside her—a sweet, warm feeling she recognized as hope. Buzzing gratefully, she embraced Leif softly with her tiny wings.</p>
+                                <p>"Thank you, Leif. Thank you, Solomon."</p>
+                                <p>As Bea flew homeward, joy filled her heart. She saw Samson working with renewed strength, Esther spreading beauty, and Jonah patiently waiting for transformation. Bea realized each had their own belief guiding them.</p>
+                                <p>Arriving at the hive, she buzzed excitedly, sharing her journey. Elder bees nodded, smiling warmly. "You see, dear Beatrice, each small action we take builds something sweet together. Belief binds us; love sustains us."</p>
+                                <p>Bea nodded proudly. She finally understood. She didn’t need to see her impact immediately to trust it existed.</p>
+                                <p>Back at the oak tree, Leif sighed contentedly as sunlight warmed his aged face. Solomon chuckled softly.</p>
+                                <p>"Every bee must learn," Solomon mused.</p>
+                                <p>Leif smiled gently, "And every leaf must teach."</p>
+                                <p>Together, they watched Bea joyfully dance among the flowers, spreading sweetness, trust, and a newfound belief in purpose.</p>
+                                <p>For in that garden of whispers and wonders, belief wasn’t just a word—it was the unseen thread connecting them all, sustaining life, growth, and love.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls" aria-label="Story navigation">
+                    <button id="prevBtn" type="button">Previous</button>
+                    <span id="pageIndicator" class="page-indicator">Page 1 of 6</span>
+                    <button id="nextBtn" type="button">Next</button>
+                </div>
+
+                <div class="actions">
+                    <a class="back-link" href="index.html">◀ BACK TO HOME</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScene = 0;
+        const scenes = document.querySelectorAll('.scene');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageIndicator = document.getElementById('pageIndicator');
+
+        const bgMusic = document.getElementById('bgMusic');
+        const pageTurnSfx = document.getElementById('pageTurnSfx');
+        let musicStarted = false;
+
+        async function tryStartMusic(reason) {
+            if (musicStarted) return true;
+            if (!bgMusic) return false;
+
+            bgMusic.volume = 0.18;
+            try {
+                await bgMusic.play();
+                musicStarted = true;
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function updateControls() {
+            prevBtn.disabled = currentScene === 0;
+            nextBtn.disabled = false;
+            nextBtn.innerText = (currentScene === scenes.length - 1) ? "Let's Play!" : 'Next';
+            pageIndicator.innerText = `Page ${currentScene + 1} of ${scenes.length}`;
+        }
+
+        function showScene(index) {
+            if (index < 0 || index >= scenes.length) return;
+            scenes[currentScene].classList.remove('active');
+            currentScene = index;
+            scenes[currentScene].classList.add('active');
+            updateControls();
+        }
+
+        function ensureMusicStarted() {
+            if (musicStarted) return;
+            // User-gesture fallback (always allowed)
+            tryStartMusic('gesture').catch(() => {});
+        }
+
+        function playPageTurn() {
+            if (!pageTurnSfx) return;
+            try {
+                pageTurnSfx.volume = 0.35;
+                pageTurnSfx.currentTime = 0;
+                const p = pageTurnSfx.play();
+                if (p && typeof p.catch === 'function') p.catch(() => {});
+            } catch (_) {}
+        }
+
+        prevBtn.addEventListener('click', () => {
+            ensureMusicStarted();
+            playPageTurn();
+            showScene(currentScene - 1);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            ensureMusicStarted();
+            playPageTurn();
+            if (currentScene === scenes.length - 1) {
+                window.location.href = 'honeygame.html';
+                return;
+            }
+            showScene(currentScene + 1);
+        });
+
+        // Best-effort autoplay on load. Note: browsers may block audible autoplay.
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const hint = localStorage.getItem('beeLeafAutoplay');
+                if (hint) localStorage.removeItem('beeLeafAutoplay');
+            } catch (_) {}
+            await tryStartMusic('load');
+        });
+
+        // If the page is restored from bfcache, attempt again.
+        window.addEventListener('pageshow', () => {
+            tryStartMusic('pageshow').catch(() => {});
+        });
+
+        updateControls();
+    </script>
+</body>
+</html>
