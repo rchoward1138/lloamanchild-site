@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLofaMC Mission Control — R.C. Howard</title>
+  <meta name="description" content="Marketing and promotion mission control for Life Lessons of a Man-Child by R.C. Howard.">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Press+Start+2P&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070510;
+      --panel: rgba(8, 8, 24, 0.9);
+      --panel-soft: rgba(15, 8, 35, 0.82);
+      --cyan: #24f6ff;
+      --cyan-soft: rgba(36, 246, 255, 0.18);
+      --magenta: #ff38d1;
+      --yellow: #ffe447;
+      --orange: #ff8a2a;
+      --green: #55f28b;
+      --red: #ff6577;
+      --text: #f6f7ff;
+      --muted: #b8b6ca;
+      --border: rgba(36, 246, 255, 0.45);
+      --shadow: 0 0 22px rgba(36, 246, 255, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+      background:
+        linear-gradient(rgba(4, 2, 16, 0.9), rgba(10, 2, 24, 0.94)),
+        url('PaperbackCoverFinal.png') center / cover fixed no-repeat,
+        var(--bg);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(36, 246, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(36, 246, 255, 0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 88%);
+      z-index: 0;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    a.button {
+      font: inherit;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      width: min(1480px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 72px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--yellow);
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(0.58rem, 1.5vw, 0.78rem);
+      letter-spacing: 0.08em;
+      line-height: 1.6;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 5vw, 4.6rem);
+      line-height: 0.98;
+      letter-spacing: 0.01em;
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(36, 246, 255, 0.7), 0 0 34px rgba(36, 246, 255, 0.32);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0.78rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(8, 8, 24, 0.88);
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-2px);
+      border-color: var(--magenta);
+      box-shadow: 0 0 18px rgba(255, 56, 209, 0.28);
+      outline: none;
+    }
+
+    .button.primary {
+      border-color: var(--yellow);
+      background: linear-gradient(135deg, #ff9f2d, #ff5b35);
+      color: #150608;
+      font-weight: 800;
+    }
+
+    .environment-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 12px 16px;
+      border: 1px solid rgba(255, 228, 71, 0.52);
+      border-radius: 12px;
+      background: rgba(255, 154, 37, 0.12);
+      color: #fff2a6;
+    }
+
+    .environment-strip strong {
+      color: var(--yellow);
+    }
+
+    .environment-strip span:last-child {
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-align: right;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .mission-panel {
+      padding: clamp(22px, 4vw, 42px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .mission-panel::after {
+      content: '';
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -90px;
+      bottom: -140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 56, 209, 0.34), transparent 68%);
+      pointer-events: none;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.48rem 0.72rem;
+      border: 1px solid rgba(85, 242, 139, 0.6);
+      border-radius: 999px;
+      background: rgba(85, 242, 139, 0.12);
+      color: #a9ffc6;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+    }
+
+    .mission-title {
+      max-width: 900px;
+      margin-bottom: 18px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.65rem, 3vw, 3rem);
+      line-height: 1.14;
+    }
+
+    .mission-copy {
+      max-width: 980px;
+      margin-bottom: 22px;
+      color: #dddced;
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      line-height: 1.72;
+    }
+
+    .checkpoint {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--yellow);
+      background: rgba(255, 228, 71, 0.08);
+      color: #fff7bd;
+      line-height: 1.45;
+    }
+
+    .countdown-panel {
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100%;
+    }
+
+    .section-kicker {
+      margin-bottom: 8px;
+      color: var(--magenta);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.66rem;
+      letter-spacing: 0.08em;
+      line-height: 1.5;
+    }
+
+    .countdown-label {
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .countdown-value {
+      margin-bottom: 10px;
+      color: var(--yellow);
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 0 18px rgba(255, 228, 71, 0.42);
+    }
+
+    .countdown-detail {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .metric-card {
+      min-height: 130px;
+      padding: 18px;
+      border: 1px solid rgba(36, 246, 255, 0.28);
+      border-radius: 16px;
+      background: var(--panel-soft);
+      box-shadow: 0 0 14px rgba(36, 246, 255, 0.1);
+    }
+
+    .metric-value {
+      margin-bottom: 8px;
+      color: var(--cyan);
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2.4rem);
+      font-weight: 900;
+    }
+
+    .metric-label {
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .metric-detail {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.38;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-panel {
+      padding: 26px;
+    }
+
+    .section-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.25rem, 2.4vw, 2rem);
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .campaign-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .datum {
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.035);
+    }
+
+    .datum-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .datum-value {
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .campaign-objective {
+      grid-column: 1 / -1;
+      padding: 16px;
+      border-left: 4px solid var(--cyan);
+      background: var(--cyan-soft);
+      color: #dffeff;
+      line-height: 1.55;
+    }
+
+    .progress-wrap {
+      margin: 20px 0 8px;
+    }
+
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .progress-track {
+      height: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(36, 246, 255, 0.45);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--magenta));
+      box-shadow: 0 0 16px rgba(36, 246, 255, 0.45);
+      transition: width 0.5s ease;
+    }
+
+    .goodreads-alert {
+      padding: 16px;
+      border: 1px solid rgba(255, 101, 119, 0.52);
+      border-radius: 14px;
+      background: rgba(255, 101, 119, 0.09);
+    }
+
+    .goodreads-alert strong {
+      color: #ffb3bd;
+    }
+
+    .goodreads-alert p {
+      margin-bottom: 12px;
+      color: #e7dce0;
+      line-height: 1.55;
+    }
+
+    .task-board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .task-column {
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.035);
+    }
+
+    .task-column h3 {
+      margin-bottom: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: var(--yellow);
+    }
+
+    .task-list,
+    .timeline,
+    .log-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .task-card {
+      padding: 12px;
+      border-left: 3px solid var(--cyan);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .task-card strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .task-card span {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .timeline-item,
+    .log-item {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .timeline-item:last-child,
+    .log-item:last-child {
+      border-bottom: 0;
+    }
+
+    .timeline-date,
+    .log-date {
+      color: var(--magenta);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .timeline-copy strong,
+    .log-copy strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .timeline-copy span,
+    .log-copy span {
+      color: var(--muted);
+      line-height: 1.48;
+    }
+
+    .regression-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .regression-summary {
+      color: var(--muted);
+    }
+
+    .regression-summary strong {
+      color: var(--yellow);
+    }
+
+    .regression-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .regression-row {
+      display: grid;
+      grid-template-columns: auto minmax(190px, 0.8fr) minmax(280px, 1.5fr) auto auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .regression-row input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--green);
+    }
+
+    .regression-name {
+      font-weight: 700;
+    }
+
+    .regression-check {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.35;
+    }
+
+    .reachability {
+      min-width: 86px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .reachability.good {
+      color: var(--green);
+    }
+
+    .reachability.bad {
+      color: var(--red);
+    }
+
+    .mini-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0.52rem 0.7rem;
+      border: 1px solid rgba(36, 246, 255, 0.32);
+      border-radius: 9px;
+      background: rgba(36, 246, 255, 0.06);
+      color: #dffeff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .mini-link:hover,
+    .mini-link:focus-visible {
+      border-color: var(--magenta);
+      outline: none;
+    }
+
+    .footnote {
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .loading,
+    .error-box {
+      padding: 26px;
+      border-radius: 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .error-box {
+      border-color: rgba(255, 101, 119, 0.55);
+      color: #ffd5da;
+    }
+
+    footer {
+      margin-top: 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 1180px) {
+      .metrics-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .regression-row {
+        grid-template-columns: auto 1fr auto auto;
+      }
+
+      .regression-check {
+        grid-column: 2 / -1;
+      }
+
+      .reachability {
+        grid-column: 2 / 3;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+
+      .task-board {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .shell {
+        width: min(100% - 18px, 1480px);
+        padding-top: 24px;
+      }
+
+      .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .campaign-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-item,
+      .log-item {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .regression-row {
+        grid-template-columns: auto 1fr;
+      }
+
+      .regression-check,
+      .reachability,
+      .mini-link {
+        grid-column: 2;
+      }
+
+      .mini-link {
+        width: 100%;
+      }
+
+      .environment-strip {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .environment-strip span:last-child {
+        text-align: left;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
+  <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
+  <a href="../">Open production</a>
+</div>
+
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <p class="eyebrow">LLofaMC MARKETING &amp; PROMOTION AGENT</p>
+        <h1>MISSION CONTROL</h1>
+        <p class="subtitle">One book. One measurable plan. No magic buttons.</p>
+      </div>
+      <nav class="top-actions" aria-label="Mission Control navigation">
+        <a class="button" href="index.html">← Staging home</a>
+        <a class="button" href="../" target="_blank" rel="noopener">Production site ↗</a>
+        <a class="button primary" href="https://www.amazon.com/dp/B0FP6ZZX63" target="_blank" rel="noopener">Amazon listing ↗</a>
+      </nav>
+    </header>
+
+    <div class="environment-strip">
+      <span><strong>SAFE TEST ENVIRONMENT:</strong> changes on this page are staged for review.</span>
+      <span id="updated-label">Loading current project data…</span>
+    </div>
+
+    <div id="loading" class="loading">Loading Mission Control data…</div>
+    <div id="error" class="error-box" hidden></div>
+
+    <div id="dashboard" hidden>
+      <section class="hero-grid">
+        <article class="panel mission-panel">
+          <div class="status-row">
+            <span class="status-badge"><span class="status-dot"></span><span id="mission-status"></span></span>
+          </div>
+          <p class="section-kicker" id="mission-eyebrow"></p>
+          <h2 class="mission-title" id="mission-title"></h2>
+          <p class="mission-copy" id="mission-summary"></p>
+          <div class="checkpoint"><strong>Next checkpoint:</strong> <span id="mission-checkpoint"></span></div>
+        </article>
+
+        <aside class="panel countdown-panel">
+          <div>
+            <p class="section-kicker">COUNTDOWN DEAL</p>
+            <p class="countdown-label" id="countdown-label">Calculating launch clock…</p>
+            <div class="countdown-value" id="countdown-value">--</div>
+            <p class="countdown-detail" id="countdown-detail"></p>
+          </div>
+          <div class="datum">
+            <span class="datum-label">Promotional price</span>
+            <span class="datum-value" id="deal-price"></span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="metrics-grid" id="metrics-grid" aria-label="Current metrics"></section>
+
+      <section class="two-column">
+        <article class="panel section-panel">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">PAID CAMPAIGN</p>
+              <h2>Amazon launch telemetry</h2>
+            </div>
+            <p id="campaign-status"></p>
+          </div>
+          <div class="campaign-grid" id="campaign-grid"></div>
+        </article>
+
+        <article class="panel section-panel">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">CREDIBILITY MILESTONE</p>
+              <h2 id="review-label"></h2>
+            </div>
+            <p id="review-count"></p>
+          </div>
+          <div class="progress-wrap">
+            <div class="progress-head"><span>Progress</span><strong id="review-percent"></strong></div>
+            <div class="progress-track" aria-label="Review-goal progress">
+              <div class="progress-bar" id="review-progress"></div>
+            </div>
+          </div>
+          <p class="footnote" id="review-note"></p>
+
+          <div class="goodreads-alert">
+            <p class="section-kicker">GOODREADS CLEANUP</p>
+            <p><strong id="goodreads-status"></strong></p>
+            <p id="goodreads-problem"></p>
+            <p id="goodreads-action"></p>
+            <a class="button" id="goodreads-link" target="_blank" rel="noopener">Open librarian request ↗</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel section-panel" id="tasks">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">MISSION BOARD</p>
+            <h2>Now, next, and waiting</h2>
+          </div>
+          <p>Only the work that matters right now.</p>
+        </div>
+        <div class="task-board" id="task-board"></div>
+      </section>
+
+      <section class="two-column" style="margin-top:18px;">
+        <article class="panel section-panel">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">MILESTONES</p>
+              <h2>What we have already moved</h2>
+            </div>
+          </div>
+          <div class="timeline" id="milestone-list"></div>
+        </article>
+
+        <article class="panel section-panel">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">CAPTAIN'S LOG</p>
+              <h2>Decisions and why they matter</h2>
+            </div>
+          </div>
+          <div class="log-list" id="captains-log"></div>
+        </article>
+      </section>
+
+      <section class="panel section-panel" id="regression" style="margin-top:18px;">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">REGRESSION TEST DECK</p>
+            <h2>Verify staging. Protect production.</h2>
+          </div>
+          <p>Checkboxes are saved only in this browser.</p>
+        </div>
+
+        <div class="regression-toolbar">
+          <div class="regression-summary"><strong id="regression-count">0 / 0</strong> modules manually confirmed</div>
+          <div class="top-actions">
+            <button class="button" id="scan-links" type="button">Run reachability scan</button>
+            <button class="button" id="reset-checks" type="button">Reset checks</button>
+          </div>
+        </div>
+
+        <div class="regression-list" id="regression-list"></div>
+        <p class="footnote">The automated scan checks whether the staging and production URLs respond. It cannot prove that videos, games, forms, or visual layouts behave correctly; those still require your manual pass.</p>
+      </section>
+    </div>
+
+    <footer>
+      <p id="data-note"></p>
+      <p>Production is not promoted from staging until Chris explicitly approves it.</p>
+    </footer>
+  </main>
+
+  <noscript>
+    <div class="error-box" style="margin:20px;">Mission Control needs JavaScript to load the project data and testing controls.</div>
+  </noscript>
+
+  <script>
+    const DATA_URL = 'data/mission-control.json';
+    const CHECK_KEY = 'lloamc-mission-control-regression-v1';
+
+    const byId = (id) => document.getElementById(id);
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function formatCountdown(ms) {
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+      if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+      return `${minutes}m ${seconds}s`;
+    }
+
+    function renderCountdown(campaign) {
+      const start = new Date(campaign.dealStart);
+      const end = new Date(campaign.dealEnd);
+
+      const tick = () => {
+        const now = new Date();
+        if (now < start) {
+          byId('countdown-label').textContent = 'Until the 99¢ deal begins';
+          byId('countdown-value').textContent = formatCountdown(start - now);
+          byId('countdown-detail').textContent = `Deal starts ${start.toLocaleString()} and runs through ${end.toLocaleString()}.`;
+        } else if (now < end) {
+          byId('countdown-label').textContent = 'The 99¢ deal is live';
+          byId('countdown-value').textContent = formatCountdown(end - now);
+          byId('countdown-detail').textContent = `Time remaining before the Kindle price returns to ${campaign.regularPrice}.`;
+        } else {
+          byId('countdown-label').textContent = 'Countdown Deal completed';
+          byId('countdown-value').textContent = 'COMPLETE';
+          byId('countdown-detail').textContent = 'Download the campaign and KDP reports before deciding what to run next.';
+        }
+      };
+
+      tick();
+      window.setInterval(tick, 1000);
+    }
+
+    function renderMetrics(metrics) {
+      byId('metrics-grid').innerHTML = metrics.map((metric) => `
+        <article class="metric-card">
+          <div class="metric-value">${escapeHtml(metric.value)}</div>
+          <div class="metric-label">${escapeHtml(metric.label)}</div>
+          <div class="metric-detail">${escapeHtml(metric.detail)}</div>
+        </article>
+      `).join('');
+    }
+
+    function renderCampaign(campaign) {
+      const data = [
+        ['Campaign', campaign.name],
+        ['Format', campaign.format],
+        ['Marketplace', campaign.marketplace],
+        ['Targeting', campaign.targeting],
+        ['Default bid', campaign.bid],
+        ['Daily budget', campaign.dailyBudget],
+        ['Bidding', campaign.biddingStrategy],
+        ['Ad dates', `${campaign.adStart} through ${campaign.adEnd}`]
+      ];
+
+      byId('campaign-status').textContent = campaign.status;
+      byId('campaign-grid').innerHTML = data.map(([label, value]) => `
+        <div class="datum">
+          <span class="datum-label">${escapeHtml(label)}</span>
+          <span class="datum-value">${escapeHtml(value)}</span>
+        </div>
+      `).join('') + `
+        <div class="campaign-objective"><strong>Objective:</strong> ${escapeHtml(campaign.objective)}</div>
+      `;
+    }
+
+    function renderTasks(tasks) {
+      const columns = [
+        ['NOW', tasks.now],
+        ['NEXT', tasks.next],
+        ['WAITING', tasks.waiting]
+      ];
+
+      byId('task-board').innerHTML = columns.map(([title, items]) => `
+        <section class="task-column">
+          <h3>${title}</h3>
+          <div class="task-list">
+            ${items.map((item) => `
+              <article class="task-card">
+                <strong>${escapeHtml(item.title)}</strong>
+                <span>${escapeHtml(item.detail)}</span>
+              </article>
+            `).join('')}
+          </div>
+        </section>
+      `).join('');
+    }
+
+    function renderTimeline(items, targetId, itemClass, dateClass, copyClass) {
+      byId(targetId).innerHTML = items.map((item) => `
+        <article class="${itemClass}">
+          <div class="${dateClass}">${escapeHtml(item.date)}</div>
+          <div class="${copyClass}">
+            ${item.title ? `<strong>${escapeHtml(item.title)}</strong>` : ''}
+            <span>${escapeHtml(item.detail ?? item.entry)}</span>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function loadChecks() {
+      try {
+        return JSON.parse(localStorage.getItem(CHECK_KEY) || '{}');
+      } catch {
+        return {};
+      }
+    }
+
+    function saveChecks(checks) {
+      try {
+        localStorage.setItem(CHECK_KEY, JSON.stringify(checks));
+      } catch {
+        // Local storage can be unavailable in strict privacy modes.
+      }
+    }
+
+    function updateRegressionCount() {
+      const boxes = [...document.querySelectorAll('.regression-checkbox')];
+      const checked = boxes.filter((box) => box.checked).length;
+      byId('regression-count').textContent = `${checked} / ${boxes.length}`;
+    }
+
+    function renderRegression(items) {
+      const checks = loadChecks();
+      const stagingBase = new URL('./', window.location.href);
+      const productionBase = new URL('../', window.location.href);
+
+      byId('regression-list').innerHTML = items.map((item, index) => {
+        const key = item.path;
+        const stagingUrl = new URL(item.path, stagingBase).href;
+        const productionUrl = new URL(item.path, productionBase).href;
+        const checked = checks[key] ? 'checked' : '';
+
+        return `
+          <article class="regression-row" data-index="${index}" data-staging-url="${escapeHtml(stagingUrl)}" data-production-url="${escapeHtml(productionUrl)}">
+            <input class="regression-checkbox" type="checkbox" data-key="${escapeHtml(key)}" aria-label="Mark ${escapeHtml(item.name)} as passed" ${checked}>
+            <div class="regression-name">${escapeHtml(item.name)}</div>
+            <div class="regression-check">${escapeHtml(item.check)}</div>
+            <div class="reachability" data-role="reachability">Not scanned</div>
+            <a class="mini-link" href="${escapeHtml(stagingUrl)}" target="_blank" rel="noopener">Staging ↗</a>
+            <a class="mini-link" href="${escapeHtml(productionUrl)}" target="_blank" rel="noopener">Production ↗</a>
+          </article>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.regression-checkbox').forEach((box) => {
+        box.addEventListener('change', () => {
+          const updated = loadChecks();
+          updated[box.dataset.key] = box.checked;
+          saveChecks(updated);
+          updateRegressionCount();
+        });
+      });
+
+      updateRegressionCount();
+    }
+
+    async function testUrl(url) {
+      try {
+        const response = await fetch(url, { cache: 'no-store' });
+        return response.ok;
+      } catch {
+        return false;
+      }
+    }
+
+    async function runReachabilityScan() {
+      const button = byId('scan-links');
+      button.disabled = true;
+      button.textContent = 'Scanning…';
+
+      const rows = [...document.querySelectorAll('.regression-row')];
+      for (const row of rows) {
+        const output = row.querySelector('[data-role="reachability"]');
+        output.className = 'reachability';
+        output.textContent = 'Checking…';
+
+        const [stagingOk, productionOk] = await Promise.all([
+          testUrl(row.dataset.stagingUrl),
+          testUrl(row.dataset.productionUrl)
+        ]);
+
+        const good = stagingOk && productionOk;
+        output.classList.add(good ? 'good' : 'bad');
+        output.textContent = good ? 'Both reachable' : `${stagingOk ? 'Stage ✓' : 'Stage ✕'} / ${productionOk ? 'Prod ✓' : 'Prod ✕'}`;
+      }
+
+      button.disabled = false;
+      button.textContent = 'Run reachability scan';
+    }
+
+    function resetChecks() {
+      saveChecks({});
+      document.querySelectorAll('.regression-checkbox').forEach((box) => {
+        box.checked = false;
+      });
+      updateRegressionCount();
+    }
+
+    function render(data) {
+      byId('updated-label').textContent = `Data updated ${data.meta.updatedLabel} · Version ${data.meta.version}`;
+      byId('mission-status').textContent = data.mission.status;
+      byId('mission-eyebrow').textContent = data.mission.eyebrow;
+      byId('mission-title').textContent = data.mission.title;
+      byId('mission-summary').textContent = data.mission.summary;
+      byId('mission-checkpoint').textContent = data.mission.nextCheckpoint;
+      byId('deal-price').textContent = `${data.campaign.dealPrice} during the deal · ${data.campaign.regularPrice} afterward`;
+
+      renderCountdown(data.campaign);
+      renderMetrics(data.metrics);
+      renderCampaign(data.campaign);
+      renderTasks(data.tasks);
+      renderTimeline(data.milestones, 'milestone-list', 'timeline-item', 'timeline-date', 'timeline-copy');
+      renderTimeline(data.captainsLog, 'captains-log', 'log-item', 'log-date', 'log-copy');
+
+      const percent = Math.min(100, Math.round((data.reviewGoal.current / data.reviewGoal.goal) * 100));
+      byId('review-label').textContent = data.reviewGoal.label;
+      byId('review-count').textContent = `${data.reviewGoal.current} of ${data.reviewGoal.goal}`;
+      byId('review-percent').textContent = `${percent}%`;
+      byId('review-progress').style.width = `${percent}%`;
+      byId('review-note').textContent = data.reviewGoal.note;
+
+      byId('goodreads-status').textContent = data.goodreads.status;
+      byId('goodreads-problem').textContent = data.goodreads.problem;
+      byId('goodreads-action').textContent = data.goodreads.action;
+      byId('goodreads-link').href = data.goodreads.threadUrl;
+
+      renderRegression(data.regression);
+      byId('data-note').textContent = data.meta.dataNote;
+
+      byId('scan-links').addEventListener('click', runReachabilityScan);
+      byId('reset-checks').addEventListener('click', resetChecks);
+
+      byId('loading').hidden = true;
+      byId('dashboard').hidden = false;
+    }
+
+    async function init() {
+      try {
+        const response = await fetch(DATA_URL, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Project data returned HTTP ${response.status}.`);
+        const data = await response.json();
+        render(data);
+      } catch (error) {
+        byId('loading').hidden = true;
+        byId('error').hidden = false;
+        byId('error').textContent = `Mission Control could not load its project data. ${error.message}`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
