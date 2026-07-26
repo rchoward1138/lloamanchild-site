@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Launch Lab - Life Lessons of a Man-Child</title>
+  <meta name="description" content="A launch lab playbook to promote Life Lessons of a Man-Child by R.C. Howard.">
+  <meta property="og:title" content="Launch Lab - Life Lessons of a Man-Child">
+  <meta property="og:description" content="Tactics, templates, and a roadmap to market Life Lessons of a Man-Child.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="Book-Cover.png">
+  <meta property="og:image:alt" content="Life Lessons of a Man-Child book cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Launch Lab - Life Lessons of a Man-Child">
+  <meta name="twitter:description" content="Tactics, templates, and a roadmap to market Life Lessons of a Man-Child.">
+  <meta name="twitter:image" content="Book-Cover.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 165, 0, 0.15), transparent 35%),
+                  radial-gradient(circle at 80% 10%, rgba(0, 255, 255, 0.18), transparent 35%),
+                  radial-gradient(circle at 50% 80%, rgba(255, 0, 120, 0.15), transparent 40%),
+                  linear-gradient(135deg, #0a0f1d 0%, #0d1f2e 40%, #0a0f1d 100%);
+      color: #e9f7ff;
+      min-height: 100vh;
+      padding: 32px 16px 48px;
+    }
+    .shell {
+      max-width: 1080px;
+      margin: 0 auto;
+      background: rgba(8, 12, 26, 0.8);
+      border: 1px solid rgba(0, 255, 255, 0.12);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 40px rgba(0, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 28px;
+      backdrop-filter: blur(6px);
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 26px;
+    }
+    .eyebrow {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: #ffd166;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 2.2rem;
+      line-height: 1.1;
+      color: #7be0ff;
+      text-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
+      margin-bottom: 10px;
+    }
+    .hero p { color: #c6d9e8; line-height: 1.5; margin-bottom: 12px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .cta { display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 12px; font-weight: 600; text-decoration: none; color: #0a0f1d; background: linear-gradient(135deg, #7be0ff, #26ffc2); border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 8px 20px rgba(0,0,0,0.35); }
+    .cta.secondary { background: transparent; color: #e9f7ff; border: 1px solid rgba(123, 224, 255, 0.4); box-shadow: none; }
+    .stat {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      line-height: 1.4;
+    }
+    .grid { display: grid; gap: 16px; }
+    .grid.two { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .grid.three { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 16px 16px 18px;
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .card h2 { font-size: 1.05rem; color: #7be0ff; margin-bottom: 8px; }
+    .card h3 { font-size: 0.95rem; color: #ffd166; margin: 10px 0 6px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: rgba(123, 224, 255, 0.12); color: #dff7ff; font-size: 0.85rem; margin-right: 8px; margin-bottom: 6px; }
+    ul { list-style: none; margin-top: 4px; }
+    ul li { padding-left: 14px; position: relative; margin-bottom: 6px; color: #d4e6f4; line-height: 1.45; }
+    ul li::before { content: '•'; position: absolute; left: 0; color: #7be0ff; }
+    .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    .template { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; font-family: 'Space Grotesk', sans-serif; color: #e9f7ff; line-height: 1.6; white-space: pre-line; min-height: 160px; }
+    .copy-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    button.copy-btn { border: 1px solid rgba(255,255,255,0.25); background: rgba(123, 224, 255, 0.12); color: #e9f7ff; padding: 8px 10px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    button.copy-btn:hover { background: rgba(123, 224, 255, 0.22); }
+    .tagline { font-size: 0.95rem; color: #b4ccde; }
+    .section-title { font-size: 1rem; color: #9de4ff; letter-spacing: 0.02em; margin-bottom: 8px; }
+    .bar { height: 6px; background: linear-gradient(90deg, #7be0ff, #ffd166, #ff7ac3); border-radius: 999px; margin: 12px 0 14px; opacity: 0.85; }
+    @media (max-width: 820px) {
+      .hero { grid-template-columns: 1fr; }
+      h1 { font-size: 1.85rem; }
+    }
+  </style>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+
+<style id="lloamc-staging-style">
+  html { scroll-padding-top: 52px; }
+  body { padding-top: 52px !important; }
+  #lloamc-staging-banner {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 2147483647;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(90deg, #ffbf00, #ff7a00);
+    border-bottom: 3px solid #111;
+    color: #111;
+    font: 800 14px/1.25 Arial, sans-serif;
+    letter-spacing: 0.04em;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+  #lloamc-staging-banner a {
+    color: #111;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    body { padding-top: 70px !important; }
+    #lloamc-staging-banner {
+      min-height: 70px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+<div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
+  <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
+  <a href="../">Open production</a>
+</div>
+
+  <div class="shell">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Launch Lab</div>
+        <h1>Life Lessons of a Man-Child</h1>
+        <p class="tagline">Tactical playbook to push toward Amazon Best Seller visibility and honest reviews—no pay-for-stars fluff.</p>
+        <div class="cta-row">
+          <a class="cta" href="https://www.amazon.com/Life-Lessons-Man-Child-R-C-Howard/dp/B0FZXCJX85" target="_blank" rel="noopener noreferrer">View on Amazon</a>
+          <a class="cta secondary" href="https://rchoward1138.github.io/lloamanchild-site/" target="_blank" rel="noopener noreferrer">Author Site</a>
+        </div>
+      </div>
+      <div class="grid two">
+        <div class="stat"><strong>North Star:</strong> 20+ verified reviews to kick Amazon surfacing; steady sales velocity week over week.</div>
+        <div class="stat"><strong>Channels:</strong> ARC outreach · email list · podcasts/press · Amazon listing polish · light ads · short-form video.</div>
+      </div>
+    </div>
+
+    <div class="bar"></div>
+
+    <div class="grid two" style="margin-bottom:16px;">
+      <div class="card">
+        <h2>90-Day Push (checkpoint every 2 weeks)</h2>
+        <h3>Weeks 1-2</h3>
+        <ul>
+          <li>Optimize Amazon page (description, A+ content, 7+ keywords, author bio, editorial highlights).</li>
+          <li>Price nudge/Kindle promo or free window to spark downloads + reviews.</li>
+          <li>Send ARC asks to 25-40 targeted readers; book 2-3 podcast pitches.</li>
+          <li>Create 6-8 short-form clips (hook + payoff) and schedule 3/week.</li>
+        </ul>
+        <h3>Weeks 3-6</h3>
+        <ul>
+          <li>Collect and post fresh reviews; add a reviewer quote to the Amazon description.</li>
+          <li>Launch micro Amazon ads (auto + one keyword list) with $5-10/day cap; prune weekly.</li>
+          <li>Lead magnet live; grow list via BookFunnel/StoryOrigin swaps.</li>
+          <li>2 guest posts or newsletter swaps; 2 podcast or IG Live appearances.</li>
+        </ul>
+        <h3>Weeks 7-12</h3>
+        <ul>
+          <li>Retarget: reach back to early readers for honest public reviews if they only emailed you.</li>
+          <li>Run a 72-hour price pulse paired with email + socials + one ad burst.</li>
+          <li>Host one virtual Q&A or reading; capture emails from attendees.</li>
+          <li>Expand keywords/categories; test fresh ad copy or new hooks.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>ARC & Reviews (no fake stars)</h2>
+        <h3>Find readers</h3>
+        <ul>
+          <li>BookSirens or StoryOrigin: genre-targeted, honest-review-first communities.</li>
+          <li>BookFunnel promos: swap arcs with similar memoir/authors.</li>
+          <li>Reddit (r/books, r/memoirs) + Facebook book groups with clear "honest review" ask.</li>
+          <li>Local libraries/book clubs; offer discussion questions + Zoom drop-in.</li>
+        </ul>
+        <h3>What to send</h3>
+        <ul>
+          <li>Clean PDF/ePub, short synopsis, 3 talking points, content warnings if any.</li>
+          <li>Exact links: Amazon review link; Goodreads if you want dual placement.</li>
+          <li>Deadline + reminder cadence: ask for reviews within 14 days; one gentle nudge at day 10.</li>
+        </ul>
+        <h3>Keep it compliant</h3>
+        <ul>
+          <li>Never require star ratings or payment for positive reviews. Only provide a free copy.</li>
+          <li>Ask for disclosure: "Received an advance copy; opinions are honest."
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid three" style="margin-bottom:16px;">
+      <div class="card">
+        <h2>Listing Polish (Amazon)</h2>
+        <ul>
+          <li>Lead with a one-sentence hook + 3 bullet promises (emotion, transformation, who it's for).</li>
+          <li>Add A+ content: quote block, author note, 3-5 image panels, and a comparison chart.</li>
+          <li>Keywords: include "memoir", "coming-of-age", "faith", "Marine family", "nostalgia", "80s", "parenting", "self-discovery"; map 7 slots.</li>
+          <li>Pick 3 categories where competition is lighter (memoir subcats, Christian memoir, coming-of-age).</li>
+          <li>Ensure author page has photo, 100-150 word bio, and links to socials/site.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Email & Lead Magnet</h2>
+        <ul>
+          <li>Create a freebie: "5 Life Lessons that Didn't Make the Book" (PDF) or a 3-page workbook.</li>
+          <li>Capture emails via: author site banner, BookFunnel landing, StoryOrigin swap, end-of-book CTA.</li>
+          <li>Welcome sequence (3 emails): story hook → behind-the-scenes → ask for honest review + Amazon link.</li>
+          <li>Send 1x/weekly note: one story snippet, one lesson, one ask (review/share).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Content Rhythm</h2>
+        <ul>
+          <li>3 shorts/week: hook ("What my Marine dad taught me at 10"), payoff, CTA to link-in-bio.</li>
+          <li>1 longer clip/week: read 60 seconds + reflect; post to YouTube/FB.</li>
+          <li>Repurpose: same script → TikTok, Reels, Shorts; update caption per platform.</li>
+          <li>Add 1 quote graphic/week pulled from the book; pin to author site and socials.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid three" style="margin-bottom:16px;">
+      <div class="card">
+        <h2>Partnerships & Press</h2>
+        <ul>
+          <li>Podcasts: parenting, faith, 80s/90s nostalgia, writing journeys. Pitch a specific episode idea.</li>
+          <li>Local: library reading, indie bookstore consignment/signing, Rotary/VFW talks (tie to Marine heritage).</li>
+          <li>Newsletters: swap with similar memoir writers; offer a 200-word excerpt + link.</li>
+          <li>Press kit: cover image, 120-word bio, logline, 5 talking points, 2-3 pull quotes, headshot.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Light Ads (budget-first)</h2>
+        <ul>
+          <li>Amazon Ads: start Auto + one list of 30-50 exact/phrase keywords; $5-10/day cap.</li>
+          <li>Cut anything over $0.60 CPC with no sales after 20-30 clicks; move winners to a manual campaign.</li>
+          <li>Creative: one short blurb + 3 bullets; test a Marine/nostalgia angle vs. fatherhood angle.</li>
+          <li>Pause ads during price promo if ACoS spikes; restart after reviews rise.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Measurement</h2>
+        <ul>
+          <li>Weekly: units sold, KENP, reviews gained, email signups, ad spend/ACoS.</li>
+          <li>Track hooks: which short-form angles drive clicks (Marine dad, nostalgia, faith, humor).</li>
+          <li>Use a simple sheet: Date, Tactic, Cost, Time, Result, Keep/Kill.</li>
+          <li>After 30 days, keep the top 3 channels and cut the rest.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="card">
+        <h2>ARC Outreach Template</h2>
+        <div id="template-arc" class="template">Hi [Name],
+
+I’m R.C. Howard. My memoir, "Life Lessons of a Man-Child," drops readers into growing up with a Marine dad, 80s/90s nostalgia, and the moments that shaped me.
+
+If you enjoy reflective memoirs with humor and heart, I’d love to send you a free ARC for an honest review (no star requirements). Format: PDF/ePub. Timing: within the next 14 days if possible.
+
+Links:
+Amazon: https://www.amazon.com/Life-Lessons-Man-Child-R-C-Howard/dp/B0FZXCJX85
+Goodreads: https://www.goodreads.com/
+
+If you’re in, reply with your preferred format. Grateful for your time either way.
+
+Thank you,
+R.C. Howard</div>
+        <div class="copy-row">
+          <button class="copy-btn" data-target="template-arc">Copy</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Podcast / Press Pitch</h2>
+        <div id="template-press" class="template">Hello [Host/Editor],
+
+I’m R.C. Howard, author of "Life Lessons of a Man-Child." It’s a memoir of growing up with a proud Marine father, rediscovering the stories I wrote as a kid, and what they taught me about faith, courage, and creative grit.
+
+Possible angles for your audience:
+• What a Marine household teaches about resilience (and where it collides with modern parenting).
+• Nostalgia as a lens: revisiting childhood stories to navigate adult pivots.
+• DIY memoir launch: honest reviews over paid hype.
+
+Happy to share a short excerpt, a giveaway copy, or do a 20-minute interview. Media kit and cover art are ready to send.
+
+Thanks for considering,
+R.C. Howard
+rchoward1138.github.io/lloamanchild-site/</div>
+        <div class="copy-row">
+          <button class="copy-btn" data-target="template-press">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>Lead Magnet & Email Ideas</h2>
+      <div class="pill">Freebie ideas</div><div class="pill">Landing</div><div class="pill">Welcome flow</div>
+      <ul>
+        <li>PDF: "5 Life Lessons I couldn't fit in the book" + 3 reflection prompts.</li>
+        <li>Landing page: headline hook, bullet promises, form (BookFunnel/ConvertKit/Mailchimp).</li>
+        <li>Welcome email 1: thanks + download link + why the book exists.</li>
+        <li>Email 2: behind-the-scenes scene; CTA to reply with their favorite childhood lesson.</li>
+        <li>Email 3: ask for an honest review with the Amazon link; mention Goodreads too.</li>
+        <li>Ongoing: 1 story, 1 lesson, 1 ask cadence; add a PS with your next event/interview link.</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>Social Hooks to Test</h2>
+      <ul>
+        <li>"A Marine raised me to do this one thing before sunrise…"</li>
+        <li>"The 80s lesson I didn’t understand until I became a dad."</li>
+        <li>"I found eight dusty stories I wrote at 10. Rewriting them changed this about me."</li>
+        <li>"What my kid thinks about my memoir (spoiler: humbling)."</li>
+        <li>"Three questions I ask when life feels like a level you can’t beat."</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>Compliance & Integrity</h2>
+      <ul>
+        <li>Only provide free copies; no payments or gifts for positive reviews.</li>
+        <li>Invite honest, voluntary reviews; ask for disclosure when appropriate.</li>
+        <li>Keep reader data private; only email with opt-in consent.</li>
+        <li>If you run giveaways, separate entry from review request.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const text = document.getElementById(targetId)?.innerText || '';
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+          const prev = btn.innerText;
+          btn.innerText = 'Copied';
+          setTimeout(() => { btn.innerText = prev; }, 1400);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

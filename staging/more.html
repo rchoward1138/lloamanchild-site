@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>More Life Lessons - R.C. Howard</title>
+  <meta name="description" content="More Life Lessons — ongoing bonus chapters from Life Lessons of a Man-Child by R.C. Howard.">
+  <meta property="og:title" content="More Life Lessons - R.C. Howard">
+  <meta property="og:description" content="Bonus chapters and reflections from Life Lessons of a Man-Child.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="Book-Cover.png">
+  <meta property="og:image:alt" content="Life Lessons of a Man-Child book cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="More Life Lessons - R.C. Howard">
+  <meta name="twitter:description" content="Bonus chapters and reflections from Life Lessons of a Man-Child.">
+  <meta name="twitter:image" content="Book-Cover.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:'Roboto',sans-serif;
+      background-image:url('PaperbackCoverFinal.png'),url('Book-Cover.png');
+      background-repeat:no-repeat;background-position:center center;background-attachment:fixed;background-size:cover;
+      min-height:100vh;position:relative;overflow-x:hidden;color:#e9f9ff;
+    }
+    body::before{content:'';position:fixed;inset:0;z-index:1;
+      background:linear-gradient(rgba(20,0,40,.7),rgba(40,0,80,.7)),
+                 radial-gradient(circle at 50% 50%,rgba(255,0,150,.08)0%,transparent 55%);
+    }
+    body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;
+      background-image:linear-gradient(rgba(0,255,255,.06)1px,transparent 1px),
+                       linear-gradient(90deg,rgba(0,255,255,.06)1px,transparent 1px);
+      background-size:50px 50px;animation:gridMove 20s linear infinite;
+    }
+    @keyframes gridMove{0%{transform:translate(0,0)}100%{transform:translate(50px,50px)}}
+    .scanlines{position:fixed;inset:0;z-index:3;pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,255,.02)2px,rgba(0,255,255,.02)4px);
+      animation:scanlineFlicker .1s linear infinite;
+    }
+    @keyframes scanlineFlicker{0%,99%{opacity:1}100%{opacity:.98}}
+
+    .container{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:2rem 1.5rem 3rem;}
+
+    .header{text-align:center;margin-bottom:1.75rem;}
+    .title{font-family:'Orbitron',monospace;font-size:2.1rem;font-weight:900;color:#00ffff;
+      text-shadow:0 0 10px #00ffff,0 0 20px #00ffff,0 0 30px #00ffff;margin-bottom:.4rem;}
+    .subtitle{font-family:'Press Start 2P',monospace;font-size:.68rem;color:#ff8cff;text-shadow:0 0 8px #ff00ff;}
+
+    .chapter-card{
+      background:rgba(0,0,0,.7);
+      border:2px solid #00ffff;
+      border-radius:12px;
+      box-shadow:0 0 25px rgba(0,255,255,.4),inset 0 0 18px rgba(0,255,255,.12);
+      padding:1.75rem 1.5rem 1.9rem;
+      backdrop-filter:blur(3px);
+      margin-bottom:2rem;
+    }
+
+    .chapter-label{font-family:'Press Start 2P',monospace;font-size:.7rem;color:#ffdfef;margin-bottom:.75rem;letter-spacing:.12em;}
+    .chapter-title{font-family:'Orbitron',monospace;font-size:1.4rem;color:#00ffff;margin-bottom:.5rem;}
+    .chapter-subtitle{font-family:'Roboto',sans-serif;font-size:.95rem;color:#ffdfef;margin-bottom:1.2rem;font-style:italic;}
+
+    .chapter-body{font-size:1rem;line-height:1.7;color:#e9f9ff;}
+    .chapter-body p{margin-bottom:1rem;}
+    .chapter-body p:last-child{margin-bottom:0;}
+
+    .back-row{margin-top:1rem;text-align:center;}
+    .back-link{display:inline-block;padding:.8rem 1.9rem;border-radius:999px;border:2px solid #00ffff;
+      background:linear-gradient(45deg,#1a0033,#330066);color:#00ffff;font-family:'Press Start 2P',monospace;font-size:.7rem;
+      text-decoration:none;box-shadow:0 0 12px #00ffff,0 0 24px #00ffff;transition:all .25s ease;}
+    .back-link:hover{background:linear-gradient(45deg,#ff00ff,#330066);color:#ffccff;border-color:#ff00ff;
+      box-shadow:0 0 18px #ff00ff,0 0 36px #ff00ff;}
+
+    @media(max-width:600px){
+      .container{padding:1.5rem 1rem 2.5rem;}
+      .title{font-size:1.7rem;}
+      .chapter-card{padding:1.4rem 1.1rem 1.6rem;}
+      .chapter-title{font-size:1.25rem;}
+      .chapter-body{font-size:.95rem;}
+    }
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}body::after,.scanlines{animation:none!important}}
+  </style>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+
+<style id="lloamc-staging-style">
+  html { scroll-padding-top: 52px; }
+  body { padding-top: 52px !important; }
+  #lloamc-staging-banner {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 2147483647;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(90deg, #ffbf00, #ff7a00);
+    border-bottom: 3px solid #111;
+    color: #111;
+    font: 800 14px/1.25 Arial, sans-serif;
+    letter-spacing: 0.04em;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+  #lloamc-staging-banner a {
+    color: #111;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    body { padding-top: 70px !important; }
+    #lloamc-staging-banner {
+      min-height: 70px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+<div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
+  <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
+  <a href="../">Open production</a>
+</div>
+
+  <div class="scanlines"></div>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">MORE LIFE LESSONS</h1>
+      <div class="subtitle">Bonus chapters from <span style="white-space:nowrap;">Life Lessons of a Man-Child</span></div>
+    </header>
+
+    <!-- The Meaning of Life -->
+    <section class="chapter-card" aria-label="The Meaning of Life story">
+      <div class="chapter-label">BONUS CHAPTER</div>
+      <h2 class="chapter-title">The Meaning of Life</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div style="width:100%;margin-top:.75rem;">
+        <a href="meaning.html" class="back-link" style="display:block;width:100%;text-align:center;">
+          The Meaning of Life
+        </a>
+      </div>
+    </section>
+
+    <!-- Currents -->
+    <section class="chapter-card" aria-label="Currents story">
+      <div class="chapter-label">BONUS CHAPTER</div>
+      <h2 class="chapter-title">Currents</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div style="width:100%;margin-top:.75rem;">
+        <a href="currents.html" class="back-link" style="display:block;width:100%;text-align:center;">
+          Currents
+        </a>
+      </div>
+    </section>
+
+    <!-- Super Secret Squirrel -->
+    <section class="chapter-card" aria-label="Super Secret Squirrel story">
+      <div class="chapter-label">BONUS CHAPTER</div>
+      <h2 class="chapter-title">Super Secret Squirrel</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div style="width:100%;margin-top:.75rem;">
+        <a href="squirrel.html" class="back-link" style="display:block;width:100%;text-align:center;">
+          Super Secret Squirrel
+        </a>
+      </div>
+    </section>
+
+    <!-- God's Gift to... Everyone -->
+    <section class="chapter-card" aria-label="God's Gift to... Everyone story">
+      <div class="chapter-label">BONUS CHAPTER</div>
+      <h2 class="chapter-title">God's Gift to... Everyone</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div style="width:100%;margin-top:.75rem;">
+        <a href="ultimate-gift.html" class="back-link" style="display:block;width:100%;text-align:center;">
+          God's Gift to... Everyone
+        </a>
+      </div>
+    </section>
+
+    <!-- Why He Did This -->
+    <section class="chapter-card" aria-label="Why He Did This story">
+      <div class="chapter-label">BONUS CHAPTER</div>
+      <h2 class="chapter-title">Why He Did This</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div style="width:100%;margin-top:.75rem;">
+        <a href="why-he-did-this.html" class="back-link" style="display:block;width:100%;text-align:center;">
+          Why He Did This
+        </a>
+      </div>
+    </section>
+
+    <!-- Can't Get Past the Waterfall -->
+    <section class="chapter-card" aria-label="Can't Get Past the Waterfall story">
+      <div class="chapter-label">BONUS CHAPTER</div>
+      <h2 class="chapter-title">Can't Get Past the Waterfall: Contra Life Lessons</h2>
+      <div class="chapter-subtitle">By R.C. Howard</div>
+      <div style="width:100%;margin-top:.75rem;">
+        <a href="contra-life-lessons.html" class="back-link" style="display:block;width:100%;text-align:center;">
+          Can't Get Past the Waterfall
+        </a>
+      </div>
+    </section>
+
+    <div class="back-row">
+      <a href="index.html" class="back-link">◀ BACK TO HOME</a>
+    </div>
+  </div>
+  <div class="scanlines"></div>
+
+  <!-- Background music continuation -->
+    <script>
+      // No background music on this page.
+    </script>
+</body>
+</html>

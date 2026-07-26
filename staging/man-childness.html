@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Man-Childness - R.C. Howard</title>
+  <meta name="description" content="Man-Childness — video clips and sightings inspired by Life Lessons of a Man-Child by R.C. Howard.">
+  <meta property="og:title" content="Man-Childness - R.C. Howard">
+  <meta property="og:description" content="Video clips and sightings inspired by Life Lessons of a Man-Child.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="Book-Cover.png">
+  <meta property="og:image:alt" content="Life Lessons of a Man-Child book cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Man-Childness - R.C. Howard">
+  <meta name="twitter:description" content="Video clips and sightings inspired by Life Lessons of a Man-Child.">
+  <meta name="twitter:image" content="Book-Cover.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:'Roboto',sans-serif;
+      background-image:url('PaperbackCoverFinal.png'),url('Book-Cover.png');
+      background-repeat:no-repeat;background-position:center center;background-attachment:fixed;background-size:cover;
+      min-height:100vh;position:relative;overflow-x:hidden;color:#e9f9ff;
+    }
+    body::before{content:'';position:fixed;inset:0;z-index:1;
+      background:linear-gradient(rgba(20,0,40,.55),rgba(40,0,80,.55)),
+                 radial-gradient(circle at 50% 50%,rgba(255,0,150,.05)0%,transparent 50%);
+    }
+    body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;
+      background-image:linear-gradient(rgba(0,255,255,.06)1px,transparent 1px),
+                       linear-gradient(90deg,rgba(0,255,255,.06)1px,transparent 1px);
+      background-size:50px 50px;animation:gridMove 20s linear infinite;
+    }
+    @keyframes gridMove{0%{transform:translate(0,0)}100%{transform:translate(50px,50px)}}
+    .scanlines{position:fixed;inset:0;z-index:3;pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,255,.02)2px,rgba(0,255,255,.02)4px);
+      animation:scanlineFlicker .1s linear infinite;
+    }
+    @keyframes scanlineFlicker{0%,99%{opacity:1}100%{opacity:.98}}
+
+    .container{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:2rem;min-height:100vh;}
+
+    .main-content{
+      background:rgba(0,0,0,0.6);
+      border:2px solid #00ffff;
+      border-radius:10px;
+      padding:2rem;
+      box-shadow:0 0 20px rgba(0,255,255,0.35), inset 0 0 20px rgba(0,255,255,0.08);
+      backdrop-filter:blur(2px);
+      animation:borderGlow 2s ease-in-out infinite alternate;
+    }
+    @keyframes borderGlow{0%{box-shadow:0 0 20px rgba(0,255,255,.35), inset 0 0 20px rgba(0,255,255,.08)}100%{box-shadow:0 0 30px rgba(0,255,255,.6), inset 0 0 30px rgba(0,255,255,.12)}}
+
+    .title{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900;color:#00ffff;text-align:center;
+      text-shadow:0 0 10px #00ffff, 0 0 20px #00ffff;margin-bottom:.6rem;animation:titlePulse 3s ease-in-out infinite;}
+    @keyframes titlePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+    .subtitle{font-family:'Press Start 2P',monospace;font-size:.7rem;color:#ff00ff;text-shadow:0 0 10px #ff00ff;text-align:center;margin-bottom:1.2rem;}
+
+    .card{
+      background:rgba(0,0,0,0.55);
+      border:1px solid #00ffff33;
+      border-radius:10px;
+      padding:1.2rem;
+      box-shadow:0 0 15px rgba(0,255,255,0.2);
+      margin-top:1.25rem;
+    }
+
+    .card-title{font-family:'Orbitron',monospace;font-size:1.15rem;color:#00ffff;margin-bottom:.35rem;}
+    .card-note{color:#cccccc;font-size:.9rem;line-height:1.5;margin-bottom:1rem;}
+
+    .back-row{text-align:center;margin-top:1.5rem;}
+    .back-link{display:inline-block;padding:.8rem 2rem;background:linear-gradient(45deg,#1a0033,#330066);
+      border:2px solid #00ffff;border-radius:25px;color:#00ffff;font-family:'Press Start 2P',monospace;font-size:.8rem;text-decoration:none;
+      box-shadow:0 0 10px #00ffff, 0 0 20px #00ffff;transition:all .25s ease;}
+    .back-link:hover{background:linear-gradient(45deg,#ff00ff,#330066);color:#ff00ff;border-color:#ff00ff;box-shadow:0 0 20px #ff00ff, 0 0 40px #ff00ff;}
+
+    .video-wrap{display:flex;justify-content:center;}
+    .video-inner{width:100%;max-width:560px;}
+
+    .video-link{display:block;text-decoration:none;}
+    .video-thumb{
+      position:relative;
+      width:100%;
+      border-radius:12px;
+      overflow:hidden;
+      background:#000;
+      cursor:pointer;
+      transition:all .25s ease;
+      border:1px solid #00ffff33;
+      box-shadow:0 0 15px rgba(0,255,255,0.15);
+    }
+    .video-thumb:hover{box-shadow:0 0 25px rgba(0,255,255,0.45);transform:scale(1.01);}
+    .video-thumb--square{aspect-ratio: 1 / 1;}
+    .video-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+    .play-overlay{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:76px;
+      height:76px;
+      background:rgba(255,0,0,0.9);
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:all .25s ease;
+      z-index:2;
+    }
+    .video-thumb:hover .play-overlay{background:rgb(255,0,0);transform:translate(-50%,-50%) scale(1.1);}
+    .play-overlay::after{
+      content:'';
+      width:0;
+      height:0;
+      border-style:solid;
+      border-width:12px 0 12px 20px;
+      border-color:transparent transparent transparent white;
+      margin-left:4px;
+    }
+
+    @media (max-width:600px){
+      .container{padding:1.5rem 1rem;}
+      .main-content{padding:1.5rem;}
+      .title{font-size:1.6rem;}
+      .subtitle{font-size:.62rem;}
+    }
+    @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important} body::after,.scanlines{animation:none !important}}
+  </style>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+
+<style id="lloamc-staging-style">
+  html { scroll-padding-top: 52px; }
+  body { padding-top: 52px !important; }
+  #lloamc-staging-banner {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 2147483647;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(90deg, #ffbf00, #ff7a00);
+    border-bottom: 3px solid #111;
+    color: #111;
+    font: 800 14px/1.25 Arial, sans-serif;
+    letter-spacing: 0.04em;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+  #lloamc-staging-banner a {
+    color: #111;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    body { padding-top: 70px !important; }
+    #lloamc-staging-banner {
+      min-height: 70px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+<div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
+  <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
+  <a href="../">Open production</a>
+</div>
+
+  <div class="scanlines"></div>
+  <div class="container">
+    <div class="main-content">
+      <h1 class="title">MAN-CHILDNESS</h1>
+      <div class="subtitle">Real-world sightings &amp; clips</div>
+
+      <section class="card" aria-label="YouTube Short 1">
+        <h2 class="card-title">Why do Men love to Play Video Games? 🎮💙 #gaming #dothingsyoudontwanttodo</h2>
+
+        <p class="card-note">Click the thumbnail to open YouTube in a new tab.</p>
+
+        <div class="video-wrap">
+          <div class="video-inner">
+            <a class="video-link" href="https://www.youtube.com/shorts/eMp2vu38PDs" target="_blank" rel="noopener noreferrer" aria-label="Open on YouTube (new tab)">
+              <div class="video-thumb video-thumb--square">
+                <img src="https://i.ytimg.com/vi/eMp2vu38PDs/hqdefault.jpg" alt="Why do Men love to Play Video Games thumbnail" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/eMp2vu38PDs/mqdefault.jpg';">
+                <div class="play-overlay" aria-hidden="true"></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="YouTube Short 2">
+        <h2 class="card-title">Very Wholesome</h2>
+
+        <p class="card-note">Click the thumbnail to open YouTube in a new tab.</p>
+
+        <div class="video-wrap">
+          <div class="video-inner">
+            <a class="video-link" href="https://www.youtube.com/shorts/vCW4eNnYqH0" target="_blank" rel="noopener noreferrer" aria-label="Open on YouTube (new tab)">
+              <div class="video-thumb video-thumb--square">
+                <img src="https://i.ytimg.com/vi/vCW4eNnYqH0/hqdefault.jpg" alt="Very Wholesome thumbnail" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/vCW4eNnYqH0/mqdefault.jpg';">
+                <div class="play-overlay" aria-hidden="true"></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="YouTube Video 1">
+        <h2 class="card-title">This little boy has some life advice we could all do with hearing ❤️</h2>
+
+        <p class="card-note">Click the thumbnail to open YouTube in a new tab.</p>
+
+        <div class="video-wrap">
+          <div class="video-inner">
+            <a class="video-link" href="https://www.youtube.com/watch?v=CF4qKjNty8Y" target="_blank" rel="noopener noreferrer" aria-label="Open on YouTube (new tab)">
+              <div class="video-thumb video-thumb--square">
+                <img src="https://i.ytimg.com/vi/CF4qKjNty8Y/hqdefault.jpg" alt="This little boy has some life advice thumbnail" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/CF4qKjNty8Y/mqdefault.jpg';">
+                <div class="play-overlay" aria-hidden="true"></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="YouTube Video 2">
+        <h2 class="card-title">The Full Dustin and Suzie NeverEnding Story Scene | Stranger Things S3</h2>
+
+        <p class="card-note">Click the thumbnail to open YouTube in a new tab.</p>
+
+        <div class="video-wrap">
+          <div class="video-inner">
+            <a class="video-link" href="https://www.youtube.com/watch?v=O5HQ1sZseKg" target="_blank" rel="noopener noreferrer" aria-label="Open on YouTube (new tab)">
+              <div class="video-thumb video-thumb--square">
+                <img src="https://i.ytimg.com/vi/O5HQ1sZseKg/hqdefault.jpg" alt="NeverEnding Story Scene thumbnail" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/O5HQ1sZseKg/mqdefault.jpg';">
+                <div class="play-overlay" aria-hidden="true"></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <div class="back-row">
+        <a href="index.html" class="back-link">◀ BACK TO HOME</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

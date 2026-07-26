@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic‑Tac‑Toe - Shall We Play a Game?</title>
+  <!-- Social/OG meta -->
+  <meta name="description" content="Play Tic‑Tac‑Toe in a neon retro theme. Win and head to Amazon to grab Life Lessons of a Man‑Child.">
+  <meta property="og:title" content="Tic‑Tac‑Toe - Shall We Play a Game?">
+  <meta property="og:description" content="A retro Tic‑Tac‑Toe homage. Win and jump to the book on Amazon.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="Book-Cover.png">
+  <meta property="og:image:alt" content="Life Lessons of a Man‑Child book cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Tic‑Tac‑Toe - Shall We Play a Game?">
+  <meta name="twitter:description" content="A retro Tic‑Tac‑Toe homage. Win and jump to the book on Amazon.">
+  <meta name="twitter:image" content="Book-Cover.png">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-image: url('PaperbackCoverFinal.png'), url('Book-Cover.png');
+      background-repeat: no-repeat; background-position: center center; background-attachment: fixed; background-size: cover;
+      min-height: 100vh; position: relative; overflow-x: hidden;
+    }
+    /* Overlays */
+    body::before { content: ''; position: fixed; inset: 0; z-index: 1;
+      background: linear-gradient(rgba(20,0,40,0.55), rgba(40,0,80,0.55)),
+                  radial-gradient(circle at 50% 50%, rgba(255,0,150,0.05) 0%, transparent 50%);
+    }
+    body::after { content: ''; position: fixed; inset: 0; z-index: 2; pointer-events: none;
+      background-image: linear-gradient(rgba(0,255,255,0.06) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0,255,255,0.06) 1px, transparent 1px);
+      background-size: 50px 50px; animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove { 0%{transform:translate(0,0)} 100%{transform:translate(50px,50px)} }
+    .scanlines { position: fixed; inset: 0; z-index: 3; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.02) 2px, rgba(0,255,255,0.02) 4px);
+      animation: scanlineFlicker 0.1s linear infinite; }
+    @keyframes scanlineFlicker { 0%,99%{opacity:1} 100%{opacity:0.98} }
+
+    .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 1rem; min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center; align-items: center; }
+
+    .main-content { background: rgba(0,0,0,0.6); border: 2px solid #00ffff; border-radius: 10px; padding: 1.5rem; text-align: center;
+      box-shadow: 0 0 20px rgba(0,255,255,0.35), inset 0 0 20px rgba(0,255,255,0.08); backdrop-filter: blur(2px);
+      animation: borderGlow 2s ease-in-out infinite alternate; width: 100%; max-width: 100%; }
+    @keyframes borderGlow { 0%{box-shadow:0 0 20px rgba(0,255,255,0.35), inset 0 0 20px rgba(0,255,255,0.08)} 100%{box-shadow:0 0 30px rgba(0,255,255,0.6), inset 0 0 30px rgba(0,255,255,0.12)} }
+
+    .title { font-family: 'Orbitron', monospace; font-size: 2.2rem; font-weight: 900; color: #00ffff;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff; margin-bottom: .5rem; animation: titlePulse 3s ease-in-out infinite; }
+    @keyframes titlePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
+
+    .subtitle { font-family: 'Press Start 2P', monospace; font-size: .7rem; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; margin-bottom: 1.5rem; letter-spacing: 1px; }
+
+    .board { width: min(320px, calc(100vw - 4rem)); margin: 0 auto 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+    .cell { position: relative; aspect-ratio: 1 / 1; background: rgba(0,0,0,0.75); border: 2px solid #00ffff; border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,255,255,0.35), inset 0 0 10px rgba(0,255,255,0.08); display: flex; align-items: center; justify-content: center;
+      font-family: 'Press Start 2P', monospace; font-size: 2.2rem; color: #00ffff; cursor: pointer; user-select: none; transition: transform .1s ease; }
+    .cell:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,255,255,0.45), inset 0 0 14px rgba(0,255,255,0.15); }
+    .cell[aria-disabled="true"] { cursor: default; opacity: .75; }
+
+    .status { color: #ffffff; font-family: 'Roboto', sans-serif; margin: .6rem 0 1rem; min-height: 1.2rem; font-size: 0.9rem; }
+
+    .controls { display: flex; gap: .8rem; justify-content: center; margin-top: .5rem; flex-wrap: wrap; }
+    .control-button, .back-link { display: inline-block; padding: 0.7rem 1.6rem; background: linear-gradient(45deg, #1a0033, #330066);
+      border: 2px solid #00ffff; border-radius: 25px; color: #00ffff; font-family: 'Press Start 2P', monospace; font-size: .75rem; text-decoration: none;
+      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; transition: all .25s ease; white-space: nowrap; }
+    .control-button:hover, .back-link:hover { background: linear-gradient(45deg, #ff00ff, #330066); color: #ff00ff; border-color: #ff00ff; box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+    .back-row {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    /* Responsive styles for narrow screens (folded phones) */
+    @media (max-width: 480px){ 
+      .container { padding: 0.5rem; }
+      .main-content { padding: 1rem; }
+      .title { font-size: 1.5rem; }
+      .subtitle { font-size: .55rem; }
+      .board { width: min(280px, calc(100vw - 3rem)); gap: .5rem; }
+      .cell { font-size: 1.6rem; border-width: 1.5px; }
+      .status { font-size: 0.8rem; }
+      .control-button, .back-link { padding: 0.6rem 1.2rem; font-size: .65rem; }
+    }
+    
+    /* Extra narrow screens (very small phones, folded devices) */
+    @media (max-width: 360px){ 
+      .container { padding: 0.25rem; }
+      .main-content { padding: 0.75rem; }
+      .title { font-size: 1.2rem; }
+      .subtitle { font-size: .5rem; margin-bottom: 1rem; }
+      .board { width: min(240px, calc(100vw - 2rem)); gap: .4rem; }
+      .cell { font-size: 1.4rem; border-width: 1px; border-radius: 8px; }
+      .status { font-size: 0.75rem; }
+      .control-button, .back-link { padding: 0.5rem 1rem; font-size: .6rem; }
+    }
+
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} body::after,.scanlines{animation:none !important} }
+  </style>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+
+<style id="lloamc-staging-style">
+  html { scroll-padding-top: 52px; }
+  body { padding-top: 52px !important; }
+  #lloamc-staging-banner {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 2147483647;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    background: linear-gradient(90deg, #ffbf00, #ff7a00);
+    border-bottom: 3px solid #111;
+    color: #111;
+    font: 800 14px/1.25 Arial, sans-serif;
+    letter-spacing: 0.04em;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+  #lloamc-staging-banner a {
+    color: #111;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    body { padding-top: 70px !important; }
+    #lloamc-staging-banner {
+      min-height: 70px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+<div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
+  <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
+  <a href="../">Open production</a>
+</div>
+
+  <div class="scanlines"></div>
+  <div class="container">
+    <div class="main-content">
+      <h1 class="title">TIC‑TAC‑TOE</h1>
+      <div class="subtitle">Shall we play a game?</div>
+
+      <div id="board" class="board" role="grid" aria-label="Tic‑Tac‑Toe board"></div>
+      <div id="status" class="status" aria-live="polite"></div>
+      <div class="controls">
+        <button id="reset" class="control-button" type="button">Restart</button>
+      </div>
+      <div class="back-row">
+        <a href="index.html" class="back-link">◀ BACK TO HOME</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const AMAZON_URL = 'https://www.amazon.com/dp/B0FP6ZZX63';
+    const WARGAMES_URL = 'https://www.justwatch.com/us/movie/wargames';
+    const HUMAN = 'X';
+    const AI = 'O';
+
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const resetBtn = document.getElementById('reset');
+
+    let board = Array(9).fill(null);
+    let gameOver = false;
+    let gamesPlayed = parseInt(localStorage.getItem('tictactoe_games') || '0', 10);
+
+    const lines = [
+      [0,1,2],[3,4,5],[6,7,8], // rows
+      [0,3,6],[1,4,7],[2,5,8], // cols
+      [0,4,8],[2,4,6]          // diags
+    ];
+
+    function init(){
+      boardEl.innerHTML = '';
+      board = Array(9).fill(null);
+      gameOver = false;
+      updateStatus();
+      for(let i=0;i<9;i++){
+        const cell = document.createElement('button');
+        cell.className = 'cell';
+        cell.setAttribute('role','gridcell');
+        cell.setAttribute('aria-label','Cell '+(i+1));
+        cell.dataset.index = i;
+        cell.addEventListener('click', onHumanMove);
+        cell.addEventListener('keydown', (e)=>{ if((e.key==='Enter'||e.key===' ')&&!gameOver){ e.preventDefault(); onHumanMove({target:cell}); } });
+        boardEl.appendChild(cell);
+      }
+    }
+
+    function updateStatus(){
+      statusEl.textContent = `You are X. Joshua is O. Games played: ${gamesPlayed}`;
+    }
+
+    function onHumanMove(e){
+      const idx = +e.target.dataset.index;
+      if(gameOver || board[idx]) return;
+      playAt(idx, HUMAN);
+      const who = winner(board);
+      if(handleEnd(who)) return;
+      // AI replies after a tiny delay for UX
+      setTimeout(()=>{
+        const move = bestMove(board, AI);
+        if(move!==null){ playAt(move, AI); }
+        handleEnd(winner(board));
+      }, 120);
+    }
+
+    function playAt(idx, player){
+      board[idx] = player;
+      const cell = boardEl.children[idx];
+      cell.textContent = player;
+      cell.setAttribute('aria-disabled','true');
+      playClickSound();
+    }
+
+    function playClickSound(){
+      try {
+        // Create a short beep using Web Audio API
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.frequency.value = 800; // Hz
+        oscillator.type = 'square';
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 0.1);
+        
+        // Clean up audio context after sound completes
+        setTimeout(() => {
+          audioCtx.close().catch(() => {});
+        }, 200);
+      } catch(e) {
+        // Silently fail if audio context fails
+      }
+    }
+
+    function winner(board){
+      // Check all winning combinations (3 in a row: horizontal, vertical, or diagonal)
+      for(const [pos1, pos2, pos3] of lines){
+        if(board[pos1] && board[pos1] === board[pos2] && board[pos1] === board[pos3]){
+          return board[pos1]; // Return 'X' or 'O'
+        }
+      }
+      // Check for draw (all cells filled, no winner)
+      if(board.every(cell => cell !== null)) return 'draw';
+      return null; // Game still in progress
+    }
+
+    function handleEnd(outcome){
+      if(!outcome) return false;
+      if(outcome==='draw'){
+        // Increment counter on each draw
+        gamesPlayed++;
+        localStorage.setItem('tictactoe_games', gamesPlayed);
+        statusEl.textContent = 'Draw. Resetting…';
+        setTimeout(()=>init(), 600);
+        return true;
+      }
+      gameOver = true;
+      if(outcome === AI){
+        statusEl.textContent = 'Joshua wins! Opening Amazon in a new tab…';
+        // Reset counter when Joshua wins (player needs to start over)
+        gamesPlayed = 0;
+        localStorage.setItem('tictactoe_games', gamesPlayed);
+        // Open Amazon in a new tab only; do not navigate current page
+        try { window.open(AMAZON_URL, '_blank', 'noopener,noreferrer'); } catch(e) {}
+        // Reset the board after a delay
+        setTimeout(()=>init(), 1200);
+      } else if(outcome === HUMAN){
+        statusEl.textContent = 'You win! Watch WarGames — opening JustWatch…';
+        // Reset the counter so they have to earn another 25 draws
+        gamesPlayed = 0;
+        localStorage.setItem('tictactoe_games', gamesPlayed);
+        setTimeout(()=>{
+          try { window.open(WARGAMES_URL, '_blank', 'noopener,noreferrer'); } catch(e) {}
+          init();
+        }, 1200);
+      }
+      return true;
+    }
+
+    // Minimax for perfect play (unless it's time to let the player win)
+    function bestMove(b, player){
+      // After 25 draws, Joshua plays suboptimally (avoids winning/blocking moves)
+      if(gamesPlayed >= 25){
+        const empty = [];
+        for(let i=0;i<9;i++) if(!b[i]) empty.push(i);
+        if(!empty.length) return null;
+        
+        // Filter out moves that would win for Joshua or block player from winning
+        const safe = empty.filter(i => {
+          // Check if this move wins for Joshua
+          b[i] = AI;
+          const aiWins = winner(b);
+          b[i] = null;
+          if(aiWins === AI) return false; // Don't take winning moves
+          
+          // Check if this move blocks player from winning
+          b[i] = HUMAN;
+          const humanWins = winner(b);
+          b[i] = null;
+          if(humanWins === HUMAN) return false; // Don't block player wins
+          
+          return true; // This move is "safe" (bad play)
+        });
+        
+        // If all moves are strategic, pick any random move (shouldn't happen often)
+        const choices = safe.length ? safe : empty;
+        return choices[Math.floor(Math.random() * choices.length)];
+      }
+      
+      // First 25 games: Use minimax for perfect play (Joshua never loses)
+      let best = { score: -Infinity, move: null };
+      for(let i=0;i<9;i++){
+        if(!b[i]){
+          b[i] = player;
+          const score = minimax(b, 0, false);
+          b[i] = null;
+          if(score > best.score){ best = { score, move:i }; }
+        }
+      }
+      return best.move;
+    }
+
+    function minimax(b, depth, isMax){
+      const res = winner(b);
+      if(res){
+        if(res===AI) return 10 - depth;
+        if(res===HUMAN) return depth - 10;
+        return 0; // draw
+      }
+      if(isMax){
+        let best = -Infinity;
+        for(let i=0;i<9;i++) if(!b[i]){ b[i]=AI; best = Math.max(best, minimax(b, depth+1, false)); b[i]=null; }
+        return best;
+      } else {
+        let best = Infinity;
+        for(let i=0;i<9;i++) if(!b[i]){ b[i]=HUMAN; best = Math.min(best, minimax(b, depth+1, true)); b[i]=null; }
+        return best;
+      }
+    }
+
+    resetBtn.addEventListener('click', () => {
+      // Reset counter when Restart button is clicked
+      gamesPlayed = 0;
+      localStorage.setItem('tictactoe_games', gamesPlayed);
+      init();
+    });
+    window.addEventListener('DOMContentLoaded', () => {
+      // Reset counter when page loads (including when returning from index.html)
+      gamesPlayed = 0;
+      localStorage.setItem('tictactoe_games', gamesPlayed);
+      init();
+    });
+  </script>
+
+  <!-- Background music continuation -->
+    <script>
+      // No background music on this page.
+    </script>
+</body>
+</html>
