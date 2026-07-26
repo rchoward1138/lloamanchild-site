@@ -1,0 +1,225 @@
+{
+  "meta": {
+    "version": "0.1.0",
+    "updated": "2026-07-25T20:00:00-05:00",
+    "updatedLabel": "July 25, 2026",
+    "dataNote": "Project data is updated from KDP, Amazon Ads, Goodreads, and campaign screenshots supplied by Chris. It is not a live Amazon API feed."
+  },
+  "mission": {
+    "eyebrow": "CURRENT MISSION",
+    "title": "Put the memoir in front of readers who do not already know Chris",
+    "status": "Launch sequence active",
+    "summary": "The first controlled cold-reader test is scheduled: a 99¢ Kindle Countdown Deal supported by a seven-day Sponsored Products campaign. The goal is not instant fame. The goal is clean evidence—impressions, clicks, purchases, pages read, and lessons we can use for the next campaign.",
+    "nextCheckpoint": "Verify the 99¢ Kindle price and first ad impressions on July 28."
+  },
+  "metrics": [
+    {
+      "label": "Lifetime units",
+      "value": "43",
+      "detail": "Confirmed through uploaded KDP reports"
+    },
+    {
+      "label": "Print units",
+      "value": "37",
+      "detail": "22 paperback + 15 hardcover"
+    },
+    {
+      "label": "Kindle units",
+      "value": "6",
+      "detail": "Before the first paid campaign"
+    },
+    {
+      "label": "Amazon reviews",
+      "value": "7 / 20",
+      "detail": "Thirteen legitimate reviews remain"
+    },
+    {
+      "label": "KENP read",
+      "value": "66",
+      "detail": "Kindle Unlimited pages"
+    },
+    {
+      "label": "Active paid tests",
+      "value": "1",
+      "detail": "Kindle Countdown automatic campaign"
+    }
+  ],
+  "reviewGoal": {
+    "current": 7,
+    "goal": 20,
+    "label": "Amazon review milestone",
+    "note": "Twenty reviews is a credibility goal—not a documented Amazon algorithm switch."
+  },
+  "campaign": {
+    "name": "LLMC - Kindle Countdown - Auto - Jul 2026",
+    "status": "Launched and scheduled",
+    "format": "Kindle eBook",
+    "marketplace": "United States",
+    "targeting": "Automatic",
+    "bid": "$0.35",
+    "dailyBudget": "$5.00",
+    "biddingStrategy": "Dynamic bids — down only",
+    "adStart": "2026-07-28",
+    "adEnd": "2026-08-03",
+    "dealStart": "2026-07-28T08:00:00-07:00",
+    "dealEnd": "2026-08-04T08:00:00-07:00",
+    "dealPrice": "$0.99",
+    "regularPrice": "$7.99",
+    "objective": "Measure whether unfamiliar Amazon shoppers will see, click, buy, borrow, or begin reading the memoir when the offer is strong."
+  },
+  "goodreads": {
+    "status": "Waiting on Goodreads Librarians",
+    "problem": "The memoir is incorrectly grouped with two unrelated R.C. Howard books, producing a misleading 2.33 author average.",
+    "action": "A profile-separation request was submitted. Do not claim the mixed profile until a librarian moves the memoir to a clean author page.",
+    "threadUrl": "https://www.goodreads.com/topic/show/24719444-please-separate-r-c-howard-author-profiles-unrelated-books-attached"
+  },
+  "tasks": {
+    "now": [
+      {
+        "title": "Hold the campaign steady",
+        "detail": "Do not change targeting, bid, budget, or advertised format before the campaign begins unless Amazon reports an error."
+      },
+      {
+        "title": "Watch the Goodreads thread",
+        "detail": "Check for a librarian response once daily. No repeated follow-ups yet."
+      },
+      {
+        "title": "Regression-test this staging build",
+        "detail": "Open every staging module, compare it with production, and confirm production remains unchanged."
+      }
+    ],
+    "next": [
+      {
+        "title": "July 28 price verification",
+        "detail": "Confirm the Kindle listing visibly shows $0.99 before announcing the promotion."
+      },
+      {
+        "title": "First campaign telemetry",
+        "detail": "Record impressions, clicks, spend, average CPC, orders, KENP, and budget status after the first full day."
+      },
+      {
+        "title": "Amazon storefront audit",
+        "detail": "Review Author Central, linked formats, description, exact-title search, keywords, categories, Read Sample, and A+ Content."
+      }
+    ],
+    "waiting": [
+      {
+        "title": "Amazon Ads delivery",
+        "detail": "Campaign begins July 28 and ends August 3."
+      },
+      {
+        "title": "Goodreads author split",
+        "detail": "Waiting for a volunteer librarian to separate the unrelated author records."
+      }
+    ]
+  },
+  "milestones": [
+    {
+      "date": "July 25, 2026",
+      "title": "Sponsored Products campaign launched",
+      "detail": "$0.35 default bid, $5 average daily budget, automatic targeting, Kindle only."
+    },
+    {
+      "date": "July 25, 2026",
+      "title": "Goodreads correction request submitted",
+      "detail": "Requested a separate R.C. Howard author profile for the memoir and its three editions."
+    },
+    {
+      "date": "July 24, 2026",
+      "title": "Kindle Countdown Deal scheduled",
+      "detail": "99¢ from July 28 at 8:00 AM PDT through August 4 at 8:00 AM PDT."
+    },
+    {
+      "date": "July 24, 2026",
+      "title": "Lifetime baseline confirmed",
+      "detail": "43 total units: 6 Kindle, 22 paperback, 15 hardcover; 66 KENP."
+    },
+    {
+      "date": "July 25, 2026",
+      "title": "Safe deployment pipeline established",
+      "detail": "Production backup, codex-staging branch, and automatic public-by-link staging preview created."
+    }
+  ],
+  "regression": [
+    {
+      "name": "Homepage",
+      "path": "index.html",
+      "check": "Cover background, central panel, navigation tiles, Amazon button, and hidden cat paw"
+    },
+    {
+      "name": "Cryptogram Puzzle",
+      "path": "cryptogram.html",
+      "check": "Puzzle loads and accepts interaction"
+    },
+    {
+      "name": "Kitty Kids",
+      "path": "kittykids.html",
+      "check": "Cat profiles, images, and navigation work"
+    },
+    {
+      "name": "Tic-Tac-Toe",
+      "path": "tictactoe.html",
+      "check": "Game starts, accepts moves, and resets"
+    },
+    {
+      "name": "Mimaw",
+      "path": "mimaw.html",
+      "check": "Interview content and media controls load"
+    },
+    {
+      "name": "Share Your Life Lessons",
+      "path": "share.html",
+      "check": "Page layout and submission experience remain intact"
+    },
+    {
+      "name": "About the Author",
+      "path": "about.html",
+      "check": "Biography, images, and links display correctly"
+    },
+    {
+      "name": "Man-Childness",
+      "path": "man-childness.html",
+      "check": "Video links or embeds load"
+    },
+    {
+      "name": "Bee-Leaf",
+      "path": "bee-leaf.html",
+      "check": "Interactive story opens and navigation works"
+    },
+    {
+      "name": "More Life Lessons",
+      "path": "more.html",
+      "check": "Recent stories, chapter links, and layout load"
+    },
+    {
+      "name": "Jumpin' Punkin'",
+      "path": "cat-library-runner.html",
+      "check": "Hidden cat-paw game loads and responds"
+    },
+    {
+      "name": "Mission Control",
+      "path": "mission-control.html",
+      "check": "Dashboard data, countdown, tasks, links, and test controls work"
+    }
+  ],
+  "captainsLog": [
+    {
+      "date": "July 25, 2026",
+      "entry": "Launched the first paid campaign after establishing billing, automatic targeting, a $0.35 down-only bid, and a $5 average daily budget."
+    },
+    {
+      "date": "July 25, 2026",
+      "entry": "Discovered the Goodreads author collision and submitted a formal librarian correction request before promoting the profile."
+    },
+    {
+      "date": "July 25, 2026",
+      "entry": "Replaced the old local-only staging dependency with a GitHub-based review pipeline. Production remains at the permanent URL printed in the book."
+    }
+  ],
+  "links": {
+    "stagingHome": "./index.html",
+    "productionHome": "../",
+    "amazonKindle": "https://www.amazon.com/dp/B0FP6ZZX63",
+    "goodreadsThread": "https://www.goodreads.com/topic/show/24719444-please-separate-r-c-howard-author-profiles-unrelated-books-attached"
+  }
+}
