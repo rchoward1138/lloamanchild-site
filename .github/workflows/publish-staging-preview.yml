@@ -1,0 +1,141 @@
+name: Publish staging preview
+
+on:
+  push:
+    branches:
+      - codex-staging
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-staging-preview
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out production branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          path: production
+
+      - name: Check out staging branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex-staging
+          fetch-depth: 1
+          path: staging-source
+
+      - name: Build public-by-link staging preview
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf production/staging
+          mkdir -p production/staging
+
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='staging/' \
+            staging-source/ production/staging/
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          preview_root = Path('production/staging')
+          marker = 'data-lloamc-staging-banner="true"'
+          meta = '<meta name="robots" content="noindex, nofollow, noarchive">'
+          style = '''
+          <style id="lloamc-staging-style">
+            html { scroll-padding-top: 52px; }
+            body { padding-top: 52px !important; }
+            #lloamc-staging-banner {
+              position: fixed;
+              inset: 0 0 auto 0;
+              z-index: 2147483647;
+              min-height: 52px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.75rem;
+              padding: 0.65rem 1rem;
+              background: linear-gradient(90deg, #ffbf00, #ff7a00);
+              border-bottom: 3px solid #111;
+              color: #111;
+              font: 800 14px/1.25 Arial, sans-serif;
+              letter-spacing: 0.04em;
+              text-align: center;
+              box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+            }
+            #lloamc-staging-banner a {
+              color: #111;
+              text-decoration: underline;
+              white-space: nowrap;
+            }
+            @media (max-width: 640px) {
+              body { padding-top: 70px !important; }
+              #lloamc-staging-banner {
+                min-height: 70px;
+                flex-wrap: wrap;
+                font-size: 12px;
+              }
+            }
+          </style>
+          '''
+          banner = '''
+          <div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
+            <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
+            <a href="../">Open production</a>
+          </div>
+          '''
+
+          for page in preview_root.rglob('*.html'):
+              text = page.read_text(encoding='utf-8', errors='replace')
+
+              if meta not in text:
+                  if '</head>' in text:
+                      text = text.replace('</head>', f'    {meta}\n{style}\n</head>', 1)
+                  else:
+                      text = f'{meta}\n{style}\n{text}'
+
+              if marker not in text:
+                  if '<body>' in text:
+                      text = text.replace('<body>', f'<body>\n{banner}', 1)
+                  elif '<body ' in text:
+                      body_end = text.find('>', text.find('<body '))
+                      if body_end != -1:
+                          text = text[:body_end + 1] + '\n' + banner + text[body_end + 1:]
+
+              page.write_text(text, encoding='utf-8')
+          PY
+
+          cat > production/staging/STAGING-INFO.txt <<'EOF'
+          This folder is generated automatically from the codex-staging branch.
+          Do not edit these generated files directly on main.
+          Production remains at the repository root.
+          EOF
+
+      - name: Commit preview to production branch
+        shell: bash
+        working-directory: production
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add staging
+
+          if git diff --cached --quiet; then
+            echo "Staging preview is already current."
+            exit 0
+          fi
+
+          git commit -m "chore: publish staging preview"
+          git push origin main
