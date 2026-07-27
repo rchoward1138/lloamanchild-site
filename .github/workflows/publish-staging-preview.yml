@@ -106,6 +106,74 @@ jobs:
                           text = text[:body_end + 1] + '\n' + banner + text[body_end + 1:]
 
               page.write_text(text, encoding='utf-8')
+
+          # The MC control is an owner convenience, not the security boundary.
+          # It appears only after a one-time browser activation; Cloudflare Access
+          # still protects the destination even if someone discovers the URL.
+          home = preview_root / 'index.html'
+          if home.exists():
+              text = home.read_text(encoding='utf-8', errors='replace')
+              mc_marker = 'data-lloamc-private-mc="true"'
+              mc_style = '''
+              <style id="lloamc-private-mc-style">
+                #lloamc-private-mc {
+                  position: fixed;
+                  left: 1.25rem;
+                  bottom: 1.25rem;
+                  z-index: 21;
+                  width: 42px;
+                  height: 42px;
+                  display: none;
+                  align-items: center;
+                  justify-content: center;
+                  border: 1px solid rgba(36, 246, 255, 0.5);
+                  border-radius: 50%;
+                  background: rgba(5, 7, 20, 0.78);
+                  color: #24f6ff;
+                  font: 800 11px/1 'Orbitron', Arial, sans-serif;
+                  letter-spacing: 0.08em;
+                  text-decoration: none;
+                  opacity: 0.18;
+                  box-shadow: 0 0 10px rgba(36, 246, 255, 0.18);
+                  transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+                }
+                #lloamc-private-mc[data-enabled="true"] { display: flex; }
+                #lloamc-private-mc:hover,
+                #lloamc-private-mc:focus-visible {
+                  opacity: 0.9;
+                  transform: translateY(-2px) scale(1.04);
+                  box-shadow: 0 0 18px rgba(36, 246, 255, 0.55);
+                  outline: 2px solid #24f6ff;
+                  outline-offset: 2px;
+                }
+              </style>
+              '''
+              mc_html = '''
+              <a id="lloamc-private-mc" data-lloamc-private-mc="true" href="https://codex-staging.lloamc-mission-control.pages.dev/" target="_blank" rel="noopener noreferrer" aria-label="Open private Mission Control">MC</a>
+              <script id="lloamc-private-mc-script">
+              (() => {
+                const key = 'lloamc-private-mc-enabled';
+                const url = new URL(window.location.href);
+                if (url.searchParams.get('enableMC') === '1') {
+                  localStorage.setItem(key, '1');
+                  url.searchParams.delete('enableMC');
+                  history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
+                }
+                if (url.searchParams.get('disableMC') === '1') {
+                  localStorage.removeItem(key);
+                  url.searchParams.delete('disableMC');
+                  history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
+                }
+                const link = document.getElementById('lloamc-private-mc');
+                if (link && localStorage.getItem(key) === '1') link.dataset.enabled = 'true';
+              })();
+              </script>
+              '''
+
+              if mc_marker not in text:
+                  text = text.replace('</head>', f'{mc_style}\n</head>', 1)
+                  text = text.replace('</body>', f'{mc_html}\n</body>', 1)
+                  home.write_text(text, encoding='utf-8')
           PY
 
           cat > production/staging/STAGING-INFO.txt <<'EOF'
