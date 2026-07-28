@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grid Duel: Tic-Tac-Toe</title>
-  <meta name="description" content="Enter an animated neon-grid Tic-Tac-Toe duel against the MCP. Survive the system and claim your reward.">
-  <meta property="og:title" content="Grid Duel: Tic-Tac-Toe">
-  <meta property="og:description" content="An original 1980s digital-grid arcade duel from the world of Life Lessons of a Man-Child.">
+  <title>Joshua's Grid Duel: Tic-Tac-Toe</title>
+  <meta name="description" content="Challenge Joshua, the WOPR intelligence operating through an MCP-style Grid shell, in animated neon Tic-Tac-Toe.">
+  <meta property="og:title" content="Joshua's Grid Duel: Tic-Tac-Toe">
+  <meta property="og:description" content="A WarGames-meets-digital-Grid arcade duel from the world of Life Lessons of a Man-Child.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="Book-Cover.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -525,6 +525,33 @@
     }
     .result-link.secondary { color: var(--cyan-soft); }
 
+    .wopr-link {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 13px;
+      padding: 8px 11px;
+      border: 1px solid rgba(124,255,155,.34);
+      border-radius: 7px;
+      color: #7cff9b;
+      background: rgba(2, 18, 13, .7);
+      box-shadow: inset 0 0 14px rgba(124,255,155,.05), 0 0 14px rgba(124,255,155,.06);
+      font: 700 clamp(.52rem, 1.35vw, .66rem)/1.45 'Roboto Mono', monospace;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+    .wopr-link span:not(.wopr-dot) { color: rgba(124,255,155,.48); }
+    .wopr-dot {
+      width: 8px;
+      height: 8px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #7cff9b;
+      box-shadow: 0 0 12px #7cff9b;
+      animation: pulseGlow 1.35s ease-in-out infinite;
+    }
+
     @media (max-width: 900px) {
       .arena-grid { grid-template-columns: 1fr 1.25fr; }
       .combatant { min-height: auto; }
@@ -585,45 +612,20 @@
 <style id="lloamc-staging-style">
   html { scroll-padding-top: 52px; }
   body { padding-top: 52px !important; }
-  #lloamc-staging-banner {
-    position: fixed;
-    inset: 0 0 auto 0;
-    z-index: 2147483647;
-    min-height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.65rem 1rem;
-    background: linear-gradient(90deg, #ffbf00, #ff7a00);
-    border-bottom: 3px solid #111;
-    color: #111;
-    font: 800 14px/1.25 Arial, sans-serif;
-    letter-spacing: 0.04em;
-    text-align: center;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  }
-  @media (max-width: 640px) {
-    body { padding-top: 64px !important; }
-    #lloamc-staging-banner {
-      min-height: 64px;
-      font-size: 12px;
-    }
-  }
+  #lloamc-staging-banner { position: fixed; inset: 0 0 auto 0; z-index: 2147483647; min-height: 52px; display: flex; align-items: center; justify-content: center; padding: .65rem 1rem; background: linear-gradient(90deg,#ffbf00,#ff7a00); border-bottom: 3px solid #111; color:#111; font:800 14px/1.25 Arial,sans-serif; letter-spacing:.04em; text-align:center; box-shadow:0 4px 16px rgba(0,0,0,.35); }
+  @media(max-width:640px){ body{padding-top:64px!important} #lloamc-staging-banner{min-height:64px;font-size:12px} }
 </style>
 
 </head>
 <body>
-
-<div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
-  <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
-</div>
-
+<div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status"><span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span></div>
   <main class="shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">LLoaMC Arcade Program // Sector 82</p>
+        <p class="eyebrow">WOPR Simulation Link // Sector 82</p>
         <h1>GRID DUEL</h1>
-        <p class="subtitle">Tic-Tac-Toe against the MCP</p>
+        <p class="subtitle">Tic-Tac-Toe against Joshua</p>
+        <div class="wopr-link" role="status"><span class="wopr-dot" aria-hidden="true"></span>WOPR ONLINE <span>//</span> JOSHUA <span>//</span> MCP GRID SHELL</div>
       </div>
       <button id="sound-toggle" class="sound-button" type="button" aria-pressed="true">Sound: Armed</button>
     </header>
@@ -657,7 +659,7 @@
         <section class="center-console">
           <div class="integrity" aria-label="Grid integrity">
             <div class="integrity-row">
-              <span>GRID INTEGRITY</span>
+              <span>GRID SIMULATION INTEGRITY</span>
               <span id="integrity-value">100%</span>
             </div>
             <div class="integrity-track" aria-hidden="true">
@@ -675,7 +677,7 @@
             <button id="reset" class="control-button" type="button">Reboot Grid</button>
             <a href="index.html" class="back-link">Exit Arena</a>
           </div>
-          <p class="system-note">MCP countermeasures adapt after every completed grid. Persistence may reveal an anomaly.</p>
+          <p class="system-note">Joshua's MCP countermeasures adapt after every completed grid. Persistence may reveal the flaw in the simulation.</p>
         </section>
 
         <article class="combatant mcp">
@@ -697,9 +699,9 @@
             </svg>
           </div>
           <div>
-            <p class="combatant-label">MASTER CONTROL PROGRAM</p>
-            <h2>MCP</h2>
-            <p>Perfect strategy. Relentless countermeasures. No known mercy protocol.</p>
+            <p class="combatant-label">WOPR GAME PROGRAM // MCP SHELL</p>
+            <h2>JOSHUA</h2>
+            <p>Perfect game strategy operating through a relentless Master Control Program shell.</p>
           </div>
         </article>
       </div>
@@ -708,9 +710,9 @@
 
   <section id="intro-gate" class="intro-gate" aria-labelledby="gate-title">
     <div class="gate-card">
-      <p class="gate-code">SYSTEM HANDSHAKE // ORIGINAL GRID SCORE ENABLED</p>
-      <h2 id="gate-title">ENTER THE GRID</h2>
-      <p>You are the DISC program. The MCP controls the arena. The soundtrack and effects are an original synth composition generated inside your browser.</p>
+      <p class="gate-code">WOPR LINK ESTABLISHED // MCP GRID SHELL ONLINE</p>
+      <h2 id="gate-title">SHALL WE PLAY A GAME?</h2>
+      <p>You are the DISC program. Joshua is the WOPR intelligence controlling this arena through an MCP-style Grid shell. The soundtrack and effects are an original synth composition generated inside your browser.</p>
       <button id="enter-grid" class="enter-button" type="button">Initialize Duel</button>
     </div>
   </section>
@@ -756,7 +758,7 @@
       const AMAZON_URL = 'https://www.amazon.com/dp/B0FP6ZZX63';
       const WARGAMES_URL = 'https://www.justwatch.com/us/movie/wargames';
       const HUMAN = 'DISC';
-      const AI = 'MCP';
+      const AI = 'JOSHUA';
       const DRAW_THRESHOLD = 25;
       const MUSIC_PREF_KEY = 'grid_duel_sound';
       const DRAW_KEY = 'tictactoe_games';
@@ -938,7 +940,7 @@
         const percent = integrityPercent();
         document.documentElement.style.setProperty('--integrity', `${percent}%`);
         integrityValue.textContent = percent <= 0 ? 'CRITICAL' : `${percent}%`;
-        if (percent <= 0) statusEl.textContent = 'SYSTEM ANOMALY DETECTED. MCP response matrix destabilizing.';
+        if (percent <= 0) statusEl.textContent = 'SYSTEM ANOMALY DETECTED. Joshua response matrix destabilizing.';
         else if (percent <= 28) statusEl.textContent = 'Grid instability rising. Continue the duel.';
       }
 
@@ -949,7 +951,7 @@
         }
         statusEl.textContent = integrityPercent() <= 0
           ? 'SYSTEM ANOMALY DETECTED. Your move, DISC.'
-          : 'Your move, DISC. MCP countermeasures are active.';
+          : "Your move, DISC. Joshua's MCP countermeasures are active.";
       }
 
       function buildBoard() {
@@ -1008,15 +1010,15 @@
         if (outcome === HUMAN) {
           resultCard.classList.add('human-result');
           resultCode.textContent = 'ANOMALY CONFIRMED // USER PROGRAM VICTORIOUS';
-          resultTitle.textContent = 'MCP DEFEATED';
-          resultCopy.textContent = 'You found the flaw in the system. Your prize is a passage out of the Grid and into one of the greatest computer-game movies of the 1980s.';
+          resultTitle.textContent = 'JOSHUA CONCEDES';
+          resultCopy.textContent = "You found the flaw in Joshua's simulation. Your prize is a passage out of the Grid and into one of the greatest computer-game movies of the 1980s.";
           resultDestination.href = WARGAMES_URL;
           resultDestination.textContent = 'Watch WarGames';
         } else {
           resultCard.classList.add('mcp-result');
-          resultCode.textContent = 'PROGRAM DEREZZED // MCP VICTORIOUS';
-          resultTitle.textContent = 'END OF LINE';
-          resultCopy.textContent = 'The MCP has terminated your program. Regroup with Life Lessons of a Man-Child before attempting another breach.';
+          resultCode.textContent = 'PROGRAM DEREZZED // JOSHUA VICTORIOUS';
+          resultTitle.textContent = 'JOSHUA WINS';
+          resultCopy.textContent = "Joshua's MCP shell has terminated your program. Regroup with Life Lessons of a Man-Child before attempting another simulation.";
           resultDestination.href = AMAZON_URL;
           resultDestination.textContent = 'Buy the Book';
         }
@@ -1033,7 +1035,7 @@
           playEndSound('draw');
           updateIntegrity();
           const percent = integrityPercent();
-          updateStatus(percent <= 0 ? 'DRAW. Grid integrity collapsed. MCP vulnerability exposed.' : `DRAW. Grid integrity reduced to ${percent}%. Reinitializing…`);
+          updateStatus(percent <= 0 ? 'DRAW. Grid integrity collapsed. Joshua vulnerability exposed.' : `DRAW. Grid integrity reduced to ${percent}%. Reinitializing…`);
           window.setTimeout(buildBoard, 880);
           return true;
         }
@@ -1042,7 +1044,7 @@
         markWinningLine(result.line);
         derezLosingPieces(result.outcome);
         playEndSound(result.outcome);
-        updateStatus(result.outcome === HUMAN ? 'Impossible result: user program has breached the MCP.' : 'MCP victory. User program derezzed.');
+        updateStatus(result.outcome === HUMAN ? 'Joshua has recognized the flaw in the simulation.' : 'Joshua victory. User program derezzed.');
         resetSequence();
         window.setTimeout(() => showResult(result.outcome), 900);
         return true;
@@ -1056,7 +1058,7 @@
         playAt(index, HUMAN);
         const humanResult = winner(board);
         if (handleEnd(humanResult)) return;
-        updateStatus('MCP calculating countermeasure…');
+        updateStatus('Joshua calculating MCP countermeasure…');
         window.setTimeout(() => {
           if (gameOver) return;
           const move = bestMove(board, AI);

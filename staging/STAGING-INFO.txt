@@ -1,3 +1,1 @@
-This folder is generated automatically from the codex-staging branch.
-Do not edit these generated files directly on main.
-Production remains at the repository root.
+Generated from codex-staging. Production remains at repository root.
