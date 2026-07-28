@@ -3,105 +3,582 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tic‑Tac‑Toe - Shall We Play a Game?</title>
-  <!-- Social/OG meta -->
-  <meta name="description" content="Play Tic‑Tac‑Toe in a neon retro theme. Win and head to Amazon to grab Life Lessons of a Man‑Child.">
-  <meta property="og:title" content="Tic‑Tac‑Toe - Shall We Play a Game?">
-  <meta property="og:description" content="A retro Tic‑Tac‑Toe homage. Win and jump to the book on Amazon.">
+  <title>Grid Duel: Tic-Tac-Toe</title>
+  <meta name="description" content="Enter an animated neon-grid Tic-Tac-Toe duel against the MCP. Survive the system and claim your reward.">
+  <meta property="og:title" content="Grid Duel: Tic-Tac-Toe">
+  <meta property="og:description" content="An original 1980s digital-grid arcade duel from the world of Life Lessons of a Man-Child.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="Book-Cover.png">
-  <meta property="og:image:alt" content="Life Lessons of a Man‑Child book cover">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Tic‑Tac‑Toe - Shall We Play a Game?">
-  <meta name="twitter:description" content="A retro Tic‑Tac‑Toe homage. Win and jump to the book on Amazon.">
-  <meta name="twitter:image" content="Book-Cover.png">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Press+Start+2P&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      color-scheme: dark;
+      --void: #020510;
+      --panel: rgba(3, 10, 24, 0.88);
+      --panel-strong: rgba(3, 8, 20, 0.97);
+      --cyan: #22f7ff;
+      --cyan-soft: #8bfbff;
+      --blue: #2b7cff;
+      --amber: #ffae35;
+      --red: #ff3a45;
+      --yellow: #ffe85c;
+      --white: #f4fbff;
+      --muted: #9ab5c8;
+      --grid-size: 54px;
+      --integrity: 100%;
+    }
+
+    * { box-sizing: border-box; }
+    html { min-height: 100%; }
+
     body {
-      font-family: 'Roboto', sans-serif;
-      background-image: url('PaperbackCoverFinal.png'), url('Book-Cover.png');
-      background-repeat: no-repeat; background-position: center center; background-attachment: fixed; background-size: cover;
-      min-height: 100vh; position: relative; overflow-x: hidden;
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(30, 103, 255, 0.18), transparent 35%),
+        radial-gradient(circle at 12% 75%, rgba(34, 247, 255, 0.11), transparent 36%),
+        linear-gradient(180deg, #05091a 0%, #01030a 72%);
+      font-family: 'Roboto Mono', monospace;
     }
-    /* Overlays */
-    body::before { content: ''; position: fixed; inset: 0; z-index: 1;
-      background: linear-gradient(rgba(20,0,40,0.55), rgba(40,0,80,0.55)),
-                  radial-gradient(circle at 50% 50%, rgba(255,0,150,0.05) 0%, transparent 50%);
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -15%;
+      z-index: -3;
+      background:
+        linear-gradient(rgba(34, 247, 255, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 247, 255, 0.055) 1px, transparent 1px);
+      background-size: var(--grid-size) var(--grid-size);
+      transform: perspective(520px) rotateX(63deg) translateY(24%);
+      transform-origin: 50% 100%;
+      animation: horizonFlow 8s linear infinite;
     }
-    body::after { content: ''; position: fixed; inset: 0; z-index: 2; pointer-events: none;
-      background-image: linear-gradient(rgba(0,255,255,0.06) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(0,255,255,0.06) 1px, transparent 1px);
-      background-size: 50px 50px; animation: gridMove 20s linear infinite;
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0.22;
+      mix-blend-mode: screen;
+      background: repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(103, 223, 255, 0.055) 4px, transparent 5px);
     }
-    @keyframes gridMove { 0%{transform:translate(0,0)} 100%{transform:translate(50px,50px)} }
-    .scanlines { position: fixed; inset: 0; z-index: 3; pointer-events: none;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.02) 2px, rgba(0,255,255,0.02) 4px);
-      animation: scanlineFlicker 0.1s linear infinite; }
-    @keyframes scanlineFlicker { 0%,99%{opacity:1} 100%{opacity:0.98} }
 
-    .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; padding: 1rem; min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    @keyframes horizonFlow { to { background-position: 0 var(--grid-size); } }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.56; filter: brightness(0.86); }
+      50% { opacity: 1; filter: brightness(1.22); }
+    }
+    @keyframes titleBreathe {
+      0%, 100% { text-shadow: 0 0 10px rgba(34,247,255,.65), 0 0 32px rgba(43,124,255,.38); }
+      50% { text-shadow: 0 0 15px rgba(34,247,255,1), 0 0 50px rgba(43,124,255,.65); }
+    }
+    @keyframes arenaTrace {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(320%); }
+    }
+    @keyframes deployDisc {
+      0% { transform: scale(0.08) rotate(-210deg); opacity: 0; filter: blur(10px); }
+      65% { transform: scale(1.12) rotate(14deg); opacity: 1; filter: blur(0); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    @keyframes deployMcp {
+      0% { transform: scaleY(0.05) scaleX(1.5); opacity: 0; filter: blur(8px); }
+      70% { transform: scaleY(1.12) scaleX(.94); opacity: 1; filter: blur(0); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes winFlash {
+      0%, 100% { box-shadow: inset 0 0 22px rgba(255,255,255,.05), 0 0 18px var(--win-color); }
+      50% { box-shadow: inset 0 0 55px var(--win-color), 0 0 42px var(--win-color); }
+    }
+    @keyframes derez {
+      0% { transform: scale(1); filter: brightness(1); opacity: 1; }
+      55% { transform: scale(1.07); filter: brightness(2.4) saturate(0); opacity: .92; }
+      100% { transform: scale(.78); filter: blur(12px) brightness(3); opacity: 0; }
+    }
+    @keyframes modalIn {
+      from { transform: translateY(28px) scale(.94); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
 
-    .main-content { background: rgba(0,0,0,0.6); border: 2px solid #00ffff; border-radius: 10px; padding: 1.5rem; text-align: center;
-      box-shadow: 0 0 20px rgba(0,255,255,0.35), inset 0 0 20px rgba(0,255,255,0.08); backdrop-filter: blur(2px);
-      animation: borderGlow 2s ease-in-out infinite alternate; width: 100%; max-width: 100%; }
-    @keyframes borderGlow { 0%{box-shadow:0 0 20px rgba(0,255,255,0.35), inset 0 0 20px rgba(0,255,255,0.08)} 100%{box-shadow:0 0 30px rgba(0,255,255,0.6), inset 0 0 30px rgba(0,255,255,0.12)} }
+    .shell {
+      position: relative;
+      width: min(1100px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 42px;
+    }
 
-    .title { font-family: 'Orbitron', monospace; font-size: 2.2rem; font-weight: 900; color: #00ffff;
-      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff; margin-bottom: .5rem; animation: titlePulse 3s ease-in-out infinite; }
-    @keyframes titlePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
 
-    .subtitle { font-family: 'Press Start 2P', monospace; font-size: .7rem; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; margin-bottom: 1.5rem; letter-spacing: 1px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--yellow);
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(.54rem, 1.5vw, .72rem);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
 
-    .board { width: min(320px, calc(100vw - 4rem)); margin: 0 auto 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
-    .cell { position: relative; aspect-ratio: 1 / 1; background: rgba(0,0,0,0.75); border: 2px solid #00ffff; border-radius: 10px;
-      box-shadow: 0 0 12px rgba(0,255,255,0.35), inset 0 0 10px rgba(0,255,255,0.08); display: flex; align-items: center; justify-content: center;
-      font-family: 'Press Start 2P', monospace; font-size: 2.2rem; color: #00ffff; cursor: pointer; user-select: none; transition: transform .1s ease; }
-    .cell:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,255,255,0.45), inset 0 0 14px rgba(0,255,255,0.15); }
-    .cell[aria-disabled="true"] { cursor: default; opacity: .75; }
+    h1 {
+      margin: 0;
+      color: var(--cyan);
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.1rem, 7vw, 5.4rem);
+      font-weight: 900;
+      line-height: .92;
+      letter-spacing: .03em;
+      animation: titleBreathe 3.4s ease-in-out infinite;
+    }
 
-    .status { color: #ffffff; font-family: 'Roboto', sans-serif; margin: .6rem 0 1rem; min-height: 1.2rem; font-size: 0.9rem; }
+    .subtitle {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: clamp(.78rem, 2vw, 1.05rem);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
 
-    .controls { display: flex; gap: .8rem; justify-content: center; margin-top: .5rem; flex-wrap: wrap; }
-    .control-button, .back-link { display: inline-block; padding: 0.7rem 1.6rem; background: linear-gradient(45deg, #1a0033, #330066);
-      border: 2px solid #00ffff; border-radius: 25px; color: #00ffff; font-family: 'Press Start 2P', monospace; font-size: .75rem; text-decoration: none;
-      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; transition: all .25s ease; white-space: nowrap; }
-    .control-button:hover, .back-link:hover { background: linear-gradient(45deg, #ff00ff, #330066); color: #ff00ff; border-color: #ff00ff; box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
-    .back-row {
+    .sound-button,
+    .control-button,
+    .back-link,
+    .result-link {
+      appearance: none;
+      border: 1px solid rgba(34, 247, 255, .62);
+      border-radius: 999px;
+      color: var(--cyan-soft);
+      background: linear-gradient(180deg, rgba(12, 35, 61, .92), rgba(2, 11, 24, .96));
+      box-shadow: 0 0 16px rgba(34, 247, 255, .15), inset 0 0 12px rgba(34, 247, 255, .06);
+      font: 700 .72rem/1 'Orbitron', sans-serif;
+      letter-spacing: .08em;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+    }
+
+    .sound-button { min-width: 144px; padding: 13px 16px; }
+    .sound-button:hover,
+    .sound-button:focus-visible,
+    .control-button:hover,
+    .control-button:focus-visible,
+    .back-link:hover,
+    .back-link:focus-visible,
+    .result-link:hover,
+    .result-link:focus-visible {
+      color: #fff;
+      border-color: var(--yellow);
+      transform: translateY(-2px);
+      box-shadow: 0 0 24px rgba(255, 232, 92, .3), inset 0 0 16px rgba(255, 232, 92, .08);
+      outline: none;
+    }
+
+    .arena-panel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(34, 247, 255, .55);
+      border-radius: 24px;
+      background: linear-gradient(145deg, rgba(11, 35, 59, .24), transparent 40%), var(--panel);
+      box-shadow: 0 0 40px rgba(34, 247, 255, .12), inset 0 0 50px rgba(43, 124, 255, .08);
+      backdrop-filter: blur(10px);
+    }
+
+    .arena-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 38%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      box-shadow: 0 0 18px var(--cyan);
+      animation: arenaTrace 4.3s linear infinite;
+    }
+
+    .arena-grid {
+      display: grid;
+      grid-template-columns: minmax(250px, .7fr) minmax(340px, 1.25fr) minmax(250px, .7fr);
+      gap: 22px;
+      padding: clamp(18px, 3vw, 34px);
+      align-items: center;
+    }
+
+    .combatant {
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 330px;
+      padding: 22px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      background: rgba(0, 4, 13, .64);
+    }
+
+    .combatant.player { border-color: rgba(34, 247, 255, .28); }
+    .combatant.mcp { border-color: rgba(255, 58, 69, .34); }
+    .combatant-label {
+      margin: 0 0 12px;
+      font: 700 .66rem/1.4 'Press Start 2P', monospace;
+      letter-spacing: .08em;
+    }
+    .player .combatant-label { color: var(--cyan); }
+    .mcp .combatant-label { color: var(--red); }
+
+    .avatar {
+      display: grid;
+      place-items: center;
+      min-height: 160px;
+      margin-bottom: 14px;
+    }
+
+    .avatar svg {
+      width: min(170px, 100%);
+      height: auto;
+      filter: drop-shadow(0 0 16px currentColor);
+    }
+
+    .player .avatar { color: var(--cyan); }
+    .mcp .avatar { color: var(--red); }
+
+    .combatant h2 {
+      margin: 0 0 9px;
+      font: 900 clamp(1.3rem, 3vw, 2rem)/1 'Orbitron', sans-serif;
+      letter-spacing: .08em;
+    }
+
+    .combatant p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.55;
+    }
+
+    .center-console { min-width: 0; }
+
+    .integrity {
+      margin-bottom: 16px;
+      padding: 14px 15px;
+      border: 1px solid rgba(255, 232, 92, .28);
+      border-radius: 14px;
+      background: rgba(12, 11, 28, .78);
+    }
+
+    .integrity-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--yellow);
+      font: 700 .67rem/1.2 'Press Start 2P', monospace;
+    }
+
+    .integrity-track {
+      position: relative;
+      height: 12px;
+      margin-top: 11px;
+      overflow: hidden;
+      border: 1px solid rgba(34,247,255,.45);
+      border-radius: 99px;
+      background: rgba(0, 0, 0, .72);
+    }
+
+    .integrity-fill {
+      width: var(--integrity);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--red), var(--amber), var(--yellow), var(--cyan));
+      box-shadow: 0 0 18px currentColor;
+      transition: width .65s cubic-bezier(.2,.75,.2,1);
+    }
+
+    .board-wrap {
+      position: relative;
+      width: min(430px, 100%);
+      margin: 0 auto;
+      padding: 15px;
+      border: 1px solid rgba(34,247,255,.42);
+      border-radius: 22px;
+      background: radial-gradient(circle, rgba(34,247,255,.10) 1px, transparent 1px), rgba(0, 2, 10, .9);
+      background-size: 17px 17px;
+      box-shadow: inset 0 0 42px rgba(34,247,255,.08), 0 0 28px rgba(34,247,255,.11);
+    }
+
+    .board-wrap::before,
+    .board-wrap::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan), 0 0 22px rgba(34,247,255,.55);
+      opacity: .9;
+    }
+
+    .board-wrap::before {
+      top: 8px;
+      left: 18px;
+      width: 42%;
+      height: 2px;
+      animation: pulseGlow 1.8s ease-in-out infinite;
+    }
+
+    .board-wrap::after {
+      right: 8px;
+      bottom: 18px;
+      width: 2px;
+      height: 42%;
+      animation: pulseGlow 1.8s .7s ease-in-out infinite;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      padding: 6px;
+      border-radius: 14px;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan), 0 0 34px rgba(34,247,255,.58);
+    }
+
+    .cell {
+      position: relative;
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1;
+      min-width: 0;
+      overflow: hidden;
+      border: 0;
+      border-radius: 9px;
+      background: linear-gradient(135deg, rgba(7,21,45,.97), rgba(1,4,13,.99)), #02050d;
+      color: #fff;
+      cursor: pointer;
+      isolation: isolate;
+      box-shadow: inset 0 0 20px rgba(34,247,255,.08);
+      transition: filter .16s ease, transform .16s ease, background .16s ease;
+    }
+
+    .cell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: .42;
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(34,247,255,.12) 50%, transparent 52%),
+        linear-gradient(transparent 48%, rgba(34,247,255,.12) 50%, transparent 52%);
+      background-size: 22px 22px;
+    }
+
+    .cell:hover:not([aria-disabled="true"]),
+    .cell:focus-visible:not([aria-disabled="true"]) {
+      transform: translateY(-2px);
+      filter: brightness(1.35);
+      outline: 2px solid var(--yellow);
+      outline-offset: -5px;
+    }
+
+    .cell[aria-disabled="true"] { cursor: default; }
+    .piece {
+      width: 74%;
+      height: 74%;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+    .piece svg { width: 100%; height: 100%; overflow: visible; }
+    .piece.disc { color: var(--cyan); animation: deployDisc .48s cubic-bezier(.2,.85,.25,1.15) both; }
+    .piece.mcp { color: var(--red); animation: deployMcp .44s cubic-bezier(.2,.85,.25,1.15) both; }
+    .cell.winning { --win-color: var(--yellow); animation: winFlash .52s ease-in-out 3; }
+    .cell.derezzed .piece { animation: derez .7s ease-in forwards; }
+
+    .status {
+      min-height: 58px;
+      margin: 14px auto 0;
+      display: grid;
+      place-items: center;
+      padding: 12px 14px;
+      border: 1px solid rgba(34,247,255,.25);
+      border-radius: 13px;
+      color: var(--cyan-soft);
+      background: rgba(0, 3, 12, .82);
       text-align: center;
-      margin-top: 2rem;
+      font-size: clamp(.74rem, 1.8vw, .92rem);
+      line-height: 1.5;
+      letter-spacing: .04em;
     }
 
-    /* Responsive styles for narrow screens (folded phones) */
-    @media (max-width: 480px){ 
-      .container { padding: 0.5rem; }
-      .main-content { padding: 1rem; }
-      .title { font-size: 1.5rem; }
-      .subtitle { font-size: .55rem; }
-      .board { width: min(280px, calc(100vw - 3rem)); gap: .5rem; }
-      .cell { font-size: 1.6rem; border-width: 1.5px; }
-      .status { font-size: 0.8rem; }
-      .control-button, .back-link { padding: 0.6rem 1.2rem; font-size: .65rem; }
-    }
-    
-    /* Extra narrow screens (very small phones, folded devices) */
-    @media (max-width: 360px){ 
-      .container { padding: 0.25rem; }
-      .main-content { padding: 0.75rem; }
-      .title { font-size: 1.2rem; }
-      .subtitle { font-size: .5rem; margin-bottom: 1rem; }
-      .board { width: min(240px, calc(100vw - 2rem)); gap: .4rem; }
-      .cell { font-size: 1.4rem; border-width: 1px; border-radius: 8px; }
-      .status { font-size: 0.75rem; }
-      .control-button, .back-link { padding: 0.5rem 1rem; font-size: .6rem; }
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
     }
 
-    /* Reduced motion preference */
-    @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} body::after,.scanlines{animation:none !important} }
+    .control-button, .back-link, .result-link { padding: 12px 18px; }
+    .system-note {
+      margin: 14px 0 0;
+      color: #7895aa;
+      font-size: .66rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .intro-gate,
+    .result-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 2, 9, .88);
+      backdrop-filter: blur(15px);
+    }
+
+    .intro-gate[hidden], .result-overlay[hidden] { display: none; }
+    .gate-card,
+    .result-card {
+      width: min(680px, 100%);
+      padding: clamp(24px, 5vw, 48px);
+      border: 1px solid rgba(34,247,255,.62);
+      border-radius: 24px;
+      background: var(--panel-strong);
+      box-shadow: 0 0 60px rgba(34,247,255,.18), inset 0 0 32px rgba(43,124,255,.08);
+      text-align: center;
+      animation: modalIn .34s ease-out both;
+    }
+
+    .gate-code,
+    .result-code {
+      margin: 0 0 14px;
+      color: var(--yellow);
+      font: 700 .62rem/1.5 'Press Start 2P', monospace;
+      letter-spacing: .1em;
+    }
+
+    .gate-card h2,
+    .result-card h2 {
+      margin: 0 0 16px;
+      color: var(--cyan);
+      font: 900 clamp(2rem, 7vw, 4.4rem)/.96 'Orbitron', sans-serif;
+      letter-spacing: .04em;
+      text-shadow: 0 0 22px rgba(34,247,255,.62);
+    }
+
+    .result-card.mcp-result h2 { color: var(--red); text-shadow: 0 0 24px rgba(255,58,69,.62); }
+    .result-card.human-result h2 { color: var(--cyan); }
+    .gate-card p,
+    .result-card p {
+      margin: 0 auto 24px;
+      max-width: 54ch;
+      color: var(--muted);
+      line-height: 1.68;
+    }
+
+    .enter-button {
+      appearance: none;
+      min-width: min(320px, 100%);
+      padding: 17px 24px;
+      border: 1px solid var(--yellow);
+      border-radius: 999px;
+      color: #05111d;
+      background: linear-gradient(90deg, var(--cyan), var(--yellow));
+      box-shadow: 0 0 30px rgba(34,247,255,.28);
+      font: 900 .84rem/1 'Orbitron', sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform .17s ease, filter .17s ease;
+    }
+
+    .enter-button:hover,
+    .enter-button:focus-visible {
+      transform: scale(1.025);
+      filter: brightness(1.14);
+      outline: 2px solid #fff;
+      outline-offset: 4px;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .result-link.primary {
+      color: #071019;
+      border-color: var(--yellow);
+      background: linear-gradient(90deg, var(--cyan), var(--yellow));
+    }
+    .result-link.secondary { color: var(--cyan-soft); }
+
+    @media (max-width: 900px) {
+      .arena-grid { grid-template-columns: 1fr 1.25fr; }
+      .combatant { min-height: auto; }
+      .combatant.mcp {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 170px 1fr;
+        align-items: center;
+        gap: 20px;
+      }
+      .combatant.mcp .avatar { margin: 0; min-height: 110px; }
+    }
+
+    @media (max-width: 690px) {
+      .shell { width: min(100% - 16px, 620px); padding-top: 18px; }
+      .topbar { grid-template-columns: 1fr; }
+      .sound-button { justify-self: start; }
+      .arena-grid { grid-template-columns: 1fr; gap: 15px; padding: 14px; }
+      .combatant,
+      .combatant.mcp {
+        grid-column: auto;
+        display: grid;
+        grid-template-columns: 90px 1fr;
+        gap: 14px;
+        align-items: center;
+        padding: 14px;
+      }
+      .combatant .avatar,
+      .combatant.mcp .avatar { min-height: 80px; margin: 0; }
+      .combatant h2 { font-size: 1.25rem; }
+      .board-wrap { width: min(390px, 100%); }
+    }
+
+    @media (max-width: 430px) {
+      .shell { width: calc(100% - 10px); }
+      .arena-panel { border-radius: 17px; }
+      .combatant,
+      .combatant.mcp { grid-template-columns: 72px 1fr; }
+      .combatant-label { font-size: .5rem; }
+      .combatant p { font-size: .72rem; }
+      .board-wrap { padding: 9px; border-radius: 16px; }
+      .board { gap: 4px; padding: 4px; }
+      .cell { border-radius: 7px; }
+      .integrity-row { font-size: .54rem; }
+      .sound-button, .control-button, .back-link, .result-link { font-size: .62rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
     <meta name="robots" content="noindex, nofollow, noarchive">
 
@@ -141,233 +618,564 @@
   <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
 </div>
 
-  <div class="scanlines"></div>
-  <div class="container">
-    <div class="main-content">
-      <h1 class="title">TIC‑TAC‑TOE</h1>
-      <div class="subtitle">Shall we play a game?</div>
-
-      <div id="board" class="board" role="grid" aria-label="Tic‑Tac‑Toe board"></div>
-      <div id="status" class="status" aria-live="polite"></div>
-      <div class="controls">
-        <button id="reset" class="control-button" type="button">Restart</button>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">LLoaMC Arcade Program // Sector 82</p>
+        <h1>GRID DUEL</h1>
+        <p class="subtitle">Tic-Tac-Toe against the MCP</p>
       </div>
-      <div class="back-row">
-        <a href="index.html" class="back-link">◀ BACK TO HOME</a>
+      <button id="sound-toggle" class="sound-button" type="button" aria-pressed="true">Sound: Armed</button>
+    </header>
+
+    <section class="arena-panel" aria-label="Grid Duel arena">
+      <div class="arena-grid">
+        <article class="combatant player">
+          <div class="avatar" aria-hidden="true">
+            <svg viewBox="0 0 180 180" role="img">
+              <defs>
+                <radialGradient id="discGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#eaffff" stop-opacity=".96"/>
+                  <stop offset="40%" stop-color="#22f7ff" stop-opacity=".42"/>
+                  <stop offset="100%" stop-color="#22f7ff" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <circle cx="90" cy="90" r="79" fill="url(#discGlow)"/>
+              <circle cx="90" cy="90" r="57" fill="none" stroke="currentColor" stroke-width="8"/>
+              <circle cx="90" cy="90" r="39" fill="none" stroke="currentColor" stroke-width="2.5" opacity=".65"/>
+              <path d="M90 33 105 69 146 70 114 94 125 133 90 111 55 133 66 94 34 70 75 69Z" fill="none" stroke="currentColor" stroke-width="3" opacity=".78"/>
+              <circle cx="90" cy="90" r="8" fill="#f7ffff"/>
+            </svg>
+          </div>
+          <div>
+            <p class="combatant-label">USER PROGRAM</p>
+            <h2>DISC</h2>
+            <p>Deploy the cyan energy disc. Find the flaw in the system.</p>
+          </div>
+        </article>
+
+        <section class="center-console">
+          <div class="integrity" aria-label="Grid integrity">
+            <div class="integrity-row">
+              <span>GRID INTEGRITY</span>
+              <span id="integrity-value">100%</span>
+            </div>
+            <div class="integrity-track" aria-hidden="true">
+              <div id="integrity-fill" class="integrity-fill"></div>
+            </div>
+          </div>
+
+          <div class="board-wrap">
+            <div id="board" class="board" role="grid" aria-label="Grid Duel Tic-Tac-Toe board"></div>
+          </div>
+
+          <div id="status" class="status" aria-live="polite">Awaiting user program.</div>
+
+          <div class="controls">
+            <button id="reset" class="control-button" type="button">Reboot Grid</button>
+            <a href="index.html" class="back-link">Exit Arena</a>
+          </div>
+          <p class="system-note">MCP countermeasures adapt after every completed grid. Persistence may reveal an anomaly.</p>
+        </section>
+
+        <article class="combatant mcp">
+          <div class="avatar" aria-hidden="true">
+            <svg viewBox="0 0 180 180" role="img">
+              <defs>
+                <linearGradient id="mcpFace" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#ff982e"/>
+                  <stop offset="48%" stop-color="#ff3a45"/>
+                  <stop offset="100%" stop-color="#b51237"/>
+                </linearGradient>
+              </defs>
+              <path d="M90 16 148 48 141 127 90 164 39 127 32 48Z" fill="rgba(255,58,69,.08)" stroke="currentColor" stroke-width="4"/>
+              <path d="M54 55 90 35 126 55 120 113 90 140 60 113Z" fill="url(#mcpFace)" opacity=".28" stroke="currentColor" stroke-width="3"/>
+              <path d="M58 70 82 63 82 82 58 88ZM122 70 98 63 98 82 122 88Z" fill="currentColor"/>
+              <path d="M67 104 90 114 113 104 105 124 90 132 75 124Z" fill="none" stroke="currentColor" stroke-width="5"/>
+              <path d="M90 35V142M48 51 132 51M42 126 138 126" stroke="currentColor" stroke-width="2" opacity=".55"/>
+              <circle cx="90" cy="90" r="74" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 8" opacity=".55"/>
+            </svg>
+          </div>
+          <div>
+            <p class="combatant-label">MASTER CONTROL PROGRAM</p>
+            <h2>MCP</h2>
+            <p>Perfect strategy. Relentless countermeasures. No known mercy protocol.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <section id="intro-gate" class="intro-gate" aria-labelledby="gate-title">
+    <div class="gate-card">
+      <p class="gate-code">SYSTEM HANDSHAKE // ORIGINAL GRID SCORE ENABLED</p>
+      <h2 id="gate-title">ENTER THE GRID</h2>
+      <p>You are the DISC program. The MCP controls the arena. The soundtrack and effects are an original synth composition generated inside your browser.</p>
+      <button id="enter-grid" class="enter-button" type="button">Initialize Duel</button>
+    </div>
+  </section>
+
+  <section id="result-overlay" class="result-overlay" aria-labelledby="result-title" hidden>
+    <div id="result-card" class="result-card">
+      <p id="result-code" class="result-code">SYSTEM RESULT</p>
+      <h2 id="result-title">GRID COMPLETE</h2>
+      <p id="result-copy"></p>
+      <div class="result-actions">
+        <a id="result-destination" class="result-link primary" href="#" target="_blank" rel="noopener noreferrer">Open Reward</a>
+        <button id="play-again" class="result-link secondary" type="button">Return to Grid</button>
       </div>
     </div>
-  </div>
+  </section>
+
+  <template id="disc-template">
+    <span class="piece disc" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="41" fill="rgba(34,247,255,.08)" stroke="currentColor" stroke-width="7"/>
+        <circle cx="50" cy="50" r="27" fill="none" stroke="currentColor" stroke-width="2" opacity=".72"/>
+        <path d="M50 12 60 38 88 39 66 55 74 82 50 67 26 82 34 55 12 39 40 38Z" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <circle cx="50" cy="50" r="5" fill="#fff"/>
+      </svg>
+    </span>
+  </template>
+
+  <template id="mcp-template">
+    <span class="piece mcp" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 7 86 26 82 75 50 94 18 75 14 26Z" fill="rgba(255,58,69,.12)" stroke="currentColor" stroke-width="4"/>
+        <path d="M28 36 45 31 45 45 28 49ZM72 36 55 31 55 45 72 49Z" fill="currentColor"/>
+        <path d="M34 63 50 71 66 63 60 78 50 83 40 78Z" fill="none" stroke="currentColor" stroke-width="4"/>
+        <path d="M50 15V86M22 27 78 27" stroke="currentColor" stroke-width="1.6" opacity=".6"/>
+      </svg>
+    </span>
+  </template>
 
   <script>
-    const AMAZON_URL = 'https://www.amazon.com/dp/B0FP6ZZX63';
-    const WARGAMES_URL = 'https://www.justwatch.com/us/movie/wargames';
-    const HUMAN = 'X';
-    const AI = 'O';
+    (() => {
+      'use strict';
 
-    const boardEl = document.getElementById('board');
-    const statusEl = document.getElementById('status');
-    const resetBtn = document.getElementById('reset');
+      const AMAZON_URL = 'https://www.amazon.com/dp/B0FP6ZZX63';
+      const WARGAMES_URL = 'https://www.justwatch.com/us/movie/wargames';
+      const HUMAN = 'DISC';
+      const AI = 'MCP';
+      const DRAW_THRESHOLD = 25;
+      const MUSIC_PREF_KEY = 'grid_duel_sound';
+      const DRAW_KEY = 'tictactoe_games';
 
-    let board = Array(9).fill(null);
-    let gameOver = false;
-    let gamesPlayed = parseInt(localStorage.getItem('tictactoe_games') || '0', 10);
+      const boardEl = document.getElementById('board');
+      const statusEl = document.getElementById('status');
+      const resetBtn = document.getElementById('reset');
+      const soundToggle = document.getElementById('sound-toggle');
+      const enterGridBtn = document.getElementById('enter-grid');
+      const introGate = document.getElementById('intro-gate');
+      const resultOverlay = document.getElementById('result-overlay');
+      const resultCard = document.getElementById('result-card');
+      const resultCode = document.getElementById('result-code');
+      const resultTitle = document.getElementById('result-title');
+      const resultCopy = document.getElementById('result-copy');
+      const resultDestination = document.getElementById('result-destination');
+      const playAgainBtn = document.getElementById('play-again');
+      const integrityValue = document.getElementById('integrity-value');
+      const discTemplate = document.getElementById('disc-template');
+      const mcpTemplate = document.getElementById('mcp-template');
 
-    const lines = [
-      [0,1,2],[3,4,5],[6,7,8], // rows
-      [0,3,6],[1,4,7],[2,5,8], // cols
-      [0,4,8],[2,4,6]          // diags
-    ];
+      let board = Array(9).fill(null);
+      let gameOver = false;
+      let gameStarted = false;
+      let gamesPlayed = Number.parseInt(localStorage.getItem(DRAW_KEY) || '0', 10);
+      let soundEnabled = localStorage.getItem(MUSIC_PREF_KEY) !== 'off';
+      let audio = null;
+      let musicTimer = null;
+      let musicStep = 0;
 
-    function init(){
-      boardEl.innerHTML = '';
-      board = Array(9).fill(null);
-      gameOver = false;
-      updateStatus();
-      for(let i=0;i<9;i++){
-        const cell = document.createElement('button');
-        cell.className = 'cell';
-        cell.setAttribute('role','gridcell');
-        cell.setAttribute('aria-label','Cell '+(i+1));
-        cell.dataset.index = i;
-        cell.addEventListener('click', onHumanMove);
-        cell.addEventListener('keydown', (e)=>{ if((e.key==='Enter'||e.key===' ')&&!gameOver){ e.preventDefault(); onHumanMove({target:cell}); } });
-        boardEl.appendChild(cell);
+      const lines = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+
+      function safeGamesPlayed() {
+        if (!Number.isFinite(gamesPlayed) || gamesPlayed < 0) gamesPlayed = 0;
+        if (gamesPlayed > DRAW_THRESHOLD) gamesPlayed = DRAW_THRESHOLD;
       }
-    }
 
-    function updateStatus(){
-      statusEl.textContent = `You are X. Joshua is O. Games played: ${gamesPlayed}`;
-    }
+      function initAudio() {
+        if (audio) return audio;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return null;
 
-    function onHumanMove(e){
-      const idx = +e.target.dataset.index;
-      if(gameOver || board[idx]) return;
-      playAt(idx, HUMAN);
-      const who = winner(board);
-      if(handleEnd(who)) return;
-      // AI replies after a tiny delay for UX
-      setTimeout(()=>{
-        const move = bestMove(board, AI);
-        if(move!==null){ playAt(move, AI); }
-        handleEnd(winner(board));
-      }, 120);
-    }
+        const context = new AudioContext();
+        const master = context.createGain();
+        const music = context.createGain();
+        const effects = context.createGain();
+        const compressor = context.createDynamicsCompressor();
 
-    function playAt(idx, player){
-      board[idx] = player;
-      const cell = boardEl.children[idx];
-      cell.textContent = player;
-      cell.setAttribute('aria-disabled','true');
-      playClickSound();
-    }
+        master.gain.value = soundEnabled ? 0.28 : 0;
+        music.gain.value = 0.38;
+        effects.gain.value = 0.78;
 
-    function playClickSound(){
-      try {
-        // Create a short beep using Web Audio API
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.frequency.value = 800; // Hz
-        oscillator.type = 'square';
-        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        oscillator.start(audioCtx.currentTime);
-        oscillator.stop(audioCtx.currentTime + 0.1);
-        
-        // Clean up audio context after sound completes
-        setTimeout(() => {
-          audioCtx.close().catch(() => {});
-        }, 200);
-      } catch(e) {
-        // Silently fail if audio context fails
+        music.connect(master);
+        effects.connect(master);
+        master.connect(compressor);
+        compressor.connect(context.destination);
+
+        audio = { context, master, music, effects };
+        return audio;
       }
-    }
 
-    function winner(board){
-      // Check all winning combinations (3 in a row: horizontal, vertical, or diagonal)
-      for(const [pos1, pos2, pos3] of lines){
-        if(board[pos1] && board[pos1] === board[pos2] && board[pos1] === board[pos3]){
-          return board[pos1]; // Return 'X' or 'O'
+      function resumeAudio() {
+        const system = initAudio();
+        if (system?.context.state === 'suspended') system.context.resume().catch(() => {});
+        return system;
+      }
+
+      function setSound(enabled) {
+        soundEnabled = enabled;
+        localStorage.setItem(MUSIC_PREF_KEY, enabled ? 'on' : 'off');
+        soundToggle.textContent = enabled ? 'Sound: Armed' : 'Sound: Muted';
+        soundToggle.setAttribute('aria-pressed', String(enabled));
+        const system = initAudio();
+        if (system) {
+          system.master.gain.cancelScheduledValues(system.context.currentTime);
+          system.master.gain.setTargetAtTime(enabled ? 0.28 : 0, system.context.currentTime, 0.035);
+        }
+        if (enabled && gameStarted) startMusic();
+        if (!enabled) stopMusic();
+      }
+
+      function tone({ frequency, duration = 0.12, type = 'sine', volume = 0.16, destination = 'effects', when = 0, slideTo = null }) {
+        const system = resumeAudio();
+        if (!system || !soundEnabled) return;
+
+        const now = system.context.currentTime + when;
+        const oscillator = system.context.createOscillator();
+        const gain = system.context.createGain();
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, now);
+        if (slideTo) oscillator.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(volume, now + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        oscillator.connect(gain);
+        gain.connect(system[destination]);
+        oscillator.start(now);
+        oscillator.stop(now + duration + 0.03);
+      }
+
+      function chord(frequencies, duration, volume = 0.035, when = 0) {
+        frequencies.forEach((frequency, index) => {
+          tone({ frequency, duration, type: index === 0 ? 'triangle' : 'sine', volume, destination: 'music', when });
+        });
+      }
+
+      function startMusic() {
+        if (!soundEnabled || musicTimer) return;
+        resumeAudio();
+        musicStep = 0;
+
+        const sequence = [110, 165, 220, 147, 196, 247, 123, 185];
+        const harmonies = [
+          [220, 277.18, 329.63],
+          [196, 246.94, 293.66],
+          [174.61, 220, 261.63],
+          [164.81, 207.65, 246.94]
+        ];
+
+        const pulse = () => {
+          if (!soundEnabled) return;
+          const base = sequence[musicStep % sequence.length];
+          tone({ frequency: base, duration: .22, type: 'sawtooth', volume: .035, destination: 'music' });
+          tone({ frequency: base * 2, duration: .11, type: 'square', volume: .018, destination: 'music', when: .12 });
+          if (musicStep % 4 === 0) chord(harmonies[(musicStep / 4) % harmonies.length], 1.05, .022, .02);
+          if (musicStep % 2 === 0) tone({ frequency: 880, duration: .035, type: 'square', volume: .012, destination: 'music', when: .06 });
+          musicStep += 1;
+        };
+
+        pulse();
+        musicTimer = window.setInterval(pulse, 420);
+      }
+
+      function stopMusic() {
+        if (musicTimer) {
+          window.clearInterval(musicTimer);
+          musicTimer = null;
         }
       }
-      // Check for draw (all cells filled, no winner)
-      if(board.every(cell => cell !== null)) return 'draw';
-      return null; // Game still in progress
-    }
 
-    function handleEnd(outcome){
-      if(!outcome) return false;
-      if(outcome==='draw'){
-        // Increment counter on each draw
-        gamesPlayed++;
-        localStorage.setItem('tictactoe_games', gamesPlayed);
-        statusEl.textContent = 'Draw. Resetting…';
-        setTimeout(()=>init(), 600);
+      function playMoveSound(player) {
+        if (player === HUMAN) {
+          tone({ frequency: 420, slideTo: 940, duration: .18, type: 'sine', volume: .16 });
+          tone({ frequency: 840, duration: .08, type: 'triangle', volume: .08, when: .09 });
+        } else {
+          tone({ frequency: 210, slideTo: 92, duration: .21, type: 'sawtooth', volume: .13 });
+          tone({ frequency: 315, duration: .08, type: 'square', volume: .06, when: .06 });
+        }
+      }
+
+      function playEndSound(outcome) {
+        if (outcome === HUMAN) {
+          [392, 523.25, 659.25, 783.99].forEach((frequency, index) => tone({ frequency, duration: .45, type: 'triangle', volume: .11, when: index * .11 }));
+        } else if (outcome === AI) {
+          [220, 174.61, 130.81, 82.41].forEach((frequency, index) => tone({ frequency, duration: .5, type: 'sawtooth', volume: .09, when: index * .12 }));
+        } else {
+          tone({ frequency: 260, duration: .12, type: 'square', volume: .07 });
+          tone({ frequency: 330, duration: .12, type: 'square', volume: .06, when: .13 });
+        }
+      }
+
+      function pieceNode(player) {
+        const source = player === HUMAN ? discTemplate : mcpTemplate;
+        return source.content.firstElementChild.cloneNode(true);
+      }
+
+      function integrityPercent() {
+        safeGamesPlayed();
+        return Math.max(0, 100 - Math.round((gamesPlayed / DRAW_THRESHOLD) * 100));
+      }
+
+      function updateIntegrity() {
+        const percent = integrityPercent();
+        document.documentElement.style.setProperty('--integrity', `${percent}%`);
+        integrityValue.textContent = percent <= 0 ? 'CRITICAL' : `${percent}%`;
+        if (percent <= 0) statusEl.textContent = 'SYSTEM ANOMALY DETECTED. MCP response matrix destabilizing.';
+        else if (percent <= 28) statusEl.textContent = 'Grid instability rising. Continue the duel.';
+      }
+
+      function updateStatus(message = '') {
+        if (message) {
+          statusEl.textContent = message;
+          return;
+        }
+        statusEl.textContent = integrityPercent() <= 0
+          ? 'SYSTEM ANOMALY DETECTED. Your move, DISC.'
+          : 'Your move, DISC. MCP countermeasures are active.';
+      }
+
+      function buildBoard() {
+        boardEl.innerHTML = '';
+        board = Array(9).fill(null);
+        gameOver = false;
+        for (let index = 0; index < 9; index += 1) {
+          const cell = document.createElement('button');
+          cell.className = 'cell';
+          cell.type = 'button';
+          cell.dataset.index = String(index);
+          cell.setAttribute('role', 'gridcell');
+          cell.setAttribute('aria-label', `Grid cell ${index + 1}, empty`);
+          cell.addEventListener('click', onHumanMove);
+          boardEl.appendChild(cell);
+        }
+        updateIntegrity();
+        updateStatus();
+      }
+
+      function playAt(index, player) {
+        board[index] = player;
+        const cell = boardEl.children[index];
+        cell.replaceChildren(pieceNode(player));
+        cell.setAttribute('aria-disabled', 'true');
+        cell.setAttribute('aria-label', `Grid cell ${index + 1}, ${player}`);
+        playMoveSound(player);
+      }
+
+      function winner(state) {
+        for (const [a, b, c] of lines) {
+          if (state[a] && state[a] === state[b] && state[a] === state[c]) return { outcome: state[a], line: [a, b, c] };
+        }
+        if (state.every(Boolean)) return { outcome: 'draw', line: [] };
+        return null;
+      }
+
+      function markWinningLine(line) {
+        line.forEach((index) => boardEl.children[index]?.classList.add('winning'));
+      }
+
+      function derezLosingPieces(winnerName) {
+        [...boardEl.children].forEach((cell, index) => {
+          if (board[index] && board[index] !== winnerName) cell.classList.add('derezzed');
+        });
+      }
+
+      function resetSequence() {
+        gamesPlayed = 0;
+        localStorage.setItem(DRAW_KEY, '0');
+        updateIntegrity();
+      }
+
+      function showResult(outcome) {
+        resultCard.classList.remove('human-result', 'mcp-result');
+        if (outcome === HUMAN) {
+          resultCard.classList.add('human-result');
+          resultCode.textContent = 'ANOMALY CONFIRMED // USER PROGRAM VICTORIOUS';
+          resultTitle.textContent = 'MCP DEFEATED';
+          resultCopy.textContent = 'You found the flaw in the system. Your prize is a passage out of the Grid and into one of the greatest computer-game movies of the 1980s.';
+          resultDestination.href = WARGAMES_URL;
+          resultDestination.textContent = 'Watch WarGames';
+        } else {
+          resultCard.classList.add('mcp-result');
+          resultCode.textContent = 'PROGRAM DEREZZED // MCP VICTORIOUS';
+          resultTitle.textContent = 'END OF LINE';
+          resultCopy.textContent = 'The MCP has terminated your program. Regroup with Life Lessons of a Man-Child before attempting another breach.';
+          resultDestination.href = AMAZON_URL;
+          resultDestination.textContent = 'Buy the Book';
+        }
+        resultOverlay.hidden = false;
+        resultDestination.focus();
+      }
+
+      function handleEnd(result) {
+        if (!result) return false;
+        if (result.outcome === 'draw') {
+          gameOver = true;
+          gamesPlayed = Math.min(DRAW_THRESHOLD, gamesPlayed + 1);
+          localStorage.setItem(DRAW_KEY, String(gamesPlayed));
+          playEndSound('draw');
+          updateIntegrity();
+          const percent = integrityPercent();
+          updateStatus(percent <= 0 ? 'DRAW. Grid integrity collapsed. MCP vulnerability exposed.' : `DRAW. Grid integrity reduced to ${percent}%. Reinitializing…`);
+          window.setTimeout(buildBoard, 880);
+          return true;
+        }
+
+        gameOver = true;
+        markWinningLine(result.line);
+        derezLosingPieces(result.outcome);
+        playEndSound(result.outcome);
+        updateStatus(result.outcome === HUMAN ? 'Impossible result: user program has breached the MCP.' : 'MCP victory. User program derezzed.');
+        resetSequence();
+        window.setTimeout(() => showResult(result.outcome), 900);
         return true;
       }
-      gameOver = true;
-      if(outcome === AI){
-        statusEl.textContent = 'Joshua wins! Opening Amazon in a new tab…';
-        // Reset counter when Joshua wins (player needs to start over)
-        gamesPlayed = 0;
-        localStorage.setItem('tictactoe_games', gamesPlayed);
-        // Open Amazon in a new tab only; do not navigate current page
-        try { window.open(AMAZON_URL, '_blank', 'noopener,noreferrer'); } catch(e) {}
-        // Reset the board after a delay
-        setTimeout(()=>init(), 1200);
-      } else if(outcome === HUMAN){
-        statusEl.textContent = 'You win! Watch WarGames — opening JustWatch…';
-        // Reset the counter so they have to earn another 25 draws
-        gamesPlayed = 0;
-        localStorage.setItem('tictactoe_games', gamesPlayed);
-        setTimeout(()=>{
-          try { window.open(WARGAMES_URL, '_blank', 'noopener,noreferrer'); } catch(e) {}
-          init();
-        }, 1200);
-      }
-      return true;
-    }
 
-    // Minimax for perfect play (unless it's time to let the player win)
-    function bestMove(b, player){
-      // After 25 draws, Joshua plays suboptimally (avoids winning/blocking moves)
-      if(gamesPlayed >= 25){
-        const empty = [];
-        for(let i=0;i<9;i++) if(!b[i]) empty.push(i);
-        if(!empty.length) return null;
-        
-        // Filter out moves that would win for Joshua or block player from winning
-        const safe = empty.filter(i => {
-          // Check if this move wins for Joshua
-          b[i] = AI;
-          const aiWins = winner(b);
-          b[i] = null;
-          if(aiWins === AI) return false; // Don't take winning moves
-          
-          // Check if this move blocks player from winning
-          b[i] = HUMAN;
-          const humanWins = winner(b);
-          b[i] = null;
-          if(humanWins === HUMAN) return false; // Don't block player wins
-          
-          return true; // This move is "safe" (bad play)
-        });
-        
-        // If all moves are strategic, pick any random move (shouldn't happen often)
-        const choices = safe.length ? safe : empty;
-        return choices[Math.floor(Math.random() * choices.length)];
+      function onHumanMove(event) {
+        if (!gameStarted || gameOver) return;
+        const index = Number(event.currentTarget.dataset.index);
+        if (!Number.isInteger(index) || board[index]) return;
+        resumeAudio();
+        playAt(index, HUMAN);
+        const humanResult = winner(board);
+        if (handleEnd(humanResult)) return;
+        updateStatus('MCP calculating countermeasure…');
+        window.setTimeout(() => {
+          if (gameOver) return;
+          const move = bestMove(board, AI);
+          if (move !== null) playAt(move, AI);
+          const aiResult = winner(board);
+          if (!handleEnd(aiResult)) updateStatus();
+        }, 330);
       }
-      
-      // First 25 games: Use minimax for perfect play (Joshua never loses)
-      let best = { score: -Infinity, move: null };
-      for(let i=0;i<9;i++){
-        if(!b[i]){
-          b[i] = player;
-          const score = minimax(b, 0, false);
-          b[i] = null;
-          if(score > best.score){ best = { score, move:i }; }
+
+      function bestMove(state, player) {
+        if (gamesPlayed >= DRAW_THRESHOLD) {
+          const empty = state.map((value, index) => value ? null : index).filter((value) => value !== null);
+          if (!empty.length) return null;
+          const strategicallyBad = empty.filter((index) => {
+            state[index] = AI;
+            const aiResult = winner(state);
+            state[index] = null;
+            if (aiResult?.outcome === AI) return false;
+            state[index] = HUMAN;
+            const humanResult = winner(state);
+            state[index] = null;
+            if (humanResult?.outcome === HUMAN) return false;
+            return true;
+          });
+          const choices = strategicallyBad.length ? strategicallyBad : empty;
+          return choices[Math.floor(Math.random() * choices.length)];
         }
-      }
-      return best.move;
-    }
 
-    function minimax(b, depth, isMax){
-      const res = winner(b);
-      if(res){
-        if(res===AI) return 10 - depth;
-        if(res===HUMAN) return depth - 10;
-        return 0; // draw
+        let best = { score: -Infinity, move: null };
+        for (let index = 0; index < 9; index += 1) {
+          if (!state[index]) {
+            state[index] = player;
+            const score = minimax(state, 0, false);
+            state[index] = null;
+            if (score > best.score) best = { score, move: index };
+          }
+        }
+        return best.move;
       }
-      if(isMax){
-        let best = -Infinity;
-        for(let i=0;i<9;i++) if(!b[i]){ b[i]=AI; best = Math.max(best, minimax(b, depth+1, false)); b[i]=null; }
-        return best;
-      } else {
+
+      function minimax(state, depth, maximizing) {
+        const result = winner(state);
+        if (result) {
+          if (result.outcome === AI) return 10 - depth;
+          if (result.outcome === HUMAN) return depth - 10;
+          return 0;
+        }
+        if (maximizing) {
+          let best = -Infinity;
+          for (let index = 0; index < 9; index += 1) {
+            if (!state[index]) {
+              state[index] = AI;
+              best = Math.max(best, minimax(state, depth + 1, false));
+              state[index] = null;
+            }
+          }
+          return best;
+        }
         let best = Infinity;
-        for(let i=0;i<9;i++) if(!b[i]){ b[i]=HUMAN; best = Math.min(best, minimax(b, depth+1, true)); b[i]=null; }
+        for (let index = 0; index < 9; index += 1) {
+          if (!state[index]) {
+            state[index] = HUMAN;
+            best = Math.min(best, minimax(state, depth + 1, true));
+            state[index] = null;
+          }
+        }
         return best;
       }
-    }
 
-    resetBtn.addEventListener('click', () => {
-      // Reset counter when Restart button is clicked
-      gamesPlayed = 0;
-      localStorage.setItem('tictactoe_games', gamesPlayed);
-      init();
-    });
-    window.addEventListener('DOMContentLoaded', () => {
-      // Reset counter when page loads (including when returning from index.html)
-      gamesPlayed = 0;
-      localStorage.setItem('tictactoe_games', gamesPlayed);
-      init();
-    });
+      enterGridBtn.addEventListener('click', () => {
+        gameStarted = true;
+        introGate.hidden = true;
+        resumeAudio();
+        if (soundEnabled) startMusic();
+        buildBoard();
+        boardEl.querySelector('.cell')?.focus();
+      });
+
+      soundToggle.addEventListener('click', () => {
+        setSound(!soundEnabled);
+        if (soundEnabled) {
+          resumeAudio();
+          tone({ frequency: 520, slideTo: 880, duration: .16, type: 'sine', volume: .11 });
+        }
+      });
+
+      resetBtn.addEventListener('click', () => {
+        resetSequence();
+        buildBoard();
+        tone({ frequency: 190, slideTo: 510, duration: .25, type: 'triangle', volume: .1 });
+      });
+
+      playAgainBtn.addEventListener('click', () => {
+        resultOverlay.hidden = true;
+        buildBoard();
+        boardEl.querySelector('.cell')?.focus();
+      });
+
+      resultDestination.addEventListener('click', () => {
+        window.setTimeout(() => {
+          resultOverlay.hidden = true;
+          buildBoard();
+        }, 180);
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stopMusic();
+        else if (soundEnabled && gameStarted) startMusic();
+      });
+
+      window.addEventListener('beforeunload', () => {
+        stopMusic();
+        audio?.context.close().catch(() => {});
+      });
+
+      safeGamesPlayed();
+      setSound(soundEnabled);
+      buildBoard();
+    })();
   </script>
-
-  <!-- Background music continuation -->
-    <script>
-      // No background music on this page.
-    </script>
 </body>
 </html>
