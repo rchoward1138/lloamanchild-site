@@ -14,13 +14,14 @@ jobs:
   patch-staging:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out main tools
+      - name: Check out main tools and public staging copy
         uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
           path: tools-main
 
-      - name: Check out author-site staging
+      - name: Check out author-site staging source
         uses: actions/checkout@v4
         with:
           ref: codex-staging
@@ -45,15 +46,43 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Apply cinematic Grid Duel patch
-        run: python3 tools-main/tools/patch-grid-duel-v2.py site
+      - name: Apply cinematic patch where needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! grep -q "tempestApproach" site/tictactoe.html; then
+            python3 tools-main/tools/patch-grid-duel-v2.py site
+          fi
+          if ! grep -q "tempestApproach" tools-main/staging/tictactoe.html; then
+            python3 tools-main/tools/patch-grid-duel-v2.py tools-main/staging
+          fi
 
-      - name: Commit staging update
+      - name: Commit staging source update when changed
         working-directory: site
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add tictactoe.html
-          git commit -m "feat: intensify Grid Duel audio and cinematic approach"
-          git push origin codex-staging
+          if git diff --cached --quiet; then
+            echo "Staging source already current."
+          else
+            git commit -m "feat: intensify Grid Duel audio and cinematic approach"
+            git push origin codex-staging
+          fi
+
+      - name: Commit public-by-link staging copy when changed
+        working-directory: tools-main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add staging/tictactoe.html
+          if git diff --cached --quiet; then
+            echo "Public staging copy already current."
+          else
+            git commit -m "chore: publish cinematic Grid Duel staging preview"
+            git push origin main
+          fi
