@@ -60,3 +60,5 @@ jobs:
           git add staging/index.html
           git commit -m "feat: add Podcasts banner to staging homepage"
           git push origin main
+
+# Triggered after initial workflow installation.
