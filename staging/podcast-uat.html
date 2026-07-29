@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Podcast Feature UAT | Life Lessons of a Man-Child</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--cyan:#00ffff;--pink:#ff00ff;--yellow:#ffff00;--panel:rgba(0,0,0,.64)}
+    body{min-height:100vh;padding-top:54px;color:white;font-family:Roboto,sans-serif;background-image:linear-gradient(rgba(20,0,40,.58),rgba(40,0,80,.58)),url('PaperbackCoverFinal.png'),url('Book-Cover.png');background-position:center;background-size:cover;background-attachment:fixed;overflow-x:hidden}
+    body:after{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,.05) 1px,transparent 1px);background-size:50px 50px;z-index:1}
+    .stage{position:fixed;inset:0 0 auto;z-index:50;min-height:54px;display:flex;justify-content:center;align-items:center;text-align:center;padding:.7rem 1rem;background:linear-gradient(90deg,#ffbf00,#ff7a00);border-bottom:3px solid #111;color:#111;font-weight:900;letter-spacing:.05em;box-shadow:0 4px 16px #0008}
+    .container{position:relative;z-index:2;width:min(960px,calc(100% - 28px));margin:auto;padding:32px 0 60px}
+    .panel{background:var(--panel);border:2px solid var(--cyan);border-radius:14px;padding:clamp(22px,5vw,48px);box-shadow:0 0 28px #00ffff55,inset 0 0 25px #00ffff12;backdrop-filter:blur(2px);text-align:center}
+    h1{font-family:Orbitron,sans-serif;font-size:clamp(2rem,7vw,3.8rem);line-height:1.05;color:var(--cyan);text-shadow:0 0 12px var(--cyan),0 0 32px #00ffff88}
+    .sub{font-family:'Press Start 2P',monospace;color:var(--pink);font-size:clamp(.55rem,1.4vw,.82rem);letter-spacing:.14em;margin:.8rem 0}
+    .author{font-family:Orbitron,sans-serif;color:var(--yellow);margin-bottom:2rem}
+    .intro{max-width:760px;margin:0 auto 1.8rem;padding:1.2rem 1.4rem;text-align:left;line-height:1.6;background:#000b;border:1px solid #00ffff44;border-radius:10px}
+    .podcast-banner,.tile{position:relative;display:block;text-decoration:none;color:var(--cyan);background:linear-gradient(135deg,#120124,#340056 55%,#101237);border:3px solid var(--cyan);border-radius:15px;box-shadow:0 0 18px #00ffff55,inset 0 0 22px #ff00ff18;transition:.25s ease;overflow:hidden}
+    .podcast-banner{width:100%;padding:1.5rem 1rem;margin:0 auto 2rem}
+    .podcast-banner:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,#ffffff18,transparent);transform:translateX(-120%);animation:sweep 4s infinite}
+    @keyframes sweep{65%,100%{transform:translateX(120%)}}
+    .podcast-banner:hover,.tile:hover{transform:translateY(-4px);border-color:var(--pink);color:var(--pink);box-shadow:0 12px 30px #ff00ff55,inset 0 0 26px #00ffff20}
+    .banner-title{font-family:'Press Start 2P',monospace;font-size:clamp(.85rem,2vw,1.1rem);letter-spacing:.12em;margin-bottom:.65rem}
+    .banner-desc{font-size:.82rem;color:#ddd;letter-spacing:.05em}
+    .nav{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));gap:1.35rem}
+    .tile{padding:1.25rem;min-height:116px;display:flex;flex-direction:column;justify-content:center}
+    .icon{font-size:1.4rem;margin-bottom:.45rem}.title{font-family:'Press Start 2P',monospace;font-size:.68rem;margin-bottom:.55rem}.desc{font-size:.72rem;color:#ccc}
+    .more{grid-column:1/-1}
+    .note{margin-top:2rem;color:#aefcff;font-size:.82rem;line-height:1.6}
+    @media(max-width:700px){body{padding-top:68px}.stage{min-height:68px;font-size:.78rem}.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.more{grid-column:auto}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="stage">ISOLATED PODCAST UAT PREVIEW — THE CURRENT STAGING AND LIVE SITES ARE UNCHANGED</div>
+  <main class="container">
+    <section class="panel">
+      <h1>LIFE LESSONS<br>OF A MAN-CHILD</h1>
+      <div class="sub">A MEMOIR?</div>
+      <div class="author">BY R.C. HOWARD</div>
+      <div class="intro"><strong>Podcast feature test:</strong> this page mirrors the homepage navigation closely enough to review placement, styling and flow. The new full-width Podcasts banner appears immediately before the existing two-column feature grid.</div>
+
+      <a class="podcast-banner" href="podcasts.html">
+        <div class="banner-title">🎙️ PODCASTS</div>
+        <div class="banner-desc">AI conversations inspired by the memoir</div>
+      </a>
+
+      <div class="nav">
+        <a href="cryptogram.html" class="tile"><span class="icon">🧩</span><span class="title">CRYPTOGRAM PUZZLE</span><span class="desc">Decode hidden messages and unlock secrets from the stories within</span></a>
+        <a href="kittykids.html" class="tile"><span class="icon">🐱</span><span class="title">KITTY KIDS</span><span class="desc">Meet the nine whiskered wonders who run the show</span></a>
+        <a href="tictactoe.html" class="tile"><span class="icon">❌⭕</span><span class="title">TIC-TAC-TOE</span><span class="desc">Lose to Joshua. Review on Amazon.</span></a>
+        <a href="mimaw.html" class="tile"><span class="icon">👵</span><span class="title">MIMAW</span><span class="desc">Watch rare interviews and memories from 1998</span></a>
+        <a href="share.html" class="tile"><span class="icon">💬</span><span class="title">SHARE YOUR LIFE LESSONS</span><span class="desc">Leave a lesson for other readers</span></a>
+        <a href="about.html" class="tile"><span class="icon">👨‍💻</span><span class="title">ABOUT THE AUTHOR</span><span class="desc">Meet the man-child behind the memories</span></a>
+        <a href="man-childness.html" class="tile"><span class="icon">📺</span><span class="title">MAN-CHILDNESS</span><span class="desc">Videos from TikTok &amp; YouTube</span></a>
+        <a href="bee-leaf.html" class="tile"><span class="icon">🐝🍃</span><span class="title">BEE-LEAF</span><span class="desc">Interactive adventure picture book</span></a>
+        <a href="more.html" class="tile more"><span class="title">MORE LIFE LESSONS</span><span class="desc">Ongoing chapters and reflections beyond the memoir</span></a>
+      </div>
+      <p class="note">Click the Podcasts banner to open the working podcast page and play the episode directly in your browser.</p>
+    </section>
+  </main>
+</body>
+</html>
