@@ -27,6 +27,24 @@ jobs:
           fetch-depth: 0
           path: site
 
+      - name: Normalize one strict patch marker
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('tools-main/tools/patch-grid-duel-v2.py')
+          text = path.read_text(encoding='utf-8')
+          text = text.replace(
+              '"        master.gain.setTargetAtTime(enabled ? 0.28 : 0, system.context.currentTime, 0.035);"',
+              '"          system.master.gain.setTargetAtTime(enabled ? 0.28 : 0, system.context.currentTime, 0.035);"'
+          )
+          text = text.replace(
+              '"        master.gain.setTargetAtTime(enabled ? 0.58 : 0, system.context.currentTime, 0.035);"',
+              '"          system.master.gain.setTargetAtTime(enabled ? 0.58 : 0, system.context.currentTime, 0.035);"'
+          )
+          path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Apply cinematic Grid Duel patch
         run: python3 tools-main/tools/patch-grid-duel-v2.py site
 
