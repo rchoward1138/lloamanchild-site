@@ -68,8 +68,10 @@
       box-shadow:0 0 15px rgba(0,255,255,0.2);
       margin-top:1.25rem;
     }
+    .card.featured{border-color:#ff00ff88;box-shadow:0 0 18px rgba(255,0,255,.24),inset 0 0 24px rgba(0,255,255,.04);}
 
     .card-title{font-family:'Orbitron',monospace;font-size:1.15rem;color:#00ffff;margin-bottom:.35rem;}
+    .featured .card-title{color:#ff73e8;text-shadow:0 0 10px rgba(255,0,255,.35);}
     .card-note{color:#cccccc;font-size:.9rem;line-height:1.5;margin-bottom:1rem;}
 
     .back-row{text-align:center;margin-top:1.5rem;}
@@ -80,6 +82,11 @@
 
     .video-wrap{display:flex;justify-content:center;}
     .video-inner{width:100%;max-width:560px;}
+
+    .tiktok-wrap{width:100%;max-width:605px;margin:0 auto;display:flex;flex-direction:column;align-items:center;}
+    .tiktok-wrap .tiktok-embed{width:100%!important;max-width:605px!important;min-width:0!important;margin:0 auto!important;}
+    .tiktok-fallback{display:inline-flex;align-items:center;justify-content:center;margin-top:.9rem;padding:.75rem 1.1rem;border:2px solid #ff3ca6;border-radius:999px;background:#17051d;color:#ffd8f3;font-family:'Orbitron',monospace;font-weight:700;text-decoration:none;box-shadow:0 0 14px rgba(255,0,153,.28);transition:all .25s ease;}
+    .tiktok-fallback:hover{transform:translateY(-2px);filter:brightness(1.15);box-shadow:0 0 22px rgba(255,0,153,.48);}
 
     .video-link{display:block;text-decoration:none;}
     .video-thumb{
@@ -94,7 +101,7 @@
       box-shadow:0 0 15px rgba(0,255,255,0.15);
     }
     .video-thumb:hover{box-shadow:0 0 25px rgba(0,255,255,0.45);transform:scale(1.01);}
-    .video-thumb--square{aspect-ratio: 1 / 1;}
+    .video-thumb--square{aspect-ratio:1 / 1;}
     .video-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
     .play-overlay{
       position:absolute;
@@ -127,46 +134,44 @@
       .main-content{padding:1.5rem;}
       .title{font-size:1.6rem;}
       .subtitle{font-size:.62rem;}
+      .card{padding:1rem;}
+      .card-title{font-size:1rem;}
+      .tiktok-fallback{width:100%;text-align:center;font-size:.88rem;}
     }
-    @media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important} body::after,.scanlines{animation:none !important}}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}body::after,.scanlines{animation:none!important}}
   </style>
-    <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="robots" content="noindex, nofollow, noarchive">
 
-<style id="lloamc-staging-style">
-  html { scroll-padding-top: 52px; }
-  body { padding-top: 52px !important; }
-  #lloamc-staging-banner {
-    position: fixed;
-    inset: 0 0 auto 0;
-    z-index: 2147483647;
-    min-height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.65rem 1rem;
-    background: linear-gradient(90deg, #ffbf00, #ff7a00);
-    border-bottom: 3px solid #111;
-    color: #111;
-    font: 800 14px/1.25 Arial, sans-serif;
-    letter-spacing: 0.04em;
-    text-align: center;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  }
-  @media (max-width: 640px) {
-    body { padding-top: 64px !important; }
-    #lloamc-staging-banner {
-      min-height: 64px;
-      font-size: 12px;
+  <style id="lloamc-staging-style">
+    html{scroll-padding-top:52px;}
+    body{padding-top:52px!important;}
+    #lloamc-staging-banner{
+      position:fixed;
+      inset:0 0 auto 0;
+      z-index:2147483647;
+      min-height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:.65rem 1rem;
+      background:linear-gradient(90deg,#ffbf00,#ff7a00);
+      border-bottom:3px solid #111;
+      color:#111;
+      font:800 14px/1.25 Arial,sans-serif;
+      letter-spacing:.04em;
+      text-align:center;
+      box-shadow:0 4px 16px rgba(0,0,0,.35);
     }
-  }
-</style>
-
+    @media (max-width:640px){
+      body{padding-top:64px!important;}
+      #lloamc-staging-banner{min-height:64px;font-size:12px;}
+    }
+  </style>
 </head>
 <body>
-
-<div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
-  <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
-</div>
+  <div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
+    <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
+  </div>
 
   <div class="scanlines"></div>
   <div class="container">
@@ -174,11 +179,22 @@
       <h1 class="title">MAN-CHILDNESS</h1>
       <div class="subtitle">Real-world sightings &amp; clips</div>
 
+      <section class="card featured" aria-label="Featured TikTok video from Mojave and Wolf">
+        <h2 class="card-title">Newest Man-Childness Sighting</h2>
+        <p class="card-note">Featured TikTok from <strong>@mojaveandwolf</strong>. The embedded player should load below; the button opens the original video if TikTok or your browser blocks embeds.</p>
+        <div class="tiktok-wrap">
+          <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@mojaveandwolf/video/7665704295836241165" data-video-id="7665704295836241165" style="max-width:605px;min-width:325px;">
+            <section>
+              <a target="_blank" title="@mojaveandwolf" href="https://www.tiktok.com/@mojaveandwolf?refer=embed">@mojaveandwolf</a>
+            </section>
+          </blockquote>
+          <a class="tiktok-fallback" href="https://www.tiktok.com/@mojaveandwolf/video/7665704295836241165?is_from_webapp=1&amp;sender_device=pc" target="_blank" rel="noopener noreferrer">OPEN ORIGINAL ON TIKTOK</a>
+        </div>
+      </section>
+
       <section class="card" aria-label="YouTube Short 1">
         <h2 class="card-title">Why do Men love to Play Video Games? 🎮💙 #gaming #dothingsyoudontwanttodo</h2>
-
         <p class="card-note">Click the thumbnail to open YouTube in a new tab.</p>
-
         <div class="video-wrap">
           <div class="video-inner">
             <a class="video-link" href="https://www.youtube.com/shorts/eMp2vu38PDs" target="_blank" rel="noopener noreferrer" aria-label="Open on YouTube (new tab)">
@@ -193,9 +209,7 @@
 
       <section class="card" aria-label="YouTube Short 2">
         <h2 class="card-title">Very Wholesome</h2>
-
         <p class="card-note">Click the thumbnail to open YouTube in a new tab.</p>
-
         <div class="video-wrap">
           <div class="video-inner">
             <a class="video-link" href="https://www.youtube.com/shorts/vCW4eNnYqH0" target="_blank" rel="noopener noreferrer" aria-label="Open on YouTube (new tab)">
@@ -210,9 +224,7 @@
 
       <section class="card" aria-label="YouTube Video 1">
         <h2 class="card-title">This little boy has some life advice we could all do with hearing ❤️</h2>
-
         <p class="card-note">Click the thumbnail to open YouTube in a new tab.</p>
-
         <div class="video-wrap">
           <div class="video-inner">
             <a class="video-link" href="https://www.youtube.com/watch?v=CF4qKjNty8Y" target="_blank" rel="noopener noreferrer" aria-label="Open on YouTube (new tab)">
@@ -227,9 +239,7 @@
 
       <section class="card" aria-label="YouTube Video 2">
         <h2 class="card-title">The Full Dustin and Suzie NeverEnding Story Scene | Stranger Things S3</h2>
-
         <p class="card-note">Click the thumbnail to open YouTube in a new tab.</p>
-
         <div class="video-wrap">
           <div class="video-inner">
             <a class="video-link" href="https://www.youtube.com/watch?v=O5HQ1sZseKg" target="_blank" rel="noopener noreferrer" aria-label="Open on YouTube (new tab)">
@@ -248,5 +258,6 @@
     </div>
   </div>
 
+  <script async src="https://www.tiktok.com/embed.js"></script>
 </body>
 </html>
