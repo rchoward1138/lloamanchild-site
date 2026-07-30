@@ -455,7 +455,19 @@
       backdrop-filter: blur(15px);
     }
 
-    .intro-gate { background: rgba(0, 2, 9, .66); backdrop-filter: blur(6px) saturate(.82); }
+    .intro-gate {
+      background-color: #01030a;
+      background-image:
+        linear-gradient(rgba(0, 2, 9, .64), rgba(0, 2, 9, .76)),
+        radial-gradient(circle at 50% 35%, rgba(34, 247, 255, .10), transparent 45%),
+        url('PaperbackCoverFinal.png'),
+        url('Book-Cover.png');
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-attachment: fixed;
+      background-size: cover;
+      backdrop-filter: none;
+    }
     .intro-gate[hidden], .result-overlay[hidden] { display: none; }
     .gate-card,
     .result-card {
@@ -678,7 +690,8 @@
     }
 
     @media (max-width: 690px) {
-      body { background-attachment: scroll; }
+      body,
+      .intro-gate { background-attachment: scroll; }
       .shell { width: min(100% - 16px, 620px); padding-top: 18px; }
       .topbar { grid-template-columns: 1fr; }
       .sound-button { justify-self: start; }
