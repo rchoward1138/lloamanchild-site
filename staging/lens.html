@@ -52,10 +52,14 @@
     .video-card{position:relative;padding:24px;border:2px solid #ff4ad877;border-radius:18px;background:linear-gradient(155deg,#090817,#200929);box-shadow:0 0 28px #ff00c52b;overflow:hidden}
     .video-card:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 25%,#ffffff12 45%,transparent 62%);transform:translateX(-120%);animation:sweep 5s infinite}
     @keyframes sweep{70%,100%{transform:translateX(120%)}}
-    .screen{position:relative;min-height:210px;display:grid;place-items:center;margin-bottom:18px;border:1px solid #2cf6ff66;border-radius:14px;background-image:linear-gradient(#04071388,#15052488),url('PaperbackCoverFinal.png'),url('Book-Cover.png');background-position:center;background-size:cover;overflow:hidden}
-    .screen:after{content:"";position:absolute;width:110px;height:110px;border:7px solid #b8ffff;border-radius:50%;box-shadow:0 0 20px #00ffff,inset 0 0 18px #00ffff55;transform:rotate(-8deg)}
-    .screen:before{content:"";position:absolute;width:55px;height:12px;margin:104px 0 0 100px;border-radius:99px;background:#ff5cdb;box-shadow:0 0 14px #ff00c8;transform:rotate(48deg);z-index:2}
-    .play{position:relative;z-index:3;width:68px;height:68px;display:grid;place-items:center;border-radius:50%;background:#050817dd;border:2px solid white;color:white;font-size:1.75rem;padding-left:4px;box-shadow:0 0 22px #000}
+    .screen{position:relative;aspect-ratio:16/9;display:grid;place-items:center;margin-bottom:18px;border:1px solid #2cf6ff66;border-radius:14px;background:#040713;box-shadow:0 0 24px #00eaff1f;overflow:hidden}
+    .screen iframe{display:block;width:100%;height:100%;border:0}
+    .video-launch{position:absolute;inset:0;width:100%;height:100%;display:grid;place-items:center;padding:0;border:0;color:white;cursor:pointer;background-color:#050817;background-image:linear-gradient(#04071342,#1505248f),url('https://i.ytimg.com/vi/iMPzcbtBtds/hqdefault.jpg');background-position:center;background-size:cover}
+    .video-launch:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,transparent 20%,#04071370 82%)}
+    .video-launch:hover .play,.video-launch:focus-visible .play{transform:scale(1.08);background:#ff2cc8;border-color:var(--cyan);box-shadow:0 0 28px #00ffff88}
+    .video-launch:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+    .play{position:relative;z-index:3;width:72px;height:72px;display:grid;place-items:center;border-radius:50%;background:#050817e8;border:2px solid white;color:white;font-size:1.85rem;padding-left:5px;box-shadow:0 0 22px #000;transition:.2s}
+    .watch-prompt{position:absolute;z-index:3;right:14px;bottom:12px;left:14px;padding:.55rem .7rem;border-radius:8px;background:#050817d9;color:#fff;font-family:'Press Start 2P',monospace;font-size:clamp(.48rem,1.4vw,.63rem);line-height:1.5;text-align:center;text-shadow:0 0 8px #00eaff}
     .button{position:relative;z-index:2;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;padding:.95rem 1.1rem;border:2px solid var(--pink);border-radius:999px;background:linear-gradient(90deg,#6d0757,#31126c);color:white;font-family:Orbitron,sans-serif;font-weight:800;text-decoration:none;text-align:center;box-shadow:0 0 18px #ff00c744;transition:.2s}
     .button:hover,.button:focus-visible{transform:translateY(-2px);border-color:var(--cyan);box-shadow:0 0 24px #00ffff55;outline:none}
     .source-note{position:relative;z-index:2;margin:.8rem 0 0;color:#aebbd0;font-size:.78rem;text-align:center}
@@ -94,7 +98,7 @@
       <div>
         <div class="section-label">VIDEO EXPLORATION 001</div>
         <h2>The Lens of Make-Believe</h2>
-        <p class="meta">EPISODE 001 &nbsp;•&nbsp; VIDEO OVERVIEW &nbsp;•&nbsp; NOTEBOOKLM</p>
+        <p class="meta">EPISODE 001 &nbsp;•&nbsp; VIDEO OVERVIEW &nbsp;•&nbsp; YOUTUBE</p>
         <div class="copy">
           <p>What if the made-up worlds of childhood were never merely an escape from life—but one of the ways we learned how to live it?</p>
           <p><strong>The Lens of Make-Believe</strong> looks more closely at imagination, creativity, memory, and the stories we carry from childhood into the bewildering business of growing older.</p>
@@ -102,9 +106,15 @@
         </div>
       </div>
       <aside class="video-card" aria-label="Watch The Lens of Make-Believe">
-        <div class="screen" aria-hidden="true"><span class="play">▶</span></div>
-        <a class="button" href="https://notebook.google.com/notebook/3f22f557-1a11-46a0-9df0-6dc3a1993948/artifact/3974cbe5-4cb9-4e99-9ed5-ab16a32bc0ce" target="_blank" rel="noopener noreferrer">WATCH THE VIDEO ↗</a>
-        <p class="source-note">Public NotebookLM video • Opens in a new tab</p>
+        <div class="screen" id="video-screen">
+          <button class="video-launch" id="video-launch" type="button" aria-label="Play The Lens of Make-Believe here">
+            <span class="play" aria-hidden="true">▶</span>
+            <span class="watch-prompt">PLAY THE LENS OF MAKE-BELIEVE</span>
+          </button>
+          <noscript><a href="https://youtu.be/iMPzcbtBtds" target="_blank" rel="noopener noreferrer">Watch The Lens of Make-Believe on YouTube</a></noscript>
+        </div>
+        <a class="button" href="https://youtu.be/iMPzcbtBtds" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a>
+        <p class="source-note">Plays here in one click • Full-screen available in the player</p>
       </aside>
     </section>
 
@@ -135,6 +145,17 @@
   <script>
     const params=new URLSearchParams(location.search);
     if(params.get('found')==='1')document.getElementById('discovery').hidden=false;
+    const videoScreen=document.getElementById('video-screen');
+    const videoLaunch=document.getElementById('video-launch');
+    videoLaunch.addEventListener('click',()=>{
+      const player=document.createElement('iframe');
+      player.src='https://www.youtube-nocookie.com/embed/iMPzcbtBtds?autoplay=1&rel=0';
+      player.title='The Lens of Make-Believe';
+      player.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      player.referrerPolicy='strict-origin-when-cross-origin';
+      player.allowFullscreen=true;
+      videoScreen.replaceChildren(player);
+    });
     const shareButton=document.getElementById('share-lens');
     shareButton.addEventListener('click',async()=>{
       const shareData={title:'The Lens of Make-Believe | R.C. Howard',text:'Look closer at the imagination behind Life Lessons of a Man-Child: A Memoir?',url:`${location.origin}${location.pathname}#episode-001`};
