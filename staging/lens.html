@@ -55,7 +55,7 @@
     @keyframes sweep{70%,100%{transform:translateX(120%)}}
     .screen{position:relative;aspect-ratio:16/9;display:grid;place-items:center;margin-bottom:18px;border:1px solid #2cf6ff66;border-radius:14px;background:#040713;box-shadow:0 0 24px #00eaff1f;overflow:hidden}
     .screen iframe{display:block;width:100%;height:100%;border:0}
-    .video-launch{position:absolute;inset:0;width:100%;height:100%;display:grid;place-items:center;padding:0;border:0;color:white;cursor:pointer;background-color:#050817;background-image:linear-gradient(#04071342,#1505248f),url('https://i.ytimg.com/vi/iMPzcbtBtds/hqdefault.jpg');background-position:center;background-size:cover}
+    .video-launch{position:absolute;inset:0;width:100%;height:100%;display:grid;place-items:center;padding:0;border:0;color:white;cursor:pointer;background-color:#050817;background-image:linear-gradient(#04071342,#1505248f),var(--video-thumb);background-position:center;background-size:cover}
     .video-launch:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,transparent 20%,#04071370 82%)}
     .video-launch:hover .play,.video-launch:focus-visible .play{transform:scale(1.08);background:#ff2cc8;border-color:var(--cyan);box-shadow:0 0 28px #00ffff88}
     .video-launch:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
@@ -108,7 +108,7 @@
       </div>
       <aside class="video-card" aria-label="Watch The Lens of Make-Believe">
         <div class="screen" id="video-screen">
-          <button class="video-launch" type="button" data-video-id="iMPzcbtBtds" data-video-title="The Lens of Make-Believe" aria-label="Play The Lens of Make-Believe here">
+          <button class="video-launch" type="button" data-video-id="iMPzcbtBtds" data-video-title="The Lens of Make-Believe" style="--video-thumb:url('https://i.ytimg.com/vi/iMPzcbtBtds/hqdefault.jpg')" aria-label="Play The Lens of Make-Believe here">
             <span class="play" aria-hidden="true">▶</span>
             <span class="watch-prompt">PLAY THE LENS OF MAKE-BELIEVE</span>
           </button>
@@ -132,7 +132,7 @@
       </div>
       <aside class="video-card" aria-label="Watch The ‘Nothing’ Problem: Why We Forget How to Play">
         <div class="screen">
-          <button class="video-launch" type="button" data-video-id="Vj1b-f5QJqM" data-video-title="The ‘Nothing’ Problem: Why We Forget How to Play" aria-label="Play The ‘Nothing’ Problem here">
+          <button class="video-launch" type="button" data-video-id="Vj1b-f5QJqM" data-video-title="The ‘Nothing’ Problem: Why We Forget How to Play" style="--video-thumb:url('https://i.ytimg.com/vi/Vj1b-f5QJqM/hqdefault.jpg')" aria-label="Play The ‘Nothing’ Problem here">
             <span class="play" aria-hidden="true">▶</span>
             <span class="watch-prompt">PLAY THE ‘NOTHING’ PROBLEM</span>
           </button>
