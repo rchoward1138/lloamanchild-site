@@ -46,6 +46,7 @@
     @keyframes lensFloat{50%{transform:translateY(-9px) rotate(-5deg)}}
     .panel{margin-top:32px;padding:clamp(24px,4vw,42px);border:1px solid #72eaff55;border-radius:20px;background:linear-gradient(145deg,#0b1224ee,#16091fee);box-shadow:0 18px 50px #0008,inset 0 0 30px #24eaff0b}
     .episode{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:32px;align-items:center}
+    .episode + .episode{margin-top:24px}
     .panel h2{margin:.3rem 0 .7rem;color:var(--cyan);font-size:clamp(1.65rem,4vw,2.65rem);line-height:1.15}
     .meta{margin:.25rem 0 1.1rem;color:var(--gold);font-weight:700;letter-spacing:.06em}
     .copy{color:#d8e5f2}.copy p{margin:.7rem 0}.copy strong{color:white}
@@ -107,13 +108,37 @@
       </div>
       <aside class="video-card" aria-label="Watch The Lens of Make-Believe">
         <div class="screen" id="video-screen">
-          <button class="video-launch" id="video-launch" type="button" aria-label="Play The Lens of Make-Believe here">
+          <button class="video-launch" type="button" data-video-id="iMPzcbtBtds" data-video-title="The Lens of Make-Believe" aria-label="Play The Lens of Make-Believe here">
             <span class="play" aria-hidden="true">▶</span>
             <span class="watch-prompt">PLAY THE LENS OF MAKE-BELIEVE</span>
           </button>
           <noscript><a href="https://youtu.be/iMPzcbtBtds" target="_blank" rel="noopener noreferrer">Watch The Lens of Make-Believe on YouTube</a></noscript>
         </div>
         <a class="button" href="https://youtu.be/iMPzcbtBtds" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a>
+        <p class="source-note">Plays here in one click • Full-screen available in the player</p>
+      </aside>
+    </section>
+
+    <section class="panel episode" id="episode-002">
+      <div>
+        <div class="section-label">VIDEO EXPLORATION 002</div>
+        <h2>The ‘Nothing’ Problem: Why We Forget How to Play</h2>
+        <p class="meta">EPISODE 002 &nbsp;•&nbsp; VIDEO OVERVIEW &nbsp;•&nbsp; 4:39 &nbsp;•&nbsp; YOUTUBE</p>
+        <div class="copy">
+          <p>At some point, childhood’s glorious “nothing” became adulthood’s dreaded waste of time. But what did we lose when play stopped being reason enough?</p>
+          <p><strong>The ‘Nothing’ Problem</strong> looks at the strange adult habit of dismissing unstructured play—even though those apparently idle hours once taught us how to imagine, experiment, fail, laugh, and begin again.</p>
+          <p>Through the Man-Child Lens, this exploration asks whether growing older truly requires us to outgrow play—or whether remembering how to play might help us become more fully ourselves.</p>
+        </div>
+      </div>
+      <aside class="video-card" aria-label="Watch The ‘Nothing’ Problem: Why We Forget How to Play">
+        <div class="screen">
+          <button class="video-launch" type="button" data-video-id="Vj1b-f5QJqM" data-video-title="The ‘Nothing’ Problem: Why We Forget How to Play" aria-label="Play The ‘Nothing’ Problem here">
+            <span class="play" aria-hidden="true">▶</span>
+            <span class="watch-prompt">PLAY THE ‘NOTHING’ PROBLEM</span>
+          </button>
+          <noscript><a href="https://youtu.be/Vj1b-f5QJqM" target="_blank" rel="noopener noreferrer">Watch The ‘Nothing’ Problem on YouTube</a></noscript>
+        </div>
+        <a class="button" href="https://youtu.be/Vj1b-f5QJqM" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a>
         <p class="source-note">Plays here in one click • Full-screen available in the player</p>
       </aside>
     </section>
@@ -145,16 +170,22 @@
   <script>
     const params=new URLSearchParams(location.search);
     if(params.get('found')==='1')document.getElementById('discovery').hidden=false;
-    const videoScreen=document.getElementById('video-screen');
-    const videoLaunch=document.getElementById('video-launch');
-    videoLaunch.addEventListener('click',()=>{
-      const player=document.createElement('iframe');
-      player.src='https://www.youtube-nocookie.com/embed/iMPzcbtBtds?autoplay=1&rel=0';
-      player.title='The Lens of Make-Believe';
-      player.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-      player.referrerPolicy='strict-origin-when-cross-origin';
-      player.allowFullscreen=true;
-      videoScreen.replaceChildren(player);
+    let activeVideo=null;
+    document.querySelectorAll('.video-launch').forEach(videoLaunch=>{
+      videoLaunch.addEventListener('click',()=>{
+        const videoScreen=videoLaunch.closest('.screen');
+        if(activeVideo&&activeVideo.screen!==videoScreen){
+          activeVideo.screen.replaceChildren(activeVideo.launch);
+        }
+        const player=document.createElement('iframe');
+        player.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoLaunch.dataset.videoId)}?autoplay=1&rel=0`;
+        player.title=videoLaunch.dataset.videoTitle;
+        player.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        player.referrerPolicy='strict-origin-when-cross-origin';
+        player.allowFullscreen=true;
+        videoScreen.replaceChildren(player);
+        activeVideo={screen:videoScreen,launch:videoLaunch};
+      });
     });
     const shareButton=document.getElementById('share-lens');
     shareButton.addEventListener('click',async()=>{
