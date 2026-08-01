@@ -133,7 +133,7 @@
         label.textContent = playing ? "80'S LOVE · PLAYING" : 'PRESS PLAY ON THE PAST';
       };
 
-      const fadeTo = (volume, duration, done) => {
+      const fadeTo = (volume, duration) => {
         cancelAnimationFrame(fadeFrame);
         const startVolume = music.volume;
         const startTime = performance.now();
@@ -142,7 +142,6 @@
           const progress = fadeDuration === 0 ? 1 : Math.min((now - startTime) / fadeDuration, 1);
           music.volume = startVolume + (volume - startVolume) * progress;
           if (progress < 1) fadeFrame = requestAnimationFrame(step);
-          else if (done) done();
         };
         fadeFrame = requestAnimationFrame(step);
       };
@@ -161,10 +160,11 @@
 
       const pauseMusic = (remember = true) => {
         if (remember) localStorage.setItem('manChildDashboardMusic', 'off');
-        fadeTo(0, 450, () => {
+        fadeTo(0, 450);
+        setTimeout(() => {
           music.pause();
           setControl();
-        });
+        }, reducedMotion ? 0 : 450);
       };
 
       const rememberPosition = () => {
@@ -176,10 +176,13 @@
         navigating = true;
         rememberPosition();
         if (music.paused) location.assign(href);
-        else fadeTo(0, 550, () => {
-          music.pause();
-          location.assign(href);
-        });
+        else {
+          fadeTo(0, 550);
+          setTimeout(() => {
+            music.pause();
+            location.assign(href);
+          }, reducedMotion ? 0 : 550);
+        }
       };
 
       music.addEventListener('loadedmetadata', () => {
