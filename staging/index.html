@@ -75,12 +75,12 @@
     <div class="welcome-heading">
       <p class="welcome-kicker">R.C. HOWARD PRESENTS</p>
       <h2 class="welcome-title" id="welcome-title">LIFE LESSONS<br>OF A MAN-CHILD</h2>
-      <p class="welcome-memory">EVERY STORY HAS A BEGINNING.</p>
+      <p class="welcome-memory">EVERY STORY HAS A BEGINNING.<br>NOT EVERY STORY HAS TO END.</p>
     </div>
     <div aria-hidden="true"></div>
     <div class="welcome-start">
       <button class="start-button" id="start-button" type="button">PRESS START TO PLAY</button>
-      <p class="welcome-sound">SOUND ON · A MEMORY AWAITS</p>
+      <p class="welcome-sound">A LIFE LESSON AWAITS</p>
     </div>
   </section>
   <noscript><style>.welcome-gate{display:none!important}body{overflow:auto!important}</style></noscript>
@@ -98,6 +98,7 @@
         For R.C. Howard, it began with eight dusty, forgotten tales—stories he wrote when life was simpler, dreams were bigger, and the world was filled with pure imagination, not digital domination.<br><br>
         What happens when those stories call out to him decades later, begging to be revisited, aching to be rewritten and demanding to be shared—only to lead him somewhere unexpected?<br><br>
         <em>Life Lessons of a Man-Child</em> takes you back to where it all started, as Howard returns to his childhood, his love for Star Wars, his passion for writing, and the moments that shaped him. What he discovers isn't just nostalgia—it's a reminder of what matters most: to be creative, to be selfless, to be fearless...and above all, to believe.<br><br>
+        Howard invites you to laugh, cry, and rekindle the wonder of growing up—or perhaps, never growing up at all. <em>Life Lessons of a Man-Child</em> is a journey through the heart, where the smallest stories lead to the biggest revelations, one of them being...<br><br>
         <strong>Not every story has to end.</strong>
       </div>
 
@@ -152,7 +153,9 @@
       const gate = document.getElementById('welcome-gate');
       const startButton = document.getElementById('start-button');
       const targetVolume = 0.18;
+      const keepAliveVolume = 0.001;
       const gateStorageKey = 'manChildWelcomeComplete:staging';
+      const musicWantedStorageKey = 'manChildMusicWanted:staging';
       const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
       const siteAlreadyEntered = (() => {
         try {
@@ -166,6 +169,22 @@
       let navigating = false;
       let autoplayBlocked = false;
       const autoplayEvents = ['pointerdown', 'keydown', 'touchstart'];
+
+      const musicIsWanted = () => {
+        try {
+          return sessionStorage.getItem(musicWantedStorageKey) !== '0';
+        } catch (error) {
+          return true;
+        }
+      };
+
+      const setMusicWanted = wanted => {
+        try {
+          sessionStorage.setItem(musicWantedStorageKey, wanted ? '1' : '0');
+        } catch (error) {
+          // Playback still works when storage is unavailable; only the preference is temporary.
+        }
+      };
 
       const setControl = () => {
         const playing = !music.paused;
@@ -210,6 +229,7 @@
       const playMusic = async () => {
         autoplayBlocked = false;
         disarmAutoplayFallback();
+        setMusicWanted(true);
         music.volume = 0;
         try {
           await music.play();
@@ -225,6 +245,7 @@
       const pauseMusic = () => {
         autoplayBlocked = false;
         disarmAutoplayFallback();
+        setMusicWanted(false);
         fadeTo(0, 450);
         setTimeout(() => {
           music.pause();
@@ -248,6 +269,7 @@
         } catch (error) {
           // The gate still works when storage is unavailable; it simply cannot remember this visit.
         }
+        setMusicWanted(true);
         playMusic();
         dismissGate();
       };
@@ -264,11 +286,16 @@
         destination.searchParams.set('dashboardReturn', '1');
         if (music.paused) location.assign(destination.href);
         else {
-          fadeTo(0, 550);
-          setTimeout(() => {
-            music.pause();
+          // Keep the authorized media element logically playing while this page is
+          // preserved in browser history. Muting without pausing avoids a fresh,
+          // browser-blockable play() request when the visitor returns.
+          if (reducedMotion) {
+            music.volume = keepAliveVolume;
             location.assign(destination.href);
-          }, reducedMotion ? 0 : 550);
+          } else {
+            fadeTo(keepAliveVolume, 550);
+            setTimeout(() => location.assign(destination.href), 550);
+          }
         }
       };
 
@@ -282,7 +309,9 @@
       window.addEventListener('pagehide', rememberPosition);
       window.addEventListener('pageshow', event => {
         navigating = false;
-        if (event.persisted && music.paused) playMusic();
+        if (!event.persisted || !musicIsWanted()) return;
+        if (music.paused) playMusic();
+        else fadeTo(targetVolume, 750);
       });
 
       toggle.addEventListener('click', () => music.paused ? playMusic() : pauseMusic());
@@ -302,7 +331,7 @@
         gate.hidden = true;
         gate.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('gate-locked');
-        playMusic();
+        if (musicIsWanted()) playMusic();
       } else {
         gatedSiblings.forEach(element => { element.inert = true; });
         startButton.focus({ preventScroll: true });
