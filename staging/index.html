@@ -152,7 +152,15 @@
       const gate = document.getElementById('welcome-gate');
       const startButton = document.getElementById('start-button');
       const targetVolume = 0.18;
+      const gateStorageKey = 'manChildWelcomeComplete:staging';
       const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const siteAlreadyEntered = (() => {
+        try {
+          return sessionStorage.getItem(gateStorageKey) === '1';
+        } catch (error) {
+          return false;
+        }
+      })();
       const gatedSiblings = [...document.body.children].filter(element => !element.matches('#welcome-gate, .stage, script, noscript'));
       let fadeFrame = 0;
       let navigating = false;
@@ -235,6 +243,11 @@
       };
 
       const enterSite = () => {
+        try {
+          sessionStorage.setItem(gateStorageKey, '1');
+        } catch (error) {
+          // The gate still works when storage is unavailable; it simply cannot remember this visit.
+        }
         playMusic();
         dismissGate();
       };
@@ -283,8 +296,15 @@
       catPaw.addEventListener('click', () => leaveDashboard('cat-library-runner.html'));
 
       setControl();
-      gatedSiblings.forEach(element => { element.inert = true; });
-      startButton.focus({ preventScroll: true });
+      if (siteAlreadyEntered) {
+        gate.hidden = true;
+        gate.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('gate-locked');
+        playMusic();
+      } else {
+        gatedSiblings.forEach(element => { element.inert = true; });
+        startButton.focus({ preventScroll: true });
+      }
     })();
   </script>
 </body>
