@@ -153,10 +153,6 @@
       const startButton = document.getElementById('start-button');
       const targetVolume = 0.18;
       const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const gateScope = location.pathname.includes('/staging') ? 'staging' : 'live';
-      const gateStorageKey = `manChildWelcomeEntered:${gateScope}`;
-      const forceGate = new URLSearchParams(location.search).has('welcome');
-      const showGate = forceGate || sessionStorage.getItem(gateStorageKey) !== '1';
       const gatedSiblings = [...document.body.children].filter(element => !element.matches('#welcome-gate, .stage, script, noscript'));
       let fadeFrame = 0;
       let navigating = false;
@@ -239,7 +235,6 @@
       };
 
       const enterSite = () => {
-        sessionStorage.setItem(gateStorageKey, '1');
         playMusic();
         dismissGate();
       };
@@ -288,14 +283,8 @@
       catPaw.addEventListener('click', () => leaveDashboard('cat-library-runner.html'));
 
       setControl();
-      if (showGate) {
-        gatedSiblings.forEach(element => { element.inert = true; });
-        startButton.focus({ preventScroll: true });
-      } else {
-        gate.hidden = true;
-        document.body.classList.remove('gate-locked');
-        playMusic();
-      }
+      gatedSiblings.forEach(element => { element.inert = true; });
+      startButton.focus({ preventScroll: true });
     })();
   </script>
 </body>
