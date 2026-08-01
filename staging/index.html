@@ -17,7 +17,7 @@
     body.gate-locked{overflow:hidden}
     body:after{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,.05) 1px,transparent 1px);background-size:50px 50px;z-index:1}
     .stage{position:fixed;inset:0 0 auto;z-index:120;min-height:54px;display:flex;justify-content:center;align-items:center;text-align:center;padding:.7rem 1rem;background:linear-gradient(90deg,#ffbf00,#ff7a00);border-bottom:3px solid #111;color:#111;font-weight:900;letter-spacing:.05em;box-shadow:0 4px 16px #0008}
-    .welcome-gate{position:fixed;inset:0;z-index:100;min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto;align-items:start;padding:calc(54px + clamp(20px,4vh,42px)) 20px clamp(28px,6vh,64px);background-image:linear-gradient(180deg,rgba(5,0,18,.24),rgba(5,0,18,.02) 45%,rgba(5,0,18,.7)),url('assets/press-start-hand.webp');background-position:center;background-size:cover;background-repeat:no-repeat;text-align:center;isolation:isolate;overflow:hidden;transition:opacity .8s ease,transform .8s ease,filter .8s ease}
+    .welcome-gate{position:fixed;inset:0;z-index:100;min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto;align-items:start;padding:calc(54px + clamp(20px,4vh,42px)) 20px clamp(28px,6vh,64px);background-image:linear-gradient(180deg,rgba(5,0,18,.42),rgba(5,0,18,.06) 42%,rgba(5,0,18,.76)),url('assets/atari-joystick-mime.webp');background-position:center;background-size:cover;background-repeat:no-repeat;text-align:center;isolation:isolate;overflow:hidden;transition:opacity .8s ease,transform .8s ease,filter .8s ease}
     .welcome-gate:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 50% 52%,transparent 25%,rgba(3,0,14,.14) 58%,rgba(3,0,14,.82) 100%),repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0,rgba(255,255,255,.022) 1px,transparent 1px,transparent 4px)}
     .welcome-gate[hidden]{display:none!important}
     .welcome-gate.is-leaving{opacity:0;transform:scale(1.025);filter:blur(3px);pointer-events:none}
@@ -50,7 +50,7 @@
     .icon{font-size:1.4rem;margin-bottom:.45rem}.title{font-family:'Press Start 2P',monospace;font-size:.68rem;margin-bottom:.55rem}.desc{font-size:.72rem;color:#ccc}.more{grid-column:1/-1}
     .amazon{display:inline-block;margin-top:2rem;padding:1rem 2rem;border:2px solid var(--yellow);border-radius:999px;background:linear-gradient(45deg,#ff6600,#ff3300);color:white;font-family:Orbitron,sans-serif;font-weight:700;text-decoration:none;box-shadow:0 0 18px #ff660088;transition:.25s}.amazon:hover{transform:translateY(-3px) scale(1.04)}
     .quote{margin-top:2rem;padding-top:1.5rem;border-top:2px solid #00ffff44;color:#9ffcff;font-style:italic}
-    .music-dock{position:fixed;top:76px;right:1.1rem;z-index:30;width:220px;padding:.7rem;border:1px solid #00ffff77;border-radius:11px;background:#080013e8;box-shadow:0 0 18px #00ffff44,inset 0 0 16px #ff00ff18;backdrop-filter:blur(8px);text-align:center}
+    .music-dock{position:fixed;left:1.1rem;bottom:1.1rem;z-index:30;width:220px;padding:.7rem;border:1px solid #00ffff77;border-radius:11px;background:#080013e8;box-shadow:0 0 18px #00ffff44,inset 0 0 16px #ff00ff18;backdrop-filter:blur(8px);text-align:center}
     .music-toggle{width:100%;display:grid;grid-template-columns:auto 1fr;gap:.55rem;align-items:center;padding:.7rem .65rem;border:1px solid var(--pink);border-radius:8px;background:linear-gradient(135deg,#26003c,#101237);color:#8fffff;font-family:'Press Start 2P',monospace;font-size:.46rem;line-height:1.45;letter-spacing:.04em;cursor:pointer;box-shadow:0 0 10px #ff00ff44;transition:.22s ease}
     .music-toggle:hover,.music-toggle:focus-visible{color:white;border-color:var(--cyan);box-shadow:0 0 15px #00ffff77;outline:none;transform:translateY(-1px)}
     .music-toggle[data-state="playing"]{color:var(--yellow);border-color:var(--yellow);box-shadow:0 0 14px #ffff0066}
@@ -64,8 +64,8 @@
     .lens-symbol:after{content:"";position:absolute;width:21px;height:5px;right:-17px;bottom:-8px;border-radius:99px;background:#ff78ee;transform:rotate(47deg);box-shadow:0 0 8px #ff00ff}
     .lens-tooltip{position:absolute;left:66px;top:50%;width:max-content;max-width:170px;transform:translateY(-50%) translateX(-5px);padding:.55rem .7rem;border:1px solid #ff61e8;border-radius:8px;background:#090014e8;color:#ff9bf0;font-family:'Press Start 2P',monospace;font-size:.5rem;line-height:1.4;letter-spacing:.08em;opacity:0;pointer-events:none;transition:.2s ease}
     .lens-shortcut:hover .lens-tooltip,.lens-shortcut:focus-visible .lens-tooltip{opacity:1;transform:translateY(-50%) translateX(0)}
-    @media(max-width:1120px){.music-dock{position:relative;top:auto;right:auto;width:min(520px,calc(100% - 28px));margin:18px auto -14px}.lens-shortcut{top:auto;bottom:1.25rem;left:.9rem}.lens-tooltip{left:55px}}
-    @media(max-width:700px){body{padding-top:68px;background-attachment:scroll}.stage{min-height:68px;font-size:.78rem}.welcome-gate{padding-top:calc(68px + 20px);padding-bottom:32px;background-position:center center}.welcome-title{font-size:clamp(1.45rem,8vw,2.35rem)}.welcome-memory{font-size:.46rem}.start-button{min-width:min(92vw,360px);padding:.85rem 1rem;font-size:.58rem}.start-button:before{width:23px;height:23px;flex-basis:23px}.media-features,.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.more{grid-column:auto}.music-dock{margin-top:14px}.music-toggle{font-size:.43rem}.lens-shortcut{width:46px;height:46px;bottom:1rem;left:.6rem}.lens-symbol{width:29px;height:29px;border-width:3px}.lens-symbol:after{width:18px;height:4px;right:-15px;bottom:-7px}.lens-tooltip{display:none}}
+    @media(max-width:1180px){.music-dock{position:relative;left:auto;bottom:auto;width:min(300px,calc(100% - 120px));margin:18px auto 82px}}
+    @media(max-width:700px){body{padding-top:68px;background-attachment:scroll}.stage{min-height:68px;font-size:.78rem}.welcome-gate{padding-top:calc(68px + 20px);padding-bottom:32px;background-position:center center}.welcome-title{font-size:clamp(1.45rem,8vw,2.35rem)}.welcome-memory{font-size:.46rem}.start-button{min-width:min(92vw,360px);padding:.85rem 1rem;font-size:.58rem}.start-button:before{width:23px;height:23px;flex-basis:23px}.media-features,.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.more{grid-column:auto}.music-toggle{font-size:.43rem}.lens-shortcut{top:auto;width:46px;height:46px;bottom:1rem;left:.6rem}.lens-symbol{width:29px;height:29px;border-width:3px}.lens-symbol:after{width:18px;height:4px;right:-15px;bottom:-7px}.lens-tooltip{display:none}}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
 </head>
@@ -87,17 +87,6 @@
   <audio id="dashboard-music" preload="auto" loop playsinline>
     <source src="audio/helkimer-80s-love.mp3" type="audio/mpeg">
   </audio>
-  <aside class="music-dock" aria-label="Dashboard music controls">
-    <button class="music-toggle" id="music-toggle" type="button" data-state="paused" aria-pressed="false">
-      <span class="music-cassette" aria-hidden="true">📼</span>
-      <span id="music-label" aria-live="polite">STARTING 80\'S LOVE...</span>
-    </button>
-    <div class="music-credit">
-      <a href="https://soundcloud.com/helkimer" target="_blank" rel="noopener noreferrer">“80s Love” by Helkimer</a><br>
-      Royalty Free Music by <a href="https://www.free-stock-music.com/helkimer-80s-love.html" target="_blank" rel="noopener noreferrer">free-stock-music.com</a><br>
-      <a href="https://creativecommons.org/licenses/by-nd/4.0/" target="_blank" rel="noopener noreferrer">CC BY-ND 4.0</a>
-    </div>
-  </aside>
   <main class="container">
     <section class="panel">
       <h1>LIFE LESSONS<br>OF A MAN-CHILD</h1>
@@ -141,6 +130,17 @@
       <div class="quote">“Howard invites you to laugh, cry, and rekindle the wonder of growing up... or perhaps, never growing up at all.”</div>
     </section>
   </main>
+  <aside class="music-dock" aria-label="Dashboard music controls">
+    <button class="music-toggle" id="music-toggle" type="button" data-state="paused" aria-pressed="false">
+      <span class="music-cassette" aria-hidden="true">📼</span>
+      <span id="music-label" aria-live="polite">STARTING 80\'S LOVE...</span>
+    </button>
+    <div class="music-credit">
+      <a href="https://soundcloud.com/helkimer" target="_blank" rel="noopener noreferrer">“80s Love” by Helkimer</a><br>
+      Royalty Free Music by <a href="https://www.free-stock-music.com/helkimer-80s-love.html" target="_blank" rel="noopener noreferrer">free-stock-music.com</a><br>
+      <a href="https://creativecommons.org/licenses/by-nd/4.0/" target="_blank" rel="noopener noreferrer">CC BY-ND 4.0</a>
+    </div>
+  </aside>
   <a class="lens-shortcut" href="lens.html?found=1" aria-label="Look closer. Discover Through the Man-Child Lens."><span class="lens-symbol" aria-hidden="true"></span><span class="lens-tooltip" aria-hidden="true">LOOK CLOSER...</span></a>
   <button class="cat-paw" id="cat-paw" type="button" aria-label="Jumpin' Punkin' game">🐾</button>
   <script>
