@@ -14,8 +14,23 @@
     *{box-sizing:border-box;margin:0;padding:0}
     :root{--cyan:#00ffff;--pink:#ff00ff;--yellow:#ffff00;--panel:rgba(0,0,0,.62)}
     body{min-height:100vh;padding-top:54px;color:white;font-family:Roboto,sans-serif;background-image:linear-gradient(rgba(20,0,40,.56),rgba(40,0,80,.56)),url('PaperbackCoverFinal.png'),url('Book-Cover.png');background-position:center;background-size:cover;background-attachment:fixed;overflow-x:hidden}
+    body.gate-locked{overflow:hidden}
     body:after{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,.05) 1px,transparent 1px);background-size:50px 50px;z-index:1}
-    .stage{position:fixed;inset:0 0 auto;z-index:50;min-height:54px;display:flex;justify-content:center;align-items:center;text-align:center;padding:.7rem 1rem;background:linear-gradient(90deg,#ffbf00,#ff7a00);border-bottom:3px solid #111;color:#111;font-weight:900;letter-spacing:.05em;box-shadow:0 4px 16px #0008}
+    .stage{position:fixed;inset:0 0 auto;z-index:120;min-height:54px;display:flex;justify-content:center;align-items:center;text-align:center;padding:.7rem 1rem;background:linear-gradient(90deg,#ffbf00,#ff7a00);border-bottom:3px solid #111;color:#111;font-weight:900;letter-spacing:.05em;box-shadow:0 4px 16px #0008}
+    .welcome-gate{position:fixed;inset:0;z-index:100;min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto;align-items:start;padding:calc(54px + clamp(20px,4vh,42px)) 20px clamp(28px,6vh,64px);background-image:linear-gradient(180deg,rgba(5,0,18,.24),rgba(5,0,18,.02) 45%,rgba(5,0,18,.7)),url('assets/press-start-hand.webp');background-position:center;background-size:cover;background-repeat:no-repeat;text-align:center;isolation:isolate;overflow:hidden;transition:opacity .8s ease,transform .8s ease,filter .8s ease}
+    .welcome-gate:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 50% 52%,transparent 25%,rgba(3,0,14,.14) 58%,rgba(3,0,14,.82) 100%),repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0,rgba(255,255,255,.022) 1px,transparent 1px,transparent 4px)}
+    .welcome-gate[hidden]{display:none!important}
+    .welcome-gate.is-leaving{opacity:0;transform:scale(1.025);filter:blur(3px);pointer-events:none}
+    .welcome-heading{position:relative;z-index:1;text-shadow:0 3px 14px #000,0 0 24px #000}
+    .welcome-kicker{margin-bottom:.75rem;color:var(--yellow);font-family:'Press Start 2P',monospace;font-size:clamp(.46rem,1vw,.68rem);line-height:1.7;letter-spacing:.2em}
+    .welcome-title{color:var(--cyan);font-family:Orbitron,sans-serif;font-size:clamp(1.6rem,5.4vw,4rem);font-weight:900;line-height:.98;letter-spacing:.035em;text-shadow:0 0 11px #00ffff,0 0 34px #00ffff88,0 4px 18px #000}
+    .welcome-memory{margin-top:.9rem;color:#ff9af2;font-family:'Press Start 2P',monospace;font-size:clamp(.48rem,1.15vw,.73rem);line-height:1.65;letter-spacing:.12em;text-shadow:0 0 10px #ff00ff,0 2px 10px #000}
+    .welcome-start{position:relative;z-index:2;align-self:end;display:grid;justify-items:center;gap:.75rem}
+    .start-button{display:flex;align-items:center;justify-content:center;gap:clamp(.7rem,2vw,1.15rem);min-width:min(92vw,430px);padding:1rem 1.35rem;border:3px solid var(--cyan);border-radius:12px;background:linear-gradient(180deg,#190128,#08000f);color:white;font-family:'Press Start 2P',monospace;font-size:clamp(.62rem,1.7vw,.9rem);line-height:1.5;letter-spacing:.08em;cursor:pointer;box-shadow:0 0 20px #00ffff88,inset 0 0 20px #ff00ff35,0 8px 0 #030006;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+    .start-button:before{content:"";width:27px;height:27px;flex:0 0 27px;border:3px solid #ff9d9d;border-radius:50%;background:radial-gradient(circle at 38% 30%,#ffb0a6 0 8%,#ff352d 32%,#a90000 75%);box-shadow:0 0 13px #ff2e27,0 3px 0 #570000}
+    .start-button:hover,.start-button:focus-visible{border-color:var(--pink);box-shadow:0 0 28px #ff00ffaa,inset 0 0 24px #00ffff35,0 8px 0 #030006;outline:none;transform:translateY(-2px)}
+    .start-button:active{transform:translateY(5px);box-shadow:0 0 18px #ff00ff88,inset 0 0 24px #00ffff35,0 2px 0 #030006}
+    .welcome-sound{color:#a9fbff;font-family:'Press Start 2P',monospace;font-size:clamp(.4rem,.85vw,.55rem);line-height:1.6;letter-spacing:.1em;text-shadow:0 2px 8px #000}
     .container{position:relative;z-index:2;width:min(960px,calc(100% - 28px));margin:auto;padding:32px 0 60px}
     .panel{background:var(--panel);border:2px solid var(--cyan);border-radius:14px;padding:clamp(22px,5vw,48px);box-shadow:0 0 28px #00ffff55,inset 0 0 25px #00ffff12;backdrop-filter:blur(2px);text-align:center}
     h1{font-family:Orbitron,sans-serif;font-size:clamp(2rem,7vw,3.8rem);line-height:1.05;color:var(--cyan);text-shadow:0 0 12px var(--cyan),0 0 32px #00ffff88}
@@ -50,13 +65,26 @@
     .lens-tooltip{position:absolute;left:66px;top:50%;width:max-content;max-width:170px;transform:translateY(-50%) translateX(-5px);padding:.55rem .7rem;border:1px solid #ff61e8;border-radius:8px;background:#090014e8;color:#ff9bf0;font-family:'Press Start 2P',monospace;font-size:.5rem;line-height:1.4;letter-spacing:.08em;opacity:0;pointer-events:none;transition:.2s ease}
     .lens-shortcut:hover .lens-tooltip,.lens-shortcut:focus-visible .lens-tooltip{opacity:1;transform:translateY(-50%) translateX(0)}
     @media(max-width:1120px){.music-dock{position:relative;top:auto;right:auto;width:min(520px,calc(100% - 28px));margin:18px auto -14px}.lens-shortcut{top:auto;bottom:1.25rem;left:.9rem}.lens-tooltip{left:55px}}
-    @media(max-width:700px){body{padding-top:68px;background-attachment:scroll}.stage{min-height:68px;font-size:.78rem}.media-features,.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.more{grid-column:auto}.music-dock{margin-top:14px}.music-toggle{font-size:.43rem}.lens-shortcut{width:46px;height:46px;bottom:1rem;left:.6rem}.lens-symbol{width:29px;height:29px;border-width:3px}.lens-symbol:after{width:18px;height:4px;right:-15px;bottom:-7px}.lens-tooltip{display:none}}
+    @media(max-width:700px){body{padding-top:68px;background-attachment:scroll}.stage{min-height:68px;font-size:.78rem}.welcome-gate{padding-top:calc(68px + 20px);padding-bottom:32px;background-position:center center}.welcome-title{font-size:clamp(1.45rem,8vw,2.35rem)}.welcome-memory{font-size:.46rem}.start-button{min-width:min(92vw,360px);padding:.85rem 1rem;font-size:.58rem}.start-button:before{width:23px;height:23px;flex-basis:23px}.media-features,.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.more{grid-column:auto}.music-dock{margin-top:14px}.music-toggle{font-size:.43rem}.lens-shortcut{width:46px;height:46px;bottom:1rem;left:.6rem}.lens-symbol{width:29px;height:29px;border-width:3px}.lens-symbol:after{width:18px;height:4px;right:-15px;bottom:-7px}.lens-tooltip{display:none}}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
 </head>
-<body>
+<body class="gate-locked">
   <div class="stage">STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</div>
-  <audio id="dashboard-music" preload="auto" autoplay loop playsinline>
+  <section class="welcome-gate" id="welcome-gate" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="welcome-heading">
+      <p class="welcome-kicker">R.C. HOWARD PRESENTS</p>
+      <h2 class="welcome-title" id="welcome-title">LIFE LESSONS<br>OF A MAN-CHILD</h2>
+      <p class="welcome-memory">EVERY STORY HAS A BEGINNING.</p>
+    </div>
+    <div aria-hidden="true"></div>
+    <div class="welcome-start">
+      <button class="start-button" id="start-button" type="button">PRESS START TO PLAY</button>
+      <p class="welcome-sound">SOUND ON · A MEMORY AWAITS</p>
+    </div>
+  </section>
+  <noscript><style>.welcome-gate{display:none!important}body{overflow:auto!important}</style></noscript>
+  <audio id="dashboard-music" preload="auto" loop playsinline>
     <source src="audio/helkimer-80s-love.mp3" type="audio/mpeg">
   </audio>
   <aside class="music-dock" aria-label="Dashboard music controls">
@@ -121,8 +149,15 @@
       const toggle = document.getElementById('music-toggle');
       const label = document.getElementById('music-label');
       const catPaw = document.getElementById('cat-paw');
+      const gate = document.getElementById('welcome-gate');
+      const startButton = document.getElementById('start-button');
       const targetVolume = 0.18;
       const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const gateScope = location.pathname.includes('/staging') ? 'staging' : 'live';
+      const gateStorageKey = `manChildWelcomeEntered:${gateScope}`;
+      const forceGate = new URLSearchParams(location.search).has('welcome');
+      const showGate = forceGate || sessionStorage.getItem(gateStorageKey) !== '1';
+      const gatedSiblings = [...document.body.children].filter(element => !element.matches('#welcome-gate, .stage, script, noscript'));
       let fadeFrame = 0;
       let navigating = false;
       let autoplayBlocked = false;
@@ -193,6 +228,22 @@
         }, reducedMotion ? 0 : 450);
       };
 
+      const dismissGate = () => {
+        gate.classList.add('is-leaving');
+        gate.setAttribute('aria-hidden', 'true');
+        setTimeout(() => {
+          gate.hidden = true;
+          gatedSiblings.forEach(element => { element.inert = false; });
+          document.body.classList.remove('gate-locked');
+        }, reducedMotion ? 0 : 800);
+      };
+
+      const enterSite = () => {
+        sessionStorage.setItem(gateStorageKey, '1');
+        playMusic();
+        dismissGate();
+      };
+
       const rememberPosition = () => {
         if (Number.isFinite(music.currentTime)) sessionStorage.setItem('manChildDashboardMusicTime', String(music.currentTime));
       };
@@ -225,6 +276,7 @@
       });
 
       toggle.addEventListener('click', () => music.paused ? playMusic() : pauseMusic());
+      startButton.addEventListener('click', enterSite);
 
       document.querySelectorAll('.feature, .tile, .lens-shortcut').forEach(link => {
         link.addEventListener('click', event => {
@@ -236,7 +288,14 @@
       catPaw.addEventListener('click', () => leaveDashboard('cat-library-runner.html'));
 
       setControl();
-      playMusic();
+      if (showGate) {
+        gatedSiblings.forEach(element => { element.inert = true; });
+        startButton.focus({ preventScroll: true });
+      } else {
+        gate.hidden = true;
+        document.body.classList.remove('gate-locked');
+        playMusic();
+      }
     })();
   </script>
 </body>
