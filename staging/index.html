@@ -260,12 +260,14 @@
         if (navigating) return;
         navigating = true;
         rememberPosition();
-        if (music.paused) location.assign(href);
+        const destination = new URL(href, location.href);
+        destination.searchParams.set('dashboardReturn', '1');
+        if (music.paused) location.assign(destination.href);
         else {
           fadeTo(0, 550);
           setTimeout(() => {
             music.pause();
-            location.assign(href);
+            location.assign(destination.href);
           }, reducedMotion ? 0 : 550);
         }
       };

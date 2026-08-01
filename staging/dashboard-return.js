@@ -2,7 +2,8 @@
   const dashboard = new URL('index.html', location.href);
   const dashboardDirectory = dashboard.pathname.replace(/index\.html$/, '');
 
-  const cameFromDashboard = (() => {
+  const markedDashboardVisit = new URLSearchParams(location.search).get('dashboardReturn') === '1';
+  const cameFromDashboard = markedDashboardVisit || (() => {
     if (!document.referrer) return false;
     try {
       const previous = new URL(document.referrer);
