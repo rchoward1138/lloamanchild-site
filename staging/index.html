@@ -56,13 +56,13 @@
 </head>
 <body>
   <div class="stage">STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</div>
-  <audio id="dashboard-music" preload="metadata" loop>
+  <audio id="dashboard-music" preload="auto" autoplay loop playsinline>
     <source src="audio/helkimer-80s-love.mp3" type="audio/mpeg">
   </audio>
   <aside class="music-dock" aria-label="Dashboard music controls">
     <button class="music-toggle" id="music-toggle" type="button" data-state="paused" aria-pressed="false">
       <span class="music-cassette" aria-hidden="true">📼</span>
-      <span id="music-label" aria-live="polite">PRESS PLAY ON THE PAST</span>
+      <span id="music-label" aria-live="polite">STARTING 80\'S LOVE...</span>
     </button>
     <div class="music-credit">
       <a href="https://soundcloud.com/helkimer" target="_blank" rel="noopener noreferrer">“80s Love” by Helkimer</a><br>
@@ -125,12 +125,16 @@
       const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
       let fadeFrame = 0;
       let navigating = false;
+      let autoplayBlocked = false;
+      const autoplayEvents = ['pointerdown', 'keydown', 'touchstart'];
 
       const setControl = () => {
         const playing = !music.paused;
         toggle.dataset.state = playing ? 'playing' : 'paused';
         toggle.setAttribute('aria-pressed', String(playing));
-        label.textContent = playing ? "80'S LOVE · PLAYING" : 'PRESS PLAY ON THE PAST';
+        label.textContent = playing
+          ? "80'S LOVE · PLAYING"
+          : (autoplayBlocked ? 'TAP ANYWHERE FOR MUSIC' : "80'S LOVE · PAUSED");
       };
 
       const fadeTo = (volume, duration) => {
@@ -146,20 +150,42 @@
         fadeFrame = requestAnimationFrame(step);
       };
 
-      const playMusic = async (remember = true) => {
-        if (remember) localStorage.setItem('manChildDashboardMusic', 'on');
+      const disarmAutoplayFallback = () => {
+        autoplayEvents.forEach(eventName => {
+          document.removeEventListener(eventName, resumeAfterInteraction, true);
+        });
+      };
+
+      const resumeAfterInteraction = event => {
+        disarmAutoplayFallback();
+        if (event.target && event.target.closest && event.target.closest('#music-toggle')) return;
+        playMusic();
+      };
+
+      const armAutoplayFallback = () => {
+        autoplayEvents.forEach(eventName => {
+          document.addEventListener(eventName, resumeAfterInteraction, { once: true, capture: true });
+        });
+      };
+
+      const playMusic = async () => {
+        autoplayBlocked = false;
+        disarmAutoplayFallback();
         music.volume = 0;
         try {
           await music.play();
           fadeTo(targetVolume, 900);
         } catch (error) {
           music.pause();
+          autoplayBlocked = true;
+          armAutoplayFallback();
         }
         setControl();
       };
 
-      const pauseMusic = (remember = true) => {
-        if (remember) localStorage.setItem('manChildDashboardMusic', 'off');
+      const pauseMusic = () => {
+        autoplayBlocked = false;
+        disarmAutoplayFallback();
         fadeTo(0, 450);
         setTimeout(() => {
           music.pause();
@@ -195,7 +221,7 @@
       window.addEventListener('pagehide', rememberPosition);
       window.addEventListener('pageshow', event => {
         navigating = false;
-        if (event.persisted && localStorage.getItem('manChildDashboardMusic') === 'on' && music.paused) playMusic(false);
+        if (event.persisted && music.paused) playMusic();
       });
 
       toggle.addEventListener('click', () => music.paused ? playMusic() : pauseMusic());
@@ -210,7 +236,7 @@
       catPaw.addEventListener('click', () => leaveDashboard('cat-library-runner.html'));
 
       setControl();
-      if (localStorage.getItem('manChildDashboardMusic') === 'on') playMusic(false);
+      playMusic();
     })();
   </script>
 </body>
