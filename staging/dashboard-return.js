@@ -1,8 +1,21 @@
 (() => {
   const dashboard = new URL('index.html', location.href);
   const dashboardDirectory = dashboard.pathname.replace(/index\.html$/, '');
+  const query = new URLSearchParams(location.search);
+  const sameSiteReferrer = (() => {
+    if (!document.referrer) return false;
+    try {
+      const previous = new URL(document.referrer);
+      return previous.origin === location.origin
+        && previous.pathname.startsWith(dashboardDirectory);
+    } catch (error) {
+      return false;
+    }
+  })();
+  const embeddedInDashboard = window.parent !== window
+    && (query.get('dashboardShell') === '1' || sameSiteReferrer);
 
-  const markedDashboardVisit = new URLSearchParams(location.search).get('dashboardReturn') === '1';
+  const markedDashboardVisit = query.get('dashboardReturn') === '1';
   const cameFromDashboard = markedDashboardVisit || (() => {
     if (!document.referrer) return false;
     try {
@@ -14,7 +27,7 @@
     }
   })();
 
-  if (!cameFromDashboard) return;
+  if (!cameFromDashboard && !embeddedInDashboard) return;
 
   document.addEventListener('click', event => {
     const link = event.target.closest('a[href]');
@@ -27,6 +40,10 @@
 
     if (!returnsHome) return;
     event.preventDefault();
-    history.back();
+    if (embeddedInDashboard) {
+      window.parent.postMessage({ type: 'manChildDashboardHome' }, location.origin);
+    } else {
+      history.back();
+    }
   }, true);
 })();
