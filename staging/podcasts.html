@@ -33,8 +33,7 @@
     .play{position:relative;z-index:3;width:70px;height:70px;display:grid;place-items:center;border-radius:50%;background:#050817e8;border:2px solid white;color:white;font-size:1.8rem;padding-left:5px;box-shadow:0 0 22px #000;transition:.2s}
     .watch-prompt{position:absolute;z-index:3;right:12px;bottom:10px;left:12px;padding:.5rem .65rem;border-radius:8px;background:#050817d9;color:#fff;font-family:'Press Start 2P',monospace;font-size:clamp(.46rem,1.25vw,.6rem);line-height:1.5;text-align:center;text-shadow:0 0 8px #00eaff}
     .video-actions{display:flex;margin-bottom:18px}.video-actions .button{width:100%}
-    .audio-only{display:flex;align-items:center;gap:10px;margin:4px 0 14px;color:#9fb1c6;font-family:'Press Start 2P',monospace;font-size:.54rem;line-height:1.5;letter-spacing:.05em}
-    .audio-only:before,.audio-only:after{content:"";height:1px;flex:1;background:#ffffff24}.transmission{font-family:'Press Start 2P',monospace;color:var(--pink);font-size:.68rem;margin-bottom:.7rem}.status{color:var(--gold);font-size:.88rem;margin:.7rem 0}.player-card audio{width:100%;accent-color:var(--pink)}.share-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.button{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.82rem 1.15rem;border-radius:999px;border:2px solid var(--cyan);background:#071328;color:var(--cyan);font-family:Orbitron,sans-serif;font-weight:700;text-decoration:none;cursor:pointer}.button.primary{background:linear-gradient(90deg,#ff6a00,#ff2f42);border-color:#ffd14a;color:white}.button:hover{transform:translateY(-2px);filter:brightness(1.12)}
+    .share-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.button{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.82rem 1.15rem;border-radius:999px;border:2px solid var(--cyan);background:#071328;color:var(--cyan);font-family:Orbitron,sans-serif;font-weight:700;text-decoration:none;cursor:pointer}.button.primary{background:linear-gradient(90deg,#ff6a00,#ff2f42);border-color:#ffd14a;color:white}.button:hover{transform:translateY(-2px);filter:brightness(1.12)}
     .future{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.pending{min-height:150px;padding:20px;border:1px dashed #7790ad66;border-radius:14px;background:#05091599;opacity:.72;display:flex;flex-direction:column;justify-content:center}.pending strong{font-family:'Press Start 2P',monospace;color:#9fb0c2;font-size:.62rem}.pending span{margin-top:.8rem;color:#d1d7df}
     .cta{text-align:center}.cta .buttons{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px}footer{text-align:center;color:#8496ab;font-size:.78rem;margin-top:34px;padding:24px}.transcript{border-top:1px solid #ffffff1a;margin-top:24px;padding-top:18px}.transcript summary{cursor:pointer;color:var(--cyan);font-weight:700}.transcript p{color:#9eafc4;font-size:.85rem}
     @media(max-width:850px){body{padding-top:68px;background-attachment:scroll}.stage{min-height:68px;font-size:.78rem}.topbar{align-items:flex-start;flex-direction:column}.brand{text-align:left}.episode{grid-template-columns:1fr}.player-card{position:static}.future{grid-template-columns:1fr}.hero-copy{position:relative;inset:auto;max-width:none;padding:20px}.hero:after{display:none}.hero p{margin-top:.8rem;text-shadow:none}}
@@ -88,13 +87,6 @@
           <noscript><a href="https://youtu.be/-Tl0GOyTJGQ" target="_blank" rel="noopener noreferrer">Watch Episode 001 on YouTube</a></noscript>
         </div>
         <div class="video-actions"><a class="button primary" href="https://youtu.be/-Tl0GOyTJGQ" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a></div>
-        <div class="audio-only">AUDIO-ONLY TRANSMISSION</div>
-        <div class="transmission">▶ BEGIN TRANSMISSION</div>
-        <div class="status" aria-live="polite">Transmission ready.</div>
-        <audio controls preload="metadata">
-          <source src="podcast-audio.mp3" type="audio/mpeg">
-          Your browser does not support the audio player.
-        </audio>
         <div class="share-row"><button class="button share-episode" type="button">SHARE EPISODE</button><a class="button" href="#about">ABOUT THE BROADCAST</a></div>
       </aside>
     </section>
@@ -120,13 +112,6 @@
           <noscript><a href="https://youtu.be/IxD3A3mtH-I" target="_blank" rel="noopener noreferrer">Watch Episode 002 on YouTube</a></noscript>
         </div>
         <div class="video-actions"><a class="button primary" href="https://youtu.be/IxD3A3mtH-I" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a></div>
-        <div class="audio-only">AUDIO-ONLY TRANSMISSION</div>
-        <div class="transmission">▶ BEGIN TRANSMISSION</div>
-        <div class="status" aria-live="polite">Transmission ready.</div>
-        <audio controls preload="metadata">
-          <source src="podcast-debate.mp3" type="audio/mpeg">
-          Your browser does not support the audio player.
-        </audio>
         <div class="share-row"><button class="button share-episode" type="button">SHARE EPISODE</button><a class="button" href="#about">ABOUT THE BROADCAST</a></div>
       </aside>
     </section>
@@ -156,7 +141,6 @@
     let activeVideo=null;
     document.querySelectorAll('.video-launch').forEach(videoLaunch=>{
       videoLaunch.addEventListener('click',()=>{
-        playerCards.forEach(card=>{const audio=card.querySelector('audio');if(!audio.paused)audio.pause();});
         const videoScreen=videoLaunch.closest('.video-screen');
         if(activeVideo&&activeVideo.screen!==videoScreen)activeVideo.screen.replaceChildren(activeVideo.launch);
         const player=document.createElement('iframe');
@@ -170,22 +154,8 @@
       });
     });
     playerCards.forEach((card)=>{
-      const player=card.querySelector('audio');
-      const status=card.querySelector('.status');
-      const label=card.querySelector('.transmission');
       const shareButton=card.querySelector('.share-episode');
       const episodeTitle=card.dataset.episodeTitle||'The Man-Child Broadcast';
-      player.addEventListener('play',()=>{
-        if(activeVideo){activeVideo.screen.replaceChildren(activeVideo.launch);activeVideo=null;}
-        playerCards.forEach((otherCard)=>{const otherPlayer=otherCard.querySelector('audio');if(otherPlayer!==player&&!otherPlayer.paused){otherPlayer.pause();}});
-        status.textContent='Connecting transmission...';label.textContent='❚❚ PAUSE TRANSMISSION';
-      });
-      player.addEventListener('playing',()=>{status.textContent='Broadcast in progress...';label.textContent='❚❚ PAUSE TRANSMISSION';});
-      player.addEventListener('waiting',()=>{status.textContent='Buffering transmission...';});
-      player.addEventListener('stalled',()=>{status.textContent='Signal stalled. Pause and press play to retry.';});
-      player.addEventListener('error',()=>{status.textContent='Transmission could not load. Please retry or use the YouTube player above.';label.textContent='↻ RETRY TRANSMISSION';});
-      player.addEventListener('pause',()=>{if(player.ended)return;status.textContent=player.currentTime>0?'Transmission paused.':'Transmission ready.';label.textContent='▶ BEGIN TRANSMISSION';});
-      player.addEventListener('ended',()=>{status.textContent='Transmission complete. Thanks for listening.';label.textContent='↻ REPLAY TRANSMISSION';});
       shareButton.addEventListener('click',async()=>{
         const shareData={title:`${episodeTitle} | The Man-Child Broadcast`,text:'Listen to a conversation inspired by Life Lessons of a Man-Child: A Memoir?',url:`${location.href.split('#')[0]}#${card.closest('.episode').id}`};
         try{if(navigator.share){await navigator.share(shareData);}else{await navigator.clipboard.writeText(shareData.url);shareButton.textContent='LINK COPIED';setTimeout(()=>shareButton.textContent='SHARE EPISODE',1800);}}catch(e){}
