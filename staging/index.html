@@ -49,13 +49,13 @@
     .media-features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.35rem;margin:0 auto 2rem}
     .feature{width:100%;padding:1.25rem;min-height:116px;display:flex;flex-direction:column;justify-content:center}
     .feature.lens-feature{color:#ff74ef;border-color:var(--pink);box-shadow:0 0 18px #ff00ff55,inset 0 0 22px #00ffff18}
-    .feature:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,#ffffff18,transparent);transform:translateX(-120%);animation:sweep 4s infinite}
+    .feature:before,.tile:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent,#ffffff18,transparent);transform:translateX(-120%);animation:sweep 4s infinite}
     @keyframes sweep{65%,100%{transform:translateX(120%)}}
     .feature:hover,.tile:hover{transform:translateY(-4px);border-color:var(--pink);color:var(--pink);box-shadow:0 12px 30px #ff00ff55,inset 0 0 26px #00ffff20}
     .feature.lens-feature:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 12px 30px #00ffff55,inset 0 0 26px #ff00ff20}
     .nav{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));gap:1.35rem}
     .tile{padding:1.25rem;min-height:116px;display:flex;flex-direction:column;justify-content:center}
-    .icon{font-size:1.4rem;margin-bottom:.45rem}.title{font-family:'Press Start 2P',monospace;font-size:.68rem;margin-bottom:.55rem}.desc{font-size:.72rem;color:#ccc}.more{grid-column:1/-1}
+    .icon{font-size:1.4rem;margin-bottom:.45rem}.title{font-family:'Press Start 2P',monospace;font-size:.68rem;margin-bottom:.55rem}.desc{font-size:.72rem;color:#ccc}
     .amazon{display:inline-block;margin-top:2rem;padding:1rem 2rem;border:2px solid var(--yellow);border-radius:999px;background:linear-gradient(45deg,#ff6600,#ff3300);color:white;font-family:Orbitron,sans-serif;font-weight:700;text-decoration:none;box-shadow:0 0 18px #ff660088;transition:.25s}.amazon:hover{transform:translateY(-3px) scale(1.04)}
     .quote{margin-top:2rem;padding-top:1.5rem;border-top:2px solid #00ffff44;color:#9ffcff;font-style:italic}
     .music-dock{position:fixed;left:1.1rem;bottom:1.1rem;z-index:30;width:220px;padding:.7rem;border:1px solid #00ffff77;border-radius:11px;background:#080013e8;box-shadow:0 0 18px #00ffff44,inset 0 0 16px #ff00ff18;backdrop-filter:blur(8px);text-align:center}
@@ -73,7 +73,7 @@
     .lens-tooltip{position:absolute;left:66px;top:50%;width:max-content;max-width:170px;transform:translateY(-50%) translateX(-5px);padding:.55rem .7rem;border:1px solid #ff61e8;border-radius:8px;background:#090014e8;color:#ff9bf0;font-family:'Press Start 2P',monospace;font-size:.5rem;line-height:1.4;letter-spacing:.08em;opacity:0;pointer-events:none;transition:.2s ease}
     .lens-shortcut:hover .lens-tooltip,.lens-shortcut:focus-visible .lens-tooltip{opacity:1;transform:translateY(-50%) translateX(0)}
     @media(max-width:1180px){.music-dock{position:relative;left:auto;bottom:auto;width:min(300px,calc(100% - 120px));margin:18px auto 82px}}
-    @media(max-width:700px){body{padding-top:68px;background-attachment:scroll}.stage{min-height:68px;font-size:.78rem}.welcome-gate{padding-top:calc(68px + 20px);padding-bottom:32px;background-position:center center}.welcome-title{font-size:clamp(1.45rem,8vw,2.35rem)}.welcome-memory{font-size:.46rem}.start-button{min-width:min(92vw,360px);padding:.85rem 1rem;font-size:.58rem}.start-button:before{width:23px;height:23px;flex-basis:23px}.module-home{top:10px;left:10px;min-height:38px;padding:.65rem .8rem;font-size:.46rem}.media-features,.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.more{grid-column:auto}.music-toggle{font-size:.43rem}.lens-shortcut{top:auto;width:46px;height:46px;bottom:1rem;left:.6rem}.lens-symbol{width:29px;height:29px;border-width:3px}.lens-symbol:after{width:18px;height:4px;right:-15px;bottom:-7px}.lens-tooltip{display:none}}
+    @media(max-width:700px){body{padding-top:68px;background-attachment:scroll}.stage{min-height:68px;font-size:.78rem}.welcome-gate{padding-top:calc(68px + 20px);padding-bottom:32px;background-position:center center}.welcome-title{font-size:clamp(1.45rem,8vw,2.35rem)}.welcome-memory{font-size:.46rem}.start-button{min-width:min(92vw,360px);padding:.85rem 1rem;font-size:.58rem}.start-button:before{width:23px;height:23px;flex-basis:23px}.module-home{top:10px;left:10px;min-height:38px;padding:.65rem .8rem;font-size:.46rem}.media-features,.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.music-toggle{font-size:.43rem}.lens-shortcut{top:auto;width:46px;height:46px;bottom:1rem;left:.6rem}.lens-symbol{width:29px;height:29px;border-width:3px}.lens-symbol:after{width:18px;height:4px;right:-15px;bottom:-7px}.lens-tooltip{display:none}}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
 </head>
@@ -133,11 +133,10 @@
         <a href="kittykids.html" class="tile"><span class="icon">🐱</span><span class="title">KITTY KIDS</span><span class="desc">Meet the nine whiskered wonders who run the show</span></a>
         <a href="tictactoe.html" class="tile"><span class="icon">❌⭕</span><span class="title">TIC-TAC-TOE</span><span class="desc">Lose to Joshua. Review on Amazon.</span></a>
         <a href="mimaw.html" class="tile"><span class="icon">👵</span><span class="title">MIMAW</span><span class="desc">Watch rare interviews and memories from 1998</span></a>
-        <a href="share.html" class="tile"><span class="icon">💬</span><span class="title">SHARE YOUR LIFE LESSONS</span><span class="desc">Leave a lesson for other readers</span></a>
-        <a href="about.html" class="tile"><span class="icon">👨‍💻</span><span class="title">ABOUT THE AUTHOR</span><span class="desc">Meet the man-child behind the memories</span></a>
         <a href="man-childness.html" class="tile"><span class="icon">📺</span><span class="title">MAN-CHILDNESS</span><span class="desc">Real-world sightings &amp; clips</span></a>
         <a href="bee-leaf.html" class="tile"><span class="icon">🐝🍃</span><span class="title">BEE-LEAF</span><span class="desc">Interactive adventure picture book</span></a>
-        <a href="more.html" class="tile more"><span class="title">MORE LIFE LESSONS</span><span class="desc">Ongoing chapters and reflections beyond the memoir</span></a>
+        <a href="more.html" class="tile"><span class="icon">📖</span><span class="title">MORE LIFE LESSONS</span><span class="desc">Ongoing chapters and reflections beyond the memoir</span></a>
+        <a href="about.html" class="tile"><span class="icon">👨‍💻</span><span class="title">ABOUT THE AUTHOR</span><span class="desc">Meet the man-child behind the memories</span></a>
       </div>
 
       <a href="https://www.amazon.com/dp/B0FP6ZZX63" class="amazon" target="_blank" rel="noopener noreferrer">BUY ON AMAZON</a>
