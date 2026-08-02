@@ -164,6 +164,7 @@
       const moduleShell = document.getElementById('module-shell');
       const moduleFrame = document.getElementById('module-frame');
       const moduleLoader = document.getElementById('module-loader');
+      const ArcadeAudioContext = window.AudioContext || window.webkitAudioContext;
       const dashboardTitle = document.title;
       const dashboard = new URL('index.html', location.href);
       const dashboardDirectory = dashboard.pathname.replace(/index\.html$/, '');
@@ -182,10 +183,94 @@
       const gatedSiblings = [...document.body.children].filter(element => !element.matches('#welcome-gate, .stage, script, noscript'));
       const dashboardElements = [...document.body.children].filter(element => !element.matches('#welcome-gate, #module-shell, audio, script, noscript'));
       let fadeFrame = 0;
+      let musicFadeTimer = 0;
       let moduleIsOpen = false;
       let lastModuleTrigger = null;
       let autoplayBlocked = false;
+      let arcadeAudioContext = null;
+      let lastCoinSoundAt = -Infinity;
+      let gateHasStarted = false;
       const autoplayEvents = ['pointerdown', 'keydown', 'touchstart'];
+
+      const runArcadeSound = (createSound, shouldPlay = () => true) => {
+        if (!ArcadeAudioContext) return;
+        if (!arcadeAudioContext) arcadeAudioContext = new ArcadeAudioContext();
+
+        const begin = () => {
+          if (arcadeAudioContext.state === 'running' && shouldPlay()) createSound(arcadeAudioContext);
+        };
+
+        if (arcadeAudioContext.state === 'suspended') {
+          arcadeAudioContext.resume().then(begin).catch(() => {});
+        } else {
+          begin();
+        }
+      };
+
+      const playCoinSound = () => {
+        const requestedAt = performance.now();
+        if (requestedAt - lastCoinSoundAt < 450) return;
+        lastCoinSoundAt = requestedAt;
+
+        runArcadeSound(context => {
+          const now = context.currentTime + 0.005;
+          const master = context.createGain();
+          master.gain.setValueAtTime(0.0001, now);
+          master.gain.exponentialRampToValueAtTime(0.14, now + 0.008);
+          master.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+          master.connect(context.destination);
+
+          [
+            { type: 'square', from: 988, to: 1568, delay: 0, duration: 0.09, level: 0.32 },
+            { type: 'triangle', from: 1976, to: 2637, delay: 0.055, duration: 0.34, level: 0.72 }
+          ].forEach(note => {
+            const start = now + note.delay;
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            oscillator.type = note.type;
+            oscillator.frequency.setValueAtTime(note.from, start);
+            oscillator.frequency.exponentialRampToValueAtTime(note.to, start + note.duration);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(note.level, start + 0.006);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + note.duration);
+            oscillator.connect(gain).connect(master);
+            oscillator.start(start);
+            oscillator.stop(start + note.duration + 0.02);
+          });
+        }, () => !gateHasStarted && startButton.matches(':hover'));
+      };
+
+      const playWakaSound = () => {
+        runArcadeSound(context => {
+          const now = context.currentTime + 0.005;
+          const master = context.createGain();
+          const filter = context.createBiquadFilter();
+          master.gain.setValueAtTime(0.0001, now);
+          master.gain.exponentialRampToValueAtTime(0.18, now + 0.008);
+          master.gain.exponentialRampToValueAtTime(0.0001, now + 0.58);
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(1500, now);
+          filter.Q.setValueAtTime(4.5, now);
+          filter.connect(master).connect(context.destination);
+
+          for (let index = 0; index < 6; index += 1) {
+            const start = now + index * 0.088;
+            const end = start + 0.072;
+            const highToLow = index % 2 === 0;
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(highToLow ? 265 : 150, start);
+            oscillator.frequency.exponentialRampToValueAtTime(highToLow ? 150 : 265, end);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(0.62, start + 0.008);
+            gain.gain.exponentialRampToValueAtTime(0.0001, end);
+            oscillator.connect(gain).connect(filter);
+            oscillator.start(start);
+            oscillator.stop(end + 0.01);
+          }
+        });
+      };
 
       const musicIsWanted = () => {
         try {
@@ -243,14 +328,21 @@
         });
       };
 
-      const playMusic = async () => {
+      const playMusic = async (fadeDelay = 0) => {
         autoplayBlocked = false;
         disarmAutoplayFallback();
         setMusicWanted(true);
+        clearTimeout(musicFadeTimer);
         music.volume = 0;
         try {
           await music.play();
-          fadeTo(targetVolume, 900);
+          if (fadeDelay > 0) {
+            musicFadeTimer = setTimeout(() => {
+              fadeTo(moduleIsOpen ? keepAliveVolume : targetVolume, 900);
+            }, fadeDelay);
+          } else {
+            fadeTo(moduleIsOpen ? keepAliveVolume : targetVolume, 900);
+          }
         } catch (error) {
           music.pause();
           autoplayBlocked = true;
@@ -263,6 +355,7 @@
         autoplayBlocked = false;
         disarmAutoplayFallback();
         setMusicWanted(false);
+        clearTimeout(musicFadeTimer);
         fadeTo(0, 450);
         setTimeout(() => {
           music.pause();
@@ -281,13 +374,16 @@
       };
 
       const enterSite = () => {
+        if (gateHasStarted) return;
+        gateHasStarted = true;
         try {
           sessionStorage.setItem(gateStorageKey, '1');
         } catch (error) {
           // The gate still works when storage is unavailable; it simply cannot remember this visit.
         }
         setMusicWanted(true);
-        playMusic();
+        playWakaSound();
+        playMusic(560);
         dismissGate();
       };
 
@@ -399,6 +495,9 @@
       moduleFrame.addEventListener('load', wireModuleDocument);
 
       toggle.addEventListener('click', () => music.paused ? playMusic() : pauseMusic());
+      startButton.addEventListener('pointerenter', event => {
+        if (event.pointerType !== 'touch') playCoinSound();
+      });
       startButton.addEventListener('click', enterSite);
 
       document.querySelectorAll('.feature, .tile, .lens-shortcut').forEach(link => {
