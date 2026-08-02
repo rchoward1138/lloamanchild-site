@@ -1,519 +1,606 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life Lessons of a Man-Child - R.C. Howard</title>
-    <!-- Social/OG meta -->
-    <meta name="description" content="Life Lessons of a Man-Child — the official site of author R.C. Howard. Explore the story, bonus cryptogram, and more.">
-    <meta property="og:title" content="Life Lessons of a Man-Child - R.C. Howard">
-    <meta property="og:description" content="The official site of R.C. Howard — book details, cryptogram bonus, and more.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="Book-Cover.png">
-    <meta property="og:image:alt" content="Life Lessons of a Man-Child book cover">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Life Lessons of a Man-Child - R.C. Howard">
-    <meta name="twitter:description" content="Explore the book and bonus cryptogram on the official site.">
-    <meta name="twitter:image" content="Book-Cover.png">
-    <link rel="icon" href="favicon.svg" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="preload" as="image" href="PaperbackCoverFinal.png">
-    <link rel="preload" as="image" href="Book-Cover.png">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            /* Try new cover first; gracefully fall back to existing PNG */
-            background-image: url('PaperbackCoverFinal.png'), url('Book-Cover.png');
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-attachment: fixed;
-            background-size: cover;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Synthwave background overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                /* Lighten overlay so the cover stands out more */
-                linear-gradient(rgba(20, 0, 40, 0.55), rgba(40, 0, 80, 0.55)),
-                radial-gradient(circle at 50% 50%, rgba(255, 0, 150, 0.05) 0%, transparent 50%);
-            z-index: 1;
-        }
-
-        /* Animated grid overlay */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                /* Subtler grid lines */
-                linear-gradient(rgba(0, 255, 255, 0.06) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.06) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        /* Scanline effect */
-        .scanlines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 255, 255, 0.02) 2px,
-                rgba(0, 255, 255, 0.02) 4px
-            );
-            z-index: 3;
-            pointer-events: none;
-            animation: scanlineFlicker 0.1s linear infinite;
-        }
-
-        @keyframes scanlineFlicker {
-            0% { opacity: 1; }
-            99% { opacity: 1; }
-            100% { opacity: 0.98; }
-        }
-
-        .container {
-            position: relative;
-            z-index: 10;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .main-content {
-            /* Make the center panel less opaque so the background pops */
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #00ffff;
-            border-radius: 10px;
-            padding: 3rem;
-            text-align: center;
-            box-shadow: 
-                0 0 20px rgba(0, 255, 255, 0.35),
-                inset 0 0 20px rgba(0, 255, 255, 0.08);
-            /* Reduce background blur so cover is clearer behind */
-            backdrop-filter: blur(2px);
-            animation: borderGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes borderGlow {
-            0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.35), inset 0 0 20px rgba(0, 255, 255, 0.08); }
-            100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 30px rgba(0, 255, 255, 0.12); }
-        }
-
-        .title {
-            font-family: 'Orbitron', monospace;
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #00ffff;
-            text-shadow: 
-                0 0 10px #00ffff,
-                0 0 20px #00ffff,
-                0 0 30px #00ffff;
-            margin-bottom: 0.5rem;
-            animation: titlePulse 3s ease-in-out infinite;
-            text-align: center;
-        }
-
-        .title-line {
-            display: block;
-            line-height: 1.1;
-        }
-
-        .title-line:first-child {
-            margin-bottom: 0.2rem;
-        }
-
-        @keyframes titlePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .subtitle {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 0.8rem;
-            color: #ff00ff;
-            text-shadow: 0 0 10px #ff00ff;
-            margin-bottom: 1rem;
-            letter-spacing: 2px;
-        }
-
-        .author {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2rem;
-            color: #ffff00;
-            text-shadow: 0 0 5px #ffff00;
-            margin-bottom: 2.5rem;
-        }
-
-        .book-description {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 1.5rem;
-            background: rgba(0,0,0,0.7);
-            border-radius: 10px;
-            border: 1px solid #00ffff33;
-            color: #ffffff;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            text-align: left;
-            box-shadow: 0 0 15px rgba(0,255,255,0.2);
-        }
-
-        .nav-buttons {
-            display: grid;
-            /* Force a 2x2 layout on wider screens so tiles map left-to-right, then wrap */
-            grid-template-columns: repeat(2, minmax(280px, 1fr));
-            gap: 2rem;
-            width: 100%;
-            max-width: 1000px;
-            margin-bottom: 2rem;
-        }
-
-        .arcade-button {
-            display: block;
-            background: linear-gradient(45deg, #1a0033, #330066);
-            border: 3px solid #00ffff;
-            border-radius: 15px;
-            padding: 1.5rem;
-            text-decoration: none;
-            color: #00ffff;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 0.7rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 
-                0 0 15px rgba(0, 255, 255, 0.3),
-                inset 0 0 15px rgba(0, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .arcade-button::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-            transform: rotate(45deg);
-            transition: all 0.6s ease;
-            opacity: 0;
-        }
-
-        .arcade-button:hover::before {
-            animation: shine 0.6s ease-in-out;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
-        }
-
-        .arcade-button:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 
-                0 10px 25px rgba(0, 255, 255, 0.5),
-                inset 0 0 25px rgba(0, 255, 255, 0.2);
-            border-color: #ff00ff;
-            color: #ff00ff;
-            text-shadow: 0 0 10px #ff00ff;
-        }
-
-        .button-icon {
-            font-size: 1.5rem;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .button-title {
-            margin-bottom: 0.5rem;
-            font-size: 0.8rem;
-        }
-
-        .button-desc {
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.6rem;
-            color: #cccccc;
-            line-height: 1.4;
-        }
-
-        .amazon-button {
-            display: inline-block;
-            background: linear-gradient(45deg, #ff6600, #ff3300);
-            border: 2px solid #ffff00;
-            border-radius: 25px;
-            padding: 1rem 2rem;
-            color: #ffffff;
-            font-family: 'Orbitron', monospace;
-            font-size: 1rem;
-            font-weight: 700;
-            text-decoration: none;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-            box-shadow: 
-                0 0 15px rgba(255, 102, 0, 0.5),
-                inset 0 0 15px rgba(255, 255, 0, 0.2);
-            transition: all 0.3s ease;
-            animation: amazonPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes amazonPulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(255, 102, 0, 0.5), inset 0 0 15px rgba(255, 255, 0, 0.2); }
-            50% { box-shadow: 0 0 25px rgba(255, 102, 0, 0.8), inset 0 0 25px rgba(255, 255, 0, 0.3); }
-        }
-
-        .amazon-button:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 
-                0 10px 30px rgba(255, 102, 0, 0.7),
-                inset 0 0 25px rgba(255, 255, 0, 0.3);
-        }
-
-        .quote {
-            color: #00ffff;
-            font-style: italic;
-            font-size: 0.9rem;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 2px solid rgba(0, 255, 255, 0.3);
-            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .main-content {
-                padding: 2rem;
-            }
-            
-            .title {
-                font-size: 1.8rem;
-            }
-            
-            .subtitle {
-                font-size: 0.6rem;
-            }
-            
-            .book-description {
-                font-size: 0.85rem;
-                padding: 1rem;
-                margin: 1.5rem auto;
-            }
-            
-            .nav-buttons {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .arcade-button {
-                padding: 1.2rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .title {
-                font-size: 1.4rem;
-            }
-            
-            .subtitle {
-                font-size: 0.5rem;
-            }
-            
-            .book-description {
-                font-size: 0.8rem;
-                padding: 0.8rem;
-                margin: 1rem auto;
-            }
-        }
-
-        /* Accessibility: respect users who prefer reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            * { animation: none !important; transition: none !important; }
-            body::after, .scanlines { animation: none !important; }
-        }
-
-        /* Hidden cat paw Easter egg trigger */
-        .cat-paw-trigger {
-            position: fixed;
-            right: 1.25rem;
-            bottom: 1.25rem;
-            width: 40px;
-            height: 40px;
-            z-index: 20;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.75;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-
-        .cat-paw-trigger:hover {
-            opacity: 1;
-            transform: translateY(-2px) scale(1.03);
-        }
-
-        .cat-paw-icon {
-            width: 32px;
-            height: 32px;
-            filter: drop-shadow(0 0 4px rgba(0,255,255,0.8));
-        }
-
-        .cat-paw-icon circle,
-        .cat-paw-icon ellipse {
-            fill: #ffb347; /* soft orange */
-            stroke: #ff8800;
-            stroke-width: 1.2;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Lessons of a Man-Child</title>
+  <meta name="description" content="The official author site for Life Lessons of a Man-Child: A Memoir? by R.C. Howard.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--cyan:#00ffff;--pink:#ff00ff;--yellow:#ffff00;--panel:rgba(0,0,0,.62)}
+    body{min-height:100vh;padding-top:0;color:white;font-family:Roboto,sans-serif;background-image:linear-gradient(rgba(20,0,40,.56),rgba(40,0,80,.56)),url('PaperbackCoverFinal.png'),url('Book-Cover.png');background-position:center;background-size:cover;background-attachment:fixed;overflow-x:hidden}
+    body.gate-locked,body.module-open{overflow:hidden}
+    body:after{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,.05) 1px,transparent 1px);background-size:50px 50px;z-index:1}
+    
+    .welcome-gate{position:fixed;inset:0;z-index:100;min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto;align-items:start;padding:clamp(20px,4vh,42px) 20px clamp(28px,6vh,64px);background-image:linear-gradient(180deg,rgba(5,0,18,.42),rgba(5,0,18,.06) 42%,rgba(5,0,18,.76)),url('assets/atari-joystick-mime.webp');background-position:center;background-size:cover;background-repeat:no-repeat;text-align:center;isolation:isolate;overflow:hidden;transition:opacity .8s ease,transform .8s ease,filter .8s ease}
+    .welcome-gate:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 50% 52%,transparent 25%,rgba(3,0,14,.14) 58%,rgba(3,0,14,.82) 100%),repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0,rgba(255,255,255,.022) 1px,transparent 1px,transparent 4px)}
+    .welcome-gate[hidden]{display:none!important}
+    .welcome-gate.is-leaving{opacity:0;transform:scale(1.025);filter:blur(3px);pointer-events:none}
+    .welcome-heading{position:relative;z-index:1;text-shadow:0 3px 14px #000,0 0 24px #000}
+    .welcome-kicker{margin-bottom:.75rem;color:var(--yellow);font-family:'Press Start 2P',monospace;font-size:clamp(.46rem,1vw,.68rem);line-height:1.7;letter-spacing:.2em}
+    .welcome-title{color:var(--cyan);font-family:Orbitron,sans-serif;font-size:clamp(1.6rem,5.4vw,4rem);font-weight:900;line-height:.98;letter-spacing:.035em;text-shadow:0 0 11px #00ffff,0 0 34px #00ffff88,0 4px 18px #000}
+    .welcome-memory{margin-top:.9rem;color:#ff9af2;font-family:'Press Start 2P',monospace;font-size:clamp(.48rem,1.15vw,.73rem);line-height:1.65;letter-spacing:.12em;text-shadow:0 0 10px #ff00ff,0 2px 10px #000}
+    .welcome-start{position:relative;z-index:2;align-self:end;display:grid;justify-items:center;gap:.75rem}
+    .start-button{display:flex;align-items:center;justify-content:center;gap:clamp(.7rem,2vw,1.15rem);min-width:min(92vw,430px);padding:1rem 1.35rem;border:3px solid var(--cyan);border-radius:12px;background:linear-gradient(180deg,#190128,#08000f);color:white;font-family:'Press Start 2P',monospace;font-size:clamp(.62rem,1.7vw,.9rem);line-height:1.5;letter-spacing:.08em;cursor:pointer;box-shadow:0 0 20px #00ffff88,inset 0 0 20px #ff00ff35,0 8px 0 #030006;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+    .start-button:before{content:"";width:27px;height:27px;flex:0 0 27px;border:3px solid #ff9d9d;border-radius:50%;background:radial-gradient(circle at 38% 30%,#ffb0a6 0 8%,#ff352d 32%,#a90000 75%);box-shadow:0 0 13px #ff2e27,0 3px 0 #570000}
+    .start-button:hover,.start-button:focus-visible{border-color:var(--pink);box-shadow:0 0 28px #ff00ffaa,inset 0 0 24px #00ffff35,0 8px 0 #030006;outline:none;transform:translateY(-2px)}
+    .start-button:active{transform:translateY(5px);box-shadow:0 0 18px #ff00ff88,inset 0 0 24px #00ffff35,0 2px 0 #030006}
+    .welcome-sound{color:#a9fbff;font-family:'Press Start 2P',monospace;font-size:clamp(.4rem,.85vw,.55rem);line-height:1.6;letter-spacing:.1em;text-shadow:0 2px 8px #000}
+    .module-shell{position:fixed;inset:0;z-index:200;background:#02050d;isolation:isolate}
+    .module-shell[hidden]{display:none!important}
+    .module-home{position:absolute;top:12px;left:50%;z-index:4;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:.72rem 1rem;border:2px solid var(--cyan);border-radius:999px;background:linear-gradient(135deg,#080d18f2,#29104df2);color:var(--cyan);font-family:'Press Start 2P',monospace;font-size:clamp(.48rem,1.15vw,.66rem);line-height:1.35;letter-spacing:.04em;cursor:pointer;box-shadow:0 0 16px #00ffff77,inset 0 0 14px #ff00ff22;backdrop-filter:blur(8px);transform:translateX(-50%);transition:transform .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease}
+    .module-home:hover,.module-home:focus-visible{color:white;border-color:var(--pink);box-shadow:0 0 20px #ff00ff88,inset 0 0 16px #00ffff28;outline:none;transform:translate(-50%,-1px)}
+    .module-home:active{transform:translate(-50%,1px)}
+    .module-frame{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;background:#02050d;opacity:0;transition:opacity .2s ease}
+    .module-shell.is-loaded .module-frame{opacity:1}
+    .module-loader{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:2rem;background:radial-gradient(circle at center,#24013c,#02050d 68%);color:var(--cyan);font-family:'Press Start 2P',monospace;font-size:clamp(.55rem,1.4vw,.8rem);line-height:1.8;letter-spacing:.1em;text-align:center;text-shadow:0 0 12px var(--cyan)}
+    .container{position:relative;z-index:2;width:min(960px,calc(100% - 28px));margin:auto;padding:32px 0 60px}
+    .panel{background:var(--panel);border:2px solid var(--cyan);border-radius:14px;padding:clamp(22px,5vw,48px);box-shadow:0 0 28px #00ffff55,inset 0 0 25px #00ffff12;backdrop-filter:blur(2px);text-align:center}
+    h1{font-family:Orbitron,sans-serif;font-size:clamp(2rem,7vw,3.8rem);line-height:1.05;color:var(--cyan);text-shadow:0 0 12px var(--cyan),0 0 32px #00ffff88}
+    .sub{font-family:'Press Start 2P',monospace;color:var(--pink);font-size:clamp(.55rem,1.4vw,.82rem);letter-spacing:.14em;margin:.8rem 0}
+    .author{font-family:Orbitron,sans-serif;color:var(--yellow);margin-bottom:2rem}
+    .book-description{max-width:760px;margin:0 auto 1.8rem;padding:1.2rem 1.4rem;text-align:left;line-height:1.6;background:#000b;border:1px solid #00ffff44;border-radius:10px}
+    .feature,.tile{position:relative;display:block;text-decoration:none;color:var(--cyan);background:linear-gradient(135deg,#120124,#340056 55%,#101237);border:3px solid var(--cyan);border-radius:15px;box-shadow:0 0 18px #00ffff55,inset 0 0 22px #ff00ff18;transition:.25s ease;overflow:hidden}
+    .media-features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.35rem;margin:0 auto 2rem}
+    .feature{width:100%;padding:1.25rem;min-height:116px;display:flex;flex-direction:column;justify-content:center}
+    .feature.lens-feature{color:#ff74ef;border-color:var(--pink);box-shadow:0 0 18px #ff00ff55,inset 0 0 22px #00ffff18}
+    .feature:before,.tile:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent,#ffffff18,transparent);transform:translateX(-120%);animation:sweep 4s infinite}
+    @keyframes sweep{65%,100%{transform:translateX(120%)}}
+    .feature:hover,.tile:hover{transform:translateY(-4px);border-color:var(--pink);color:var(--pink);box-shadow:0 12px 30px #ff00ff55,inset 0 0 26px #00ffff20}
+    .feature.lens-feature:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 12px 30px #00ffff55,inset 0 0 26px #ff00ff20}
+    .nav{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));gap:1.35rem}
+    .tile{padding:1.25rem;min-height:116px;display:flex;flex-direction:column;justify-content:center}
+    .icon{font-size:1.4rem;margin-bottom:.45rem}.title{font-family:'Press Start 2P',monospace;font-size:.68rem;margin-bottom:.55rem}.desc{font-size:.72rem;color:#ccc}
+    .amazon{display:inline-block;margin-top:2rem;padding:1rem 2rem;border:2px solid var(--yellow);border-radius:999px;background:linear-gradient(45deg,#ff6600,#ff3300);color:white;font-family:Orbitron,sans-serif;font-weight:700;text-decoration:none;box-shadow:0 0 18px #ff660088;transition:.25s}.amazon:hover{transform:translateY(-3px) scale(1.04)}
+    .quote{margin-top:2rem;padding-top:1.5rem;border-top:2px solid #00ffff44;color:#9ffcff;font-style:italic}
+    .music-dock{position:fixed;left:1.1rem;bottom:1.1rem;z-index:30;width:220px;padding:.7rem;border:1px solid #00ffff77;border-radius:11px;background:#080013e8;box-shadow:0 0 18px #00ffff44,inset 0 0 16px #ff00ff18;backdrop-filter:blur(8px);text-align:center}
+    .music-toggle{width:100%;display:grid;grid-template-columns:auto 1fr;gap:.55rem;align-items:center;padding:.7rem .65rem;border:1px solid var(--pink);border-radius:8px;background:linear-gradient(135deg,#26003c,#101237);color:#8fffff;font-family:'Press Start 2P',monospace;font-size:.46rem;line-height:1.45;letter-spacing:.04em;cursor:pointer;box-shadow:0 0 10px #ff00ff44;transition:.22s ease}
+    .music-toggle:hover,.music-toggle:focus-visible{color:white;border-color:var(--cyan);box-shadow:0 0 15px #00ffff77;outline:none;transform:translateY(-1px)}
+    .music-toggle[data-state="playing"]{color:var(--yellow);border-color:var(--yellow);box-shadow:0 0 14px #ffff0066}
+    .music-cassette{font-size:1.35rem;filter:drop-shadow(0 0 5px #ff00ff)}
+    .music-credit{margin-top:.55rem;color:#bbb;font-size:.54rem;line-height:1.45}
+    .music-credit a{color:#89f8ff;text-decoration:none}.music-credit a:hover,.music-credit a:focus-visible{color:#fff;text-decoration:underline}
+    .cat-paw{position:fixed;right:1.25rem;bottom:1.25rem;z-index:20;width:42px;height:42px;border:0;background:transparent;font-size:2rem;cursor:pointer;filter:drop-shadow(0 0 5px #00ffff)}
+    .lens-shortcut{position:fixed;left:1.25rem;top:1.25rem;z-index:20;width:58px;height:58px;display:grid;place-items:center;text-decoration:none;opacity:.38;filter:drop-shadow(0 0 7px #00ffff);transition:.25s ease}
+    .lens-shortcut:hover,.lens-shortcut:focus-visible{opacity:1;transform:rotate(-7deg) scale(1.08);outline:none}
+    .lens-symbol{position:relative;width:34px;height:34px;border:4px solid #a7ffff;border-radius:50%;background:#06182b77;box-shadow:inset 0 0 12px #00ffff55,0 0 12px #00ffff66}
+    .lens-symbol:after{content:"";position:absolute;width:21px;height:5px;right:-17px;bottom:-8px;border-radius:99px;background:#ff78ee;transform:rotate(47deg);box-shadow:0 0 8px #ff00ff}
+    .lens-tooltip{position:absolute;left:66px;top:50%;width:max-content;max-width:170px;transform:translateY(-50%) translateX(-5px);padding:.55rem .7rem;border:1px solid #ff61e8;border-radius:8px;background:#090014e8;color:#ff9bf0;font-family:'Press Start 2P',monospace;font-size:.5rem;line-height:1.4;letter-spacing:.08em;opacity:0;pointer-events:none;transition:.2s ease}
+    .lens-shortcut:hover .lens-tooltip,.lens-shortcut:focus-visible .lens-tooltip{opacity:1;transform:translateY(-50%) translateX(0)}
+    @media(max-width:1180px){.music-dock{position:relative;left:auto;bottom:auto;width:min(300px,calc(100% - 120px));margin:18px auto 82px}}
+    @media(max-width:700px){body{padding-top:0;background-attachment:scroll}.welcome-gate{padding-top:20px;padding-bottom:32px;background-position:center center}.welcome-title{font-size:clamp(1.45rem,8vw,2.35rem)}.welcome-memory{font-size:.46rem}.start-button{min-width:min(92vw,360px);padding:.85rem 1rem;font-size:.58rem}.start-button:before{width:23px;height:23px;flex-basis:23px}.module-home{top:10px;left:10px;min-height:38px;padding:.65rem .8rem;font-size:.46rem;transform:none}.module-home:hover,.module-home:focus-visible{transform:translateY(-1px)}.module-home:active{transform:translateY(1px)}.media-features,.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.music-toggle{font-size:.43rem}.lens-shortcut{top:auto;width:46px;height:46px;bottom:1rem;left:.6rem}.lens-symbol{width:29px;height:29px;border-width:3px}.lens-symbol:after{width:18px;height:4px;right:-15px;bottom:-7px}.lens-tooltip{display:none}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
 </head>
-<body>
-    <div class="scanlines"></div>
-    <div class="container">
-        <div class="main-content">
-            <h1 class="title">
-                <div class="title-line">LIFE LESSONS</div>
-                <div class="title-line">OF A MAN-CHILD</div>
-            </h1>
-            <div class="subtitle">A MEMOIR?</div>
-            <div class="author">BY R.C. HOWARD</div>
-            
-            <div class="book-description">
-                <strong>Every story has a beginning.</strong>
-                <br><br>
-                For R.C. Howard, it began with eight dusty, forgotten tales—stories he wrote when life was simpler, dreams were bigger, and the world was filled with pure imagination, not digital domination.
-                <br><br>
-                What happens when those stories call out to him decades later, begging to be revisited, aching to be rewritten and demanding to be shared—only to lead him somewhere unexpected?
-                <br><br>
-                Life Lessons of a Man-Child takes you back to where it all started, as Howard returns to his childhood, his love for Star Wars, his passion for writing, and the moments that shaped him. What he discovers isn't just nostalgia—it's a reminder of what matters most: to be creative, to be selfless, to be fearless...and above all, to believe.
-                <br><br>
-                Howard invites you to laugh, cry, and rekindle the wonder of growing up—or perhaps, never growing up at all. Life Lessons of a Man-Child is a journey through the heart, where the smallest stories lead to the biggest revelations, one of them being...
-                <br><br>
-                <strong>Not every story has to end.</strong>
-            </div>
-
-            <div class="nav-buttons">
-                <a href="cryptogram.html" class="arcade-button">
-                    <span class="button-icon">🧩</span>
-                    <div class="button-title">CRYPTOGRAM PUZZLE</div>
-                    <div class="button-desc">Decode hidden messages and unlock secrets from the stories within</div>
-                </a>
-
-                <a href="kittykids.html" class="arcade-button">
-                    <span class="button-icon">🐱</span>
-                    <div class="button-title">KITTY KIDS</div>
-                    <div class="button-desc">Meet the nine whiskered wonders who run the show</div>
-                </a>
-
-                <a href="tictactoe.html" class="arcade-button">
-                    <span class="button-icon">❌⭕</span>
-                    <div class="button-title">TIC‑TAC‑TOE</div>
-                    <div class="button-desc">Lose to Joshua, Review on Amazon</div>
-                </a>
-
-                <a href="mimaw.html" class="arcade-button">
-                    <span class="button-icon">👵</span>
-                    <div class="button-title">MIMAW</div>
-                    <div class="button-desc">Watch rare interviews and memories from 1998</div>
-                </a>
-
-                <a href="share.html" class="arcade-button">
-                    <span class="button-icon">💬</span>
-                    <div class="button-title">SHARE YOUR LIFE LESSONS</div>
-                    <div class="button-desc">Leave a lesson for other readers</div>
-                </a>
-
-                <a href="about.html" class="arcade-button">
-                    <span class="button-icon">👨‍💻</span>
-                    <div class="button-title">ABOUT THE AUTHOR</div>
-                    <div class="button-desc">Meet the man-child behind the memories</div>
-                </a>
-
-                <a href="man-childness.html" class="arcade-button">
-                    <span class="button-icon">📺</span>
-                    <div class="button-title">MAN-CHILDNESS</div>
-                    <div class="button-desc">Videos from TikTok &amp; YouTube</div>
-                </a>
-
-                <a href="bee-leaf.html" class="arcade-button" onclick="try{localStorage.setItem('beeLeafAutoplay','1')}catch(e){}">
-                    <span class="button-icon">🐝🍃</span>
-                    <div class="button-title">BEE-LEAF</div>
-                    <div class="button-desc">Interactive adventure picture book</div>
-                </a>
-            </div>
-
-            <!-- Full-width More Life Lessons banner -->
-            <div style="width:100%;max-width:1000px;margin:0 auto 2rem;">
-                <a href="more.html" class="arcade-button" style="width:100%;display:block;padding:1.5rem 1rem;">
-                    <div class="button-title" style="font-size:0.9rem;letter-spacing:0.12em;">MORE LIFE LESSONS</div>
-                    <div class="button-desc">Ongoing chapters and reflections beyond the memoir</div>
-                </a>
-            </div>
-
-            <a href="https://www.amazon.com/dp/B0FP6ZZX63" class="amazon-button" target="_blank" rel="noopener noreferrer">
-                BUY ON AMAZON
-            </a>
-
-            <div class="quote">
-                "Howard invites you to laugh, cry, and rekindle the wonder of growing up... or perhaps, never growing up at all."
-            </div>
-        </div>
+<body class="gate-locked">
+<section class="welcome-gate" id="welcome-gate" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="welcome-heading">
+      <p class="welcome-kicker">R.C. HOWARD PRESENTS</p>
+      <h2 class="welcome-title" id="welcome-title">LIFE LESSONS<br>OF A MAN-CHILD</h2>
+      <p class="welcome-memory">EVERY STORY HAS A BEGINNING.<br>NOT EVERY STORY HAS TO END.</p>
     </div>
+    <div aria-hidden="true"></div>
+    <div class="welcome-start">
+      <button class="start-button" id="start-button" type="button">PRESS START TO PLAY</button>
+      <p class="welcome-sound">A LIFE LESSON AWAITS</p>
+    </div>
+  </section>
+  <noscript><style>.welcome-gate{display:none!important}body{overflow:auto!important}</style></noscript>
+  <audio id="dashboard-music" preload="auto" loop playsinline>
+    <source src="audio/helkimer-80s-love.mp3" type="audio/mpeg">
+  </audio>
+  <section class="module-shell" id="module-shell" aria-label="Author site section" hidden>
+    <button class="module-home" id="module-home" type="button">◀ BACK TO HOME</button>
+    <div class="module-loader" id="module-loader" role="status" aria-live="polite">LOADING THE NEXT LIFE LESSON...</div>
+    <iframe class="module-frame" id="module-frame" title="Author site section" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; web-share" allowfullscreen></iframe>
+  </section>
+  <main class="container">
+    <section class="panel">
+      <h1>LIFE LESSONS<br>OF A MAN-CHILD</h1>
+      <div class="sub">A MEMOIR?</div>
+      <div class="author">BY R.C. HOWARD</div>
 
-    <!-- Cat paw Easter egg trigger -->
-    <button class="cat-paw-trigger" type="button" aria-label="Jumpin' Punkin' game" onclick="window.location.href='cat-library-runner.html'">
-        <svg class="cat-paw-icon" viewBox="0 0 64 64" aria-hidden="true">
-            <!-- Main pad -->
-            <circle cx="32" cy="38" r="14" />
-            <!-- Toes -->
-            <ellipse cx="20" cy="24" rx="5" ry="7" />
-            <ellipse cx="28" cy="20" rx="5" ry="7" />
-            <ellipse cx="36" cy="20" rx="5" ry="7" />
-            <ellipse cx="44" cy="24" rx="5" ry="7" />
-        </svg>
+      <div class="book-description">
+        <strong>Every story has a beginning.</strong><br><br>
+        For R.C. Howard, it began with eight dusty, forgotten tales—stories he wrote when life was simpler, dreams were bigger, and the world was filled with pure imagination, not digital domination.<br><br>
+        What happens when those stories call out to him decades later, begging to be revisited, aching to be rewritten and demanding to be shared—only to lead him somewhere unexpected?<br><br>
+        <em>Life Lessons of a Man-Child</em> takes you back to where it all started, as Howard returns to his childhood, his love for Star Wars, his passion for writing, and the moments that shaped him. What he discovers isn't just nostalgia—it's a reminder of what matters most: to be creative, to be selfless, to be fearless...and above all, to believe.<br><br>
+        Howard invites you to laugh, cry, and rekindle the wonder of growing up—or perhaps, never growing up at all. <em>Life Lessons of a Man-Child</em> is a journey through the heart, where the smallest stories lead to the biggest revelations, one of them being...<br><br>
+        <strong>Not every story has to end.</strong>
+      </div>
+
+      <nav class="media-features" aria-label="Featured audio and video">
+        <a class="feature" href="podcasts.html">
+          <span class="icon">🎙️</span>
+          <span class="title">PODCASTS</span>
+          <span class="desc">Conversations inspired by the memoir</span>
+        </a>
+        <a class="feature lens-feature" href="lens.html">
+          <span class="icon">🔎</span>
+          <span class="title">THROUGH THE LENS</span>
+          <span class="desc">Video explorations behind the stories</span>
+        </a>
+      </nav>
+
+      <div class="nav">
+        <a href="cryptogram.html" class="tile"><span class="icon">🧩</span><span class="title">CRYPTOGRAM PUZZLE</span><span class="desc">Decode hidden messages and unlock secrets from the stories within</span></a>
+        <a href="kittykids.html" class="tile"><span class="icon">🐱</span><span class="title">KITTY KIDS</span><span class="desc">Meet the nine whiskered wonders who run the show</span></a>
+        <a href="tictactoe.html" class="tile"><span class="icon">❌⭕</span><span class="title">TIC-TAC-TOE</span><span class="desc">Lose to Joshua. Review on Amazon.</span></a>
+        <a href="mimaw.html" class="tile"><span class="icon">👵</span><span class="title">MIMAW</span><span class="desc">Watch rare interviews and memories from 1998</span></a>
+        <a href="man-childness.html" class="tile"><span class="icon">📺</span><span class="title">MAN-CHILDNESS</span><span class="desc">Real-world sightings &amp; clips</span></a>
+        <a href="bee-leaf.html" class="tile"><span class="icon">🐝🍃</span><span class="title">BEE-LEAF</span><span class="desc">Interactive adventure picture book</span></a>
+        <a href="more.html" class="tile"><span class="icon">📖</span><span class="title">MORE LIFE LESSONS</span><span class="desc">Ongoing chapters and reflections beyond the memoir</span></a>
+        <a href="about.html" class="tile"><span class="icon">👨‍💻</span><span class="title">ABOUT THE AUTHOR</span><span class="desc">Meet the man-child behind the memories</span></a>
+      </div>
+
+      <a href="https://www.amazon.com/dp/B0FP6ZZX63" class="amazon" target="_blank" rel="noopener noreferrer">BUY ON AMAZON</a>
+      <div class="quote">“Howard invites you to laugh, cry, and rekindle the wonder of growing up... or perhaps, never growing up at all.”</div>
+    </section>
+  </main>
+  <aside class="music-dock" aria-label="Dashboard music controls">
+    <button class="music-toggle" id="music-toggle" type="button" data-state="paused" aria-pressed="false">
+      <span class="music-cassette" aria-hidden="true">📼</span>
+      <span id="music-label" aria-live="polite">STARTING 80\'S LOVE...</span>
     </button>
+    <div class="music-credit">
+      <a href="https://soundcloud.com/helkimer" target="_blank" rel="noopener noreferrer">“80s Love” by Helkimer</a><br>
+      Royalty Free Music by <a href="https://www.free-stock-music.com/helkimer-80s-love.html" target="_blank" rel="noopener noreferrer">free-stock-music.com</a><br>
+      <a href="https://creativecommons.org/licenses/by-nd/4.0/" target="_blank" rel="noopener noreferrer">CC BY-ND 4.0</a>
+    </div>
+  </aside>
+  <a class="lens-shortcut" href="lens.html?found=1" aria-label="Look closer. Discover Through the Man-Child Lens."><span class="lens-symbol" aria-hidden="true"></span><span class="lens-tooltip" aria-hidden="true">LOOK CLOSER...</span></a>
+  <button class="cat-paw" id="cat-paw" type="button" aria-label="Jumpin' Punkin' game">🐾</button>
+  <script>
+    (() => {
+      const music = document.getElementById('dashboard-music');
+      const toggle = document.getElementById('music-toggle');
+      const label = document.getElementById('music-label');
+      const catPaw = document.getElementById('cat-paw');
+      const gate = document.getElementById('welcome-gate');
+      const startButton = document.getElementById('start-button');
+      const moduleShell = document.getElementById('module-shell');
+      const moduleFrame = document.getElementById('module-frame');
+      const moduleLoader = document.getElementById('module-loader');
+      const moduleHome = document.getElementById('module-home');
+      const ArcadeAudioContext = window.AudioContext || window.webkitAudioContext;
+      const dashboardTitle = document.title;
+      const dashboard = new URL('index.html', location.href);
+      const dashboardDirectory = dashboard.pathname.replace(/index\.html$/, '');
+      const targetVolume = 0.18;
+      const keepAliveVolume = 0.001;
+      const gateStorageKey = 'manChildWelcomeComplete:production';
+      const musicWantedStorageKey = 'manChildMusicWanted:production';
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const siteAlreadyEntered = (() => {
+        try {
+          return sessionStorage.getItem(gateStorageKey) === '1';
+        } catch (error) {
+          return false;
+        }
+      })();
+      const gatedSiblings = [...document.body.children].filter(element => !element.matches('#welcome-gate, script, noscript'));
+      const dashboardElements = [...document.body.children].filter(element => !element.matches('#welcome-gate, #module-shell, audio, script, noscript'));
+      let fadeFrame = 0;
+      let musicFadeTimer = 0;
+      let moduleIsOpen = false;
+      let moduleHistoryActive = false;
+      let lastModuleTrigger = null;
+      let autoplayBlocked = false;
+      let arcadeAudioContext = null;
+      let gateHasStarted = false;
+      const autoplayEvents = ['pointerdown', 'keydown', 'touchstart'];
 
-    <script>
-        // No background music logic; cat paw simply navigates to the game page.
-    </script>
+      const runArcadeSound = createSound => {
+        if (!ArcadeAudioContext) return;
+        if (!arcadeAudioContext) arcadeAudioContext = new ArcadeAudioContext();
+
+        const begin = () => {
+          if (arcadeAudioContext.state === 'running') createSound(arcadeAudioContext);
+        };
+
+        if (arcadeAudioContext.state === 'suspended') {
+          arcadeAudioContext.resume().then(begin).catch(() => {});
+        } else {
+          begin();
+        }
+      };
+
+      const playCoinSlotSound = () => {
+        runArcadeSound(context => {
+          const now = context.currentTime + 0.01;
+          const master = context.createGain();
+          const compressor = context.createDynamicsCompressor();
+          master.gain.setValueAtTime(0.72, now);
+          compressor.threshold.setValueAtTime(-20, now);
+          compressor.knee.setValueAtTime(12, now);
+          compressor.ratio.setValueAtTime(7, now);
+          compressor.attack.setValueAtTime(0.002, now);
+          compressor.release.setValueAtTime(0.12, now);
+          master.connect(compressor).connect(context.destination);
+
+          const metalHit = (start, baseFrequency, duration, level) => {
+            [1, 1.43, 1.91, 2.67].forEach((ratio, index) => {
+              const partialDuration = duration / (1 + index * 0.22);
+              const partialLevel = level / (1 + index * 0.65);
+              const oscillator = context.createOscillator();
+              const gain = context.createGain();
+              oscillator.type = 'sine';
+              oscillator.frequency.setValueAtTime(baseFrequency * ratio, start);
+              oscillator.frequency.exponentialRampToValueAtTime(baseFrequency * ratio * 0.985, start + partialDuration);
+              gain.gain.setValueAtTime(0.0001, start);
+              gain.gain.exponentialRampToValueAtTime(partialLevel, start + 0.002);
+              gain.gain.exponentialRampToValueAtTime(0.0001, start + partialDuration);
+              oscillator.connect(gain).connect(master);
+              oscillator.start(start);
+              oscillator.stop(start + partialDuration + 0.02);
+            });
+          };
+
+          const noiseBurst = (start, duration, frequency, filterType, level) => {
+            const frameCount = Math.ceil(context.sampleRate * duration);
+            const buffer = context.createBuffer(1, frameCount, context.sampleRate);
+            const channel = buffer.getChannelData(0);
+            for (let index = 0; index < frameCount; index += 1) {
+              const decay = 1 - index / frameCount;
+              channel[index] = (Math.random() * 2 - 1) * decay;
+            }
+
+            const source = context.createBufferSource();
+            const filter = context.createBiquadFilter();
+            const gain = context.createGain();
+            source.buffer = buffer;
+            filter.type = filterType;
+            filter.frequency.setValueAtTime(frequency, start);
+            filter.Q.setValueAtTime(filterType === 'bandpass' ? 1.4 : 0.75, start);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(level, start + 0.003);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+            source.connect(filter).connect(gain).connect(master);
+            source.start(start);
+            source.stop(start + duration + 0.01);
+          };
+
+          const mechanismClack = start => {
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            oscillator.type = 'triangle';
+            oscillator.frequency.setValueAtTime(165, start);
+            oscillator.frequency.exponentialRampToValueAtTime(78, start + 0.085);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(0.42, start + 0.003);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.09);
+            oscillator.connect(gain).connect(master);
+            oscillator.start(start);
+            oscillator.stop(start + 0.105);
+            noiseBurst(start, 0.055, 1350, 'lowpass', 0.38);
+          };
+
+          // Bright quarter contact, a brief scrape through the chute, the coin
+          // switch engaging, and two smaller impacts in the metal cash box.
+          metalHit(now, 3150, 0.12, 0.34);
+          metalHit(now + 0.026, 4650, 0.09, 0.2);
+          noiseBurst(now + 0.055, 0.16, 3100, 'bandpass', 0.14);
+          mechanismClack(now + 0.205);
+          metalHit(now + 0.285, 1280, 0.18, 0.28);
+          metalHit(now + 0.355, 880, 0.2, 0.2);
+        });
+      };
+
+      const musicIsWanted = () => {
+        try {
+          return sessionStorage.getItem(musicWantedStorageKey) !== '0';
+        } catch (error) {
+          return true;
+        }
+      };
+
+      const setMusicWanted = wanted => {
+        try {
+          sessionStorage.setItem(musicWantedStorageKey, wanted ? '1' : '0');
+        } catch (error) {
+          // Playback still works when storage is unavailable; only the preference is temporary.
+        }
+      };
+
+      const setControl = () => {
+        const playing = !music.paused;
+        toggle.dataset.state = playing ? 'playing' : 'paused';
+        toggle.setAttribute('aria-pressed', String(playing));
+        label.textContent = playing
+          ? "80'S LOVE · PLAYING"
+          : (autoplayBlocked ? 'TAP ANYWHERE FOR MUSIC' : "80'S LOVE · PAUSED");
+      };
+
+      const fadeTo = (volume, duration) => {
+        cancelAnimationFrame(fadeFrame);
+        const startVolume = music.volume;
+        const startTime = performance.now();
+        const fadeDuration = reducedMotion ? 0 : duration;
+        const step = now => {
+          const progress = fadeDuration === 0 ? 1 : Math.min((now - startTime) / fadeDuration, 1);
+          music.volume = startVolume + (volume - startVolume) * progress;
+          if (progress < 1) fadeFrame = requestAnimationFrame(step);
+        };
+        fadeFrame = requestAnimationFrame(step);
+      };
+
+      const disarmAutoplayFallback = () => {
+        autoplayEvents.forEach(eventName => {
+          document.removeEventListener(eventName, resumeAfterInteraction, true);
+        });
+      };
+
+      const resumeAfterInteraction = event => {
+        disarmAutoplayFallback();
+        if (event.target && event.target.closest && event.target.closest('#music-toggle')) return;
+        playMusic();
+      };
+
+      const armAutoplayFallback = () => {
+        autoplayEvents.forEach(eventName => {
+          document.addEventListener(eventName, resumeAfterInteraction, { once: true, capture: true });
+        });
+      };
+
+      const playMusic = async (fadeDelay = 0) => {
+        autoplayBlocked = false;
+        disarmAutoplayFallback();
+        setMusicWanted(true);
+        clearTimeout(musicFadeTimer);
+        cancelAnimationFrame(fadeFrame);
+        music.muted = false;
+        music.volume = keepAliveVolume;
+        try {
+          await music.play();
+          if (fadeDelay > 0) {
+            musicFadeTimer = setTimeout(() => {
+              fadeTo(moduleIsOpen ? keepAliveVolume : targetVolume, 900);
+            }, fadeDelay);
+          } else {
+            fadeTo(moduleIsOpen ? keepAliveVolume : targetVolume, 900);
+          }
+        } catch (error) {
+          music.pause();
+          autoplayBlocked = true;
+          armAutoplayFallback();
+        }
+        setControl();
+        return !music.paused;
+      };
+
+      const pauseMusic = () => {
+        autoplayBlocked = false;
+        disarmAutoplayFallback();
+        setMusicWanted(false);
+        clearTimeout(musicFadeTimer);
+        fadeTo(0, 450);
+        setTimeout(() => {
+          music.pause();
+          setControl();
+        }, reducedMotion ? 0 : 450);
+      };
+
+      const dismissGate = () => {
+        gate.classList.add('is-leaving');
+        gate.setAttribute('aria-hidden', 'true');
+        setTimeout(() => {
+          gate.hidden = true;
+          gatedSiblings.forEach(element => { element.inert = false; });
+          document.body.classList.remove('gate-locked');
+        }, reducedMotion ? 0 : 800);
+      };
+
+      const enterSite = () => {
+        if (gateHasStarted) return;
+        gateHasStarted = true;
+        try {
+          sessionStorage.setItem(gateStorageKey, '1');
+        } catch (error) {
+          // The gate still works when storage is unavailable; it simply cannot remember this visit.
+        }
+        setMusicWanted(true);
+        // Request the song first while the click's browser permission is at its
+        // strongest, then play the quarter cue through the same interaction.
+        playMusic(420);
+        playCoinSlotSound();
+        dismissGate();
+      };
+
+      const rememberPosition = () => {
+        if (Number.isFinite(music.currentTime)) sessionStorage.setItem('manChildDashboardMusicTime', String(music.currentTime));
+      };
+
+      const isDashboardURL = url => url.origin === location.origin
+        && (url.pathname === dashboard.pathname || url.pathname === dashboardDirectory);
+
+      const clearModuleFrame = () => {
+        try {
+          moduleFrame.contentWindow.location.replace('about:blank');
+        } catch (error) {
+          moduleFrame.removeAttribute('src');
+        }
+      };
+
+      const closeModule = () => {
+        if (!moduleIsOpen) return;
+        moduleIsOpen = false;
+        moduleShell.hidden = true;
+        moduleShell.classList.remove('is-loaded');
+        moduleShell.setAttribute('aria-hidden', 'true');
+        clearModuleFrame();
+        moduleFrame.title = 'Author site section';
+        moduleLoader.textContent = 'LOADING THE NEXT LIFE LESSON...';
+        document.body.classList.remove('module-open');
+        dashboardElements.forEach(element => { element.inert = false; });
+        document.title = dashboardTitle;
+        if (!music.paused && musicIsWanted()) fadeTo(targetVolume, 750);
+        if (lastModuleTrigger && document.contains(lastModuleTrigger)) lastModuleTrigger.focus({ preventScroll: true });
+      };
+
+      const returnHome = () => {
+        if (!moduleIsOpen) return;
+        if (moduleHistoryActive) {
+          history.back();
+        } else {
+          closeModule();
+        }
+      };
+
+      const openModule = (href, title = 'Author site section', trigger = document.activeElement) => {
+        const destination = new URL(href, location.href);
+        if (destination.origin !== location.origin || !destination.pathname.startsWith(dashboardDirectory)
+          || isDashboardURL(destination)) {
+          location.assign(destination.href);
+          return;
+        }
+
+        destination.searchParams.set('dashboardShell', '1');
+        const currentState = history.state && typeof history.state === 'object' ? history.state : {};
+        history.pushState({ ...currentState, manChildModule: true }, '', location.href);
+        moduleHistoryActive = true;
+        moduleIsOpen = true;
+        lastModuleTrigger = trigger;
+        rememberPosition();
+        moduleShell.hidden = false;
+        moduleShell.classList.remove('is-loaded');
+        moduleShell.removeAttribute('aria-hidden');
+        moduleFrame.title = title;
+        moduleLoader.textContent = `LOADING ${title.toUpperCase()}...`;
+        document.body.classList.add('module-open');
+        dashboardElements.forEach(element => { element.inert = true; });
+        if (!music.paused) fadeTo(keepAliveVolume, 500);
+        moduleFrame.contentWindow.location.replace(destination.href);
+      };
+
+      const hideEmbeddedHomeLinks = root => {
+        const candidates = [];
+        if (root.nodeType === Node.ELEMENT_NODE && root.matches('a[href]')) candidates.push(root);
+        if (root.querySelectorAll) candidates.push(...root.querySelectorAll('a[href]'));
+        candidates.forEach(link => {
+          let destination;
+          try {
+            destination = new URL(link.href, moduleFrame.contentWindow.location.href);
+          } catch (error) {
+            return;
+          }
+          if (!isDashboardURL(destination)) return;
+          link.hidden = true;
+          link.style.setProperty('display', 'none', 'important');
+          link.setAttribute('aria-hidden', 'true');
+          link.tabIndex = -1;
+        });
+      };
+
+      const wireModuleDocument = () => {
+        let moduleURL;
+        let moduleDocument;
+        try {
+          moduleURL = new URL(moduleFrame.contentWindow.location.href);
+          moduleDocument = moduleFrame.contentDocument;
+        } catch (error) {
+          moduleShell.classList.add('is-loaded');
+          return;
+        }
+
+        if (moduleURL.href === 'about:blank') {
+          return;
+        }
+        if (isDashboardURL(moduleURL)) {
+          returnHome();
+          return;
+        }
+
+        moduleShell.classList.add('is-loaded');
+        if (moduleDocument && moduleDocument.title) {
+          moduleFrame.title = moduleDocument.title;
+          document.title = `${moduleDocument.title} | Life Lessons of a Man-Child`;
+        }
+        moduleFrame.focus({ preventScroll: true });
+
+        if (!moduleDocument) return;
+        hideEmbeddedHomeLinks(moduleDocument);
+        const homeLinkObserver = new MutationObserver(records => {
+          records.forEach(record => record.addedNodes.forEach(hideEmbeddedHomeLinks));
+        });
+        homeLinkObserver.observe(moduleDocument.documentElement, { childList: true, subtree: true });
+        moduleDocument.addEventListener('click', event => {
+          const link = event.target.closest('a[href]');
+          if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          const destination = new URL(link.href, moduleURL);
+          if (isDashboardURL(destination)) {
+            event.preventDefault();
+            returnHome();
+            return;
+          }
+          const staysInsideSite = destination.origin === location.origin
+            && destination.pathname.startsWith(dashboardDirectory)
+            && !link.hasAttribute('download');
+          if (!staysInsideSite) return;
+          event.preventDefault();
+          destination.searchParams.set('dashboardShell', '1');
+          moduleFrame.contentWindow.location.replace(destination.href);
+        }, true);
+        moduleDocument.addEventListener('keydown', event => {
+          if (event.key === 'Escape') returnHome();
+        });
+      };
+
+      music.addEventListener('loadedmetadata', () => {
+        const savedTime = Number(sessionStorage.getItem('manChildDashboardMusicTime'));
+        if (Number.isFinite(savedTime) && savedTime >= 0 && savedTime < music.duration) music.currentTime = savedTime;
+      });
+      music.addEventListener('timeupdate', rememberPosition);
+      music.addEventListener('play', setControl);
+      music.addEventListener('pause', setControl);
+      window.addEventListener('pagehide', rememberPosition);
+      window.addEventListener('pageshow', event => {
+        if (!event.persisted || !musicIsWanted()) return;
+        if (music.paused) playMusic();
+        else fadeTo(moduleIsOpen ? keepAliveVolume : targetVolume, 750);
+      });
+      window.addEventListener('message', event => {
+        if (event.origin !== location.origin || event.source !== moduleFrame.contentWindow
+          || !event.data || event.data.type !== 'manChildDashboardHome') return;
+        returnHome();
+      });
+      window.addEventListener('popstate', () => {
+        if (!moduleIsOpen) return;
+        moduleHistoryActive = false;
+        closeModule();
+      });
+      moduleFrame.addEventListener('load', wireModuleDocument);
+
+      toggle.addEventListener('click', () => music.paused ? playMusic() : pauseMusic());
+      startButton.addEventListener('click', enterSite);
+      moduleHome.addEventListener('click', returnHome);
+
+      document.querySelectorAll('.feature, .tile, .lens-shortcut').forEach(link => {
+        link.addEventListener('click', event => {
+          if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          const title = link.querySelector('.title')?.textContent.trim()
+            || link.getAttribute('aria-label')
+            || 'Author site section';
+          openModule(link.href, title, link);
+        });
+      });
+      catPaw.addEventListener('click', () => openModule('cat-library-runner.html', "Jumpin' Punkin'", catPaw));
+
+      setControl();
+      if (siteAlreadyEntered) {
+        gate.hidden = true;
+        gate.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('gate-locked');
+        if (musicIsWanted()) playMusic();
+      } else {
+        gatedSiblings.forEach(element => { element.inert = true; });
+        startButton.focus({ preventScroll: true });
+      }
+    })();
+  </script>
 </body>
 </html>

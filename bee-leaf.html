@@ -571,7 +571,7 @@
     </style>
 </head>
 <body>
-    <div class="scanlines"></div>
+<div class="scanlines"></div>
 
     <audio id="bgMusic" preload="auto" loop autoplay>
         <source src="Bee%20Leaf/soft-background-music-432715.mp3" type="audio/mpeg">
@@ -852,7 +852,7 @@
             ensureMusicStarted();
             playPageTurn();
             if (currentScene === scenes.length - 1) {
-                window.location.href = 'honeygame.html';
+                window.location.replace('honeygame.html');
                 return;
             }
             showScene(currentScene + 1);
@@ -874,5 +874,6 @@
 
         updateControls();
     </script>
+  <script src="dashboard-return.js"></script>
 </body>
 </html>

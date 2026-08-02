@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Through the Man-Child Lens | R.C. Howard</title>
+  <meta name="description" content="Video explorations of the stories, themes, and imagination behind Life Lessons of a Man-Child: A Memoir? by R.C. Howard.">
+  <meta property="og:title" content="Through the Man-Child Lens">
+  <meta property="og:description" content="Look closer at the stories and imagination behind Life Lessons of a Man-Child: A Memoir?">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="PaperbackCoverFinal.png">
+  <meta property="og:image:alt" content="Life Lessons of a Man-Child: A Memoir? book cover">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;600;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}
+    :root{--cyan:#2cf6ff;--pink:#ff4ad8;--gold:#ffd65a;--ink:#040713;--panel:#080a18e8;--muted:#b6c6d9}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;padding-top:0;color:#edfaff;font-family:Roboto,sans-serif;line-height:1.65;background-color:#03030b;background-image:radial-gradient(circle at 18% 16%,#00e5ff33,transparent 30%),radial-gradient(circle at 82% 24%,#ff00bb38,transparent 34%),linear-gradient(180deg,rgba(5,4,20,.70),rgba(27,4,42,.78) 58%,rgba(2,5,13,.88)),url('PaperbackCoverFinal.png'),url('Book-Cover.png');background-repeat:no-repeat;background-position:center;background-size:cover;background-attachment:fixed;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(#2cf6ff0c 1px,transparent 1px),linear-gradient(90deg,#2cf6ff0c 1px,transparent 1px);background-size:52px 52px;z-index:-1}
+    a{color:inherit}
+    
+    .shell{width:min(1120px,calc(100% - 28px));margin:auto;padding:24px 0 70px}
+    .topbar{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:18px}
+    .back{font-family:'Press Start 2P',monospace;font-size:.6rem;line-height:1.45;text-decoration:none;color:var(--cyan);padding:.8rem 1rem;border:2px solid #2cf6ff88;border-radius:999px;background:#07111f;transition:.2s}
+    .back:hover,.back:focus-visible{border-color:var(--pink);color:var(--pink);transform:translateY(-2px);outline:none}
+    .brand{text-align:right}.brand strong{display:block;font-family:Orbitron,sans-serif;color:var(--cyan);font-size:clamp(1rem,3vw,1.5rem);letter-spacing:.08em}.brand span{color:var(--muted);font-size:.72rem;letter-spacing:.12em}
+    .discovery{margin:0 0 18px;padding:14px 18px;border:2px solid var(--gold);border-radius:14px;background:linear-gradient(90deg,#241500ee,#371127ee);color:#fff3b5;text-align:center;font-family:'Press Start 2P',monospace;font-size:clamp(.52rem,1.5vw,.7rem);line-height:1.7;box-shadow:0 0 22px #ffd65a55;animation:discovered .7s ease both}
+    .discovery[hidden]{display:none}
+    @keyframes discovered{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+    .hero{position:relative;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:clamp(24px,5vw,58px);align-items:center;min-height:470px;padding:clamp(28px,6vw,68px);border:2px solid #2cf6ff77;border-radius:24px;overflow:hidden;background:linear-gradient(145deg,#070b1aef,#1f062ee8);box-shadow:0 0 38px #00eaff36,0 26px 70px #000a}
+    .hero:before{content:"";position:absolute;width:430px;height:430px;right:-110px;top:-150px;border:2px solid #ff4ad824;border-radius:50%;box-shadow:0 0 70px #ff00bf18,inset 0 0 55px #00efff10}
+    .hero-copy{position:relative;z-index:2}
+    .eyebrow,.section-label{font-family:'Press Start 2P',monospace;color:var(--gold);font-size:clamp(.55rem,1.3vw,.72rem);line-height:1.6;letter-spacing:.11em}
+    h1,h2{font-family:Orbitron,sans-serif}
+    h1{margin:.65rem 0 1rem;color:var(--cyan);font-size:clamp(2rem,6vw,4rem);line-height:1.04;text-shadow:0 0 14px #00efff88,0 0 38px #00efff44}
+    .hero p{max-width:660px;margin:0;color:#dce9f6;font-size:clamp(.95rem,2vw,1.08rem)}
+    .cover-portal{position:relative;z-index:2;width:min(310px,82%);margin:auto;filter:drop-shadow(0 22px 28px #000a)}
+    .cover-portal img{display:block;width:100%;height:auto;border-radius:8px;border:1px solid #ffffff44}
+    .lens-ring{position:absolute;width:72%;aspect-ratio:1;right:-17%;top:8%;border:10px solid #9ffcff;border-radius:50%;background:radial-gradient(circle at 38% 32%,#ffffff20,transparent 45%);box-shadow:0 0 20px #00ffff,0 0 55px #00ffff77,inset 0 0 24px #00ffff66;transform:rotate(-8deg);animation:lensFloat 4s ease-in-out infinite}
+    .lens-ring:after{content:"";position:absolute;width:44%;height:18px;right:-30%;bottom:-13%;border-radius:999px;background:linear-gradient(90deg,#ff81ec,#ff26ca);box-shadow:0 0 18px #ff00d4;transform:rotate(47deg)}
+    @keyframes lensFloat{50%{transform:translateY(-9px) rotate(-5deg)}}
+    .panel{margin-top:32px;padding:clamp(24px,4vw,42px);border:1px solid #72eaff55;border-radius:20px;background:linear-gradient(145deg,#0b1224ee,#16091fee);box-shadow:0 18px 50px #0008,inset 0 0 30px #24eaff0b}
+    .episode{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:32px;align-items:center}
+    .episode + .episode{margin-top:24px}
+    .panel h2{margin:.3rem 0 .7rem;color:var(--cyan);font-size:clamp(1.65rem,4vw,2.65rem);line-height:1.15}
+    .meta{margin:.25rem 0 1.1rem;color:var(--gold);font-weight:700;letter-spacing:.06em}
+    .copy{color:#d8e5f2}.copy p{margin:.7rem 0}.copy strong{color:white}
+    .video-card{position:relative;padding:24px;border:2px solid #ff4ad877;border-radius:18px;background:linear-gradient(155deg,#090817,#200929);box-shadow:0 0 28px #ff00c52b;overflow:hidden}
+    .video-card:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 25%,#ffffff12 45%,transparent 62%);transform:translateX(-120%);animation:sweep 5s infinite}
+    @keyframes sweep{70%,100%{transform:translateX(120%)}}
+    .screen{position:relative;aspect-ratio:16/9;display:grid;place-items:center;margin-bottom:18px;border:1px solid #2cf6ff66;border-radius:14px;background:#040713;box-shadow:0 0 24px #00eaff1f;overflow:hidden}
+    .screen iframe{display:block;width:100%;height:100%;border:0}
+    .video-launch{position:absolute;inset:0;width:100%;height:100%;display:grid;place-items:center;padding:0;border:0;color:white;cursor:pointer;background-color:#050817;background-image:linear-gradient(#04071342,#1505248f),var(--video-thumb);background-position:center;background-size:cover}
+    .video-launch:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,transparent 20%,#04071370 82%)}
+    .video-launch:hover .play,.video-launch:focus-visible .play{transform:scale(1.08);background:#ff2cc8;border-color:var(--cyan);box-shadow:0 0 28px #00ffff88}
+    .video-launch:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+    .play{position:relative;z-index:3;width:72px;height:72px;display:grid;place-items:center;border-radius:50%;background:#050817e8;border:2px solid white;color:white;font-size:1.85rem;padding-left:5px;box-shadow:0 0 22px #000;transition:.2s}
+    .watch-prompt{position:absolute;z-index:3;right:14px;bottom:12px;left:14px;padding:.55rem .7rem;border-radius:8px;background:#050817d9;color:#fff;font-family:'Press Start 2P',monospace;font-size:clamp(.48rem,1.4vw,.63rem);line-height:1.5;text-align:center;text-shadow:0 0 8px #00eaff}
+    .button{position:relative;z-index:2;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;padding:.95rem 1.1rem;border:2px solid var(--pink);border-radius:999px;background:linear-gradient(90deg,#6d0757,#31126c);color:white;font-family:Orbitron,sans-serif;font-weight:800;text-decoration:none;text-align:center;box-shadow:0 0 18px #ff00c744;transition:.2s}
+    .button:hover,.button:focus-visible{transform:translateY(-2px);border-color:var(--cyan);box-shadow:0 0 24px #00ffff55;outline:none}
+    .source-note{position:relative;z-index:2;margin:.8rem 0 0;color:#aebbd0;font-size:.78rem;text-align:center}
+    .why{display:grid;grid-template-columns:1fr 1fr;gap:24px}.why blockquote{margin:0;padding:1.25rem;border-left:4px solid var(--pink);background:#05091588;color:#f7c6ef;font-size:1.05rem;font-style:italic}
+    .future{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}.pending{min-height:145px;padding:20px;border:1px dashed #7790ad66;border-radius:14px;background:#05091599;opacity:.74;display:flex;flex-direction:column;justify-content:center}.pending strong{font-family:'Press Start 2P',monospace;color:#a9bbcb;font-size:.6rem;line-height:1.5}.pending span{margin-top:.7rem;color:#d1d7df}
+    .actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:20px}.actions .button{width:auto;min-width:210px}.share{cursor:pointer}
+    footer{text-align:center;color:#899bad;font-size:.78rem;margin-top:34px;padding:22px}
+    @media(max-width:820px){body{padding-top:0;background-attachment:scroll}.topbar{align-items:flex-start;flex-direction:column}.brand{text-align:left}.hero,.episode,.why{grid-template-columns:1fr}.hero{min-height:0}.cover-portal{width:min(270px,72%)}.episode{align-items:start}.future{grid-template-columns:1fr}.video-card{padding:18px}}
+    @media(max-width:480px){.shell{width:min(100% - 20px,1120px)}.hero,.panel{padding:22px 16px}.screen{min-height:0}.actions .button{width:100%}.back{font-size:.54rem}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+<main class="shell">
+    <header class="topbar">
+      <a class="back" href="index.html">◀ BACK TO HOME</a>
+      <div class="brand"><strong>THROUGH THE MAN-CHILD LENS</strong><span>LOOK CLOSER. REMEMBER MORE.</span></div>
+    </header>
+
+    <div class="discovery" id="discovery" role="status" hidden>🔎 SECRET DISCOVERED: YOU FOUND THE MAN-CHILD LENS.</div>
+
+    <section class="hero" aria-labelledby="lens-title">
+      <div class="hero-copy">
+        <div class="eyebrow">A CLOSER LOOK AT THE MEMOIR</div>
+        <h1 id="lens-title">THROUGH THE<br>MAN-CHILD LENS</h1>
+        <p>Video explorations of the stories, themes, memories, and imagination behind <em>Life Lessons of a Man-Child: A Memoir?</em></p>
+      </div>
+      <div class="cover-portal" aria-hidden="true">
+        <img src="PaperbackCoverFinal.png" alt="">
+        <span class="lens-ring"></span>
+      </div>
+    </section>
+
+    <section class="panel episode" id="episode-001">
+      <div>
+        <div class="section-label">VIDEO EXPLORATION 001</div>
+        <h2>Life Lessons of a Man Child</h2>
+        <p class="meta">EPISODE 001 &nbsp;•&nbsp; VIDEO OVERVIEW &nbsp;•&nbsp; 9:03 &nbsp;•&nbsp; YOUTUBE</p>
+        <div class="copy">
+          <p>Before looking through the individual lenses, begin with the story as a whole.</p>
+          <p><strong>Life Lessons of a Man Child</strong> offers a visual synopsis of R.C. Howard’s memoir—a journey through childhood memories, family, laughter, loss, and the lessons that follow us into adulthood.</p>
+          <p>It is the ideal starting point for readers who want to glimpse the heart of the book and for those who have already finished it but are not quite ready to leave its world behind.</p>
+        </div>
+      </div>
+      <aside class="video-card" aria-label="Watch Life Lessons of a Man Child">
+        <div class="screen">
+          <button class="video-launch" type="button" data-video-id="xB9K23vouIc" data-video-title="Life Lessons of a Man Child" style="--video-thumb:url('https://i.ytimg.com/vi/xB9K23vouIc/hqdefault.jpg')" aria-label="Play Life Lessons of a Man Child here">
+            <span class="play" aria-hidden="true">▶</span>
+            <span class="watch-prompt">PLAY LIFE LESSONS OF A MAN CHILD</span>
+          </button>
+          <noscript><a href="https://youtu.be/xB9K23vouIc" target="_blank" rel="noopener noreferrer">Watch Life Lessons of a Man Child on YouTube</a></noscript>
+        </div>
+        <a class="button" href="https://youtu.be/xB9K23vouIc" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a>
+        <p class="source-note">Plays here in one click • Full-screen available in the player</p>
+      </aside>
+    </section>
+
+    <section class="panel episode" id="episode-002">
+      <div>
+        <div class="section-label">VIDEO EXPLORATION 002</div>
+        <h2>The Lens of Make-Believe</h2>
+        <p class="meta">EPISODE 002 &nbsp;•&nbsp; VIDEO OVERVIEW &nbsp;•&nbsp; 4:59 &nbsp;•&nbsp; YOUTUBE</p>
+        <div class="copy">
+          <p>What if the made-up worlds of childhood were never merely an escape from life—but one of the ways we learned how to live it?</p>
+          <p><strong>The Lens of Make-Believe</strong> looks more closely at imagination, creativity, memory, and the stories we carry from childhood into the bewildering business of growing older.</p>
+          <p>It is a guided visual journey through one of the ideas beating beneath the memoir: make-believe does not always disappear. Sometimes it becomes the lens through which we finally understand ourselves.</p>
+        </div>
+      </div>
+      <aside class="video-card" aria-label="Watch The Lens of Make-Believe">
+        <div class="screen">
+          <button class="video-launch" type="button" data-video-id="iMPzcbtBtds" data-video-title="The Lens of Make-Believe" style="--video-thumb:url('https://i.ytimg.com/vi/iMPzcbtBtds/hqdefault.jpg')" aria-label="Play The Lens of Make-Believe here">
+            <span class="play" aria-hidden="true">▶</span>
+            <span class="watch-prompt">PLAY THE LENS OF MAKE-BELIEVE</span>
+          </button>
+          <noscript><a href="https://youtu.be/iMPzcbtBtds" target="_blank" rel="noopener noreferrer">Watch The Lens of Make-Believe on YouTube</a></noscript>
+        </div>
+        <a class="button" href="https://youtu.be/iMPzcbtBtds" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a>
+        <p class="source-note">Plays here in one click • Full-screen available in the player</p>
+      </aside>
+    </section>
+
+    <section class="panel episode" id="episode-003">
+      <div>
+        <div class="section-label">VIDEO EXPLORATION 003</div>
+        <h2>The ‘Nothing’ Problem: Why We Forget How to Play</h2>
+        <p class="meta">EPISODE 003 &nbsp;•&nbsp; VIDEO OVERVIEW &nbsp;•&nbsp; 4:39 &nbsp;•&nbsp; YOUTUBE</p>
+        <div class="copy">
+          <p>At some point, childhood’s glorious “nothing” became adulthood’s dreaded waste of time. But what did we lose when play stopped being reason enough?</p>
+          <p><strong>The ‘Nothing’ Problem</strong> looks at the strange adult habit of dismissing unstructured play—even though those apparently idle hours once taught us how to imagine, experiment, fail, laugh, and begin again.</p>
+          <p>Through the Man-Child Lens, this exploration asks whether growing older truly requires us to outgrow play—or whether remembering how to play might help us become more fully ourselves.</p>
+        </div>
+      </div>
+      <aside class="video-card" aria-label="Watch The ‘Nothing’ Problem: Why We Forget How to Play">
+        <div class="screen">
+          <button class="video-launch" type="button" data-video-id="Vj1b-f5QJqM" data-video-title="The ‘Nothing’ Problem: Why We Forget How to Play" style="--video-thumb:url('https://i.ytimg.com/vi/Vj1b-f5QJqM/hqdefault.jpg')" aria-label="Play The ‘Nothing’ Problem here">
+            <span class="play" aria-hidden="true">▶</span>
+            <span class="watch-prompt">PLAY THE ‘NOTHING’ PROBLEM</span>
+          </button>
+          <noscript><a href="https://youtu.be/Vj1b-f5QJqM" target="_blank" rel="noopener noreferrer">Watch The ‘Nothing’ Problem on YouTube</a></noscript>
+        </div>
+        <a class="button" href="https://youtu.be/Vj1b-f5QJqM" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a>
+        <p class="source-note">Plays here in one click • Full-screen available in the player</p>
+      </aside>
+    </section>
+
+    <section class="panel episode" id="episode-004">
+      <div>
+        <div class="section-label">VIDEO EXPLORATION 004</div>
+        <h2>Finding God thru Writing</h2>
+        <p class="meta">EPISODE 004 &nbsp;•&nbsp; VIDEO OVERVIEW &nbsp;•&nbsp; 7:59 &nbsp;•&nbsp; YOUTUBE</p>
+        <div class="copy">
+          <p>What happens when putting a life on the page becomes more than an act of remembrance?</p>
+          <p><strong>Finding God thru Writing</strong> reflects on the connection between faith and the writing life—how revisiting memories, shaping them into stories, and searching for meaning can become a spiritual journey of its own.</p>
+          <p>Drawn from <em>Life Lessons of a Man-Child: A Memoir?</em>, it considers how we may begin writing to understand where we have been and discover something larger waiting between the lines.</p>
+        </div>
+      </div>
+      <aside class="video-card" aria-label="Watch Finding God thru Writing">
+        <div class="screen">
+          <button class="video-launch" type="button" data-video-id="i3ZPAjRGR2E" data-video-title="Finding God thru Writing" style="--video-thumb:url('https://i.ytimg.com/vi/i3ZPAjRGR2E/hqdefault.jpg')" aria-label="Play Finding God thru Writing here">
+            <span class="play" aria-hidden="true">▶</span>
+            <span class="watch-prompt">PLAY FINDING GOD THRU WRITING</span>
+          </button>
+          <noscript><a href="https://youtu.be/i3ZPAjRGR2E" target="_blank" rel="noopener noreferrer">Watch Finding God thru Writing on YouTube</a></noscript>
+        </div>
+        <a class="button" href="https://youtu.be/i3ZPAjRGR2E" target="_blank" rel="noopener noreferrer">WATCH ON YOUTUBE ↗</a>
+        <p class="source-note">Plays here in one click • Full-screen available in the player</p>
+      </aside>
+    </section>
+
+    <section class="panel why">
+      <div>
+        <div class="section-label">WHY A LENS?</div>
+        <h2>Some stories ask to be seen again.</h2>
+        <div class="copy"><p>A memoir tells you what happened. The Man-Child Lens pauses over the curious details—the themes, symbols, memories, and unanswered questions that keep glowing after the page is turned.</p><p>Each video will focus on one doorway into the book and invite readers to look through it from a fresh angle.</p></div>
+      </div>
+      <blockquote>“Not every story has to end. Sometimes it is only waiting for us to look again.”</blockquote>
+    </section>
+
+    <section class="panel">
+      <div class="section-label">MORE LENSES ARE COMING INTO FOCUS...</div>
+      <div class="future">
+        <div class="pending"><strong>FOCUSING...</strong><span>A forgotten story waits.</span></div>
+        <div class="pending"><strong>FOCUSING...</strong><span>A childhood world reappears.</span></div>
+        <div class="pending"><strong>FOCUSING...</strong><span>Another life lesson sharpens.</span></div>
+      </div>
+      <div class="actions">
+        <button class="button share" id="share-lens" type="button">SHARE THIS LENS</button>
+      </div>
+    </section>
+
+    <footer>Through the Man-Child Lens<br>Inspired by <em>Life Lessons of a Man-Child: A Memoir?</em> by R.C. Howard<br>All original stories and book content © R.C. Howard.</footer>
+  </main>
+  <script>
+    const params=new URLSearchParams(location.search);
+    if(params.get('found')==='1')document.getElementById('discovery').hidden=false;
+    let activeVideo=null;
+    document.querySelectorAll('.video-launch').forEach(videoLaunch=>{
+      videoLaunch.addEventListener('click',()=>{
+        const videoScreen=videoLaunch.closest('.screen');
+        if(activeVideo&&activeVideo.screen!==videoScreen){
+          activeVideo.screen.replaceChildren(activeVideo.launch);
+        }
+        const player=document.createElement('iframe');
+        player.src=`https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoLaunch.dataset.videoId)}?autoplay=1&rel=0`;
+        player.title=videoLaunch.dataset.videoTitle;
+        player.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        player.referrerPolicy='strict-origin-when-cross-origin';
+        player.allowFullscreen=true;
+        videoScreen.replaceChildren(player);
+        activeVideo={screen:videoScreen,launch:videoLaunch};
+      });
+    });
+    const shareButton=document.getElementById('share-lens');
+    shareButton.addEventListener('click',async()=>{
+      const shareData={title:'Life Lessons of a Man Child | R.C. Howard',text:'Look closer at the stories behind Life Lessons of a Man-Child: A Memoir?',url:`${location.origin}${location.pathname}#episode-001`};
+      try{if(navigator.share){await navigator.share(shareData);}else{await navigator.clipboard.writeText(shareData.url);shareButton.textContent='LINK COPIED';setTimeout(()=>shareButton.textContent='SHARE THIS LENS',1800);}}catch(e){}
+    });
+  </script>
+  <script src="dashboard-return.js"></script>
+</body>
+</html>
