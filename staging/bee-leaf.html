@@ -888,7 +888,7 @@
             ensureMusicStarted();
             playPageTurn();
             if (currentScene === scenes.length - 1) {
-                window.location.href = 'honeygame.html';
+                window.location.replace('honeygame.html');
                 return;
             }
             showScene(currentScene + 1);

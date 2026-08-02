@@ -56,12 +56,48 @@
   }).observe(document.documentElement, { childList: true, subtree: true });
 
   if (!embeddedInDashboard) {
+    const fixedHomeStyles = document.createElement('style');
+    fixedHomeStyles.textContent = `
+      .lloamc-fixed-home {
+        position: fixed;
+        top: 66px;
+        left: 50%;
+        z-index: 2147483647;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 11px 16px;
+        border: 2px solid #00ffff;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(8, 13, 24, .95), rgba(41, 16, 77, .95));
+        color: #00ffff;
+        font-family: "Press Start 2P", Orbitron, monospace;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.35;
+        letter-spacing: .04em;
+        text-decoration: none;
+        box-shadow: 0 0 16px rgba(0, 255, 255, .47), inset 0 0 14px rgba(255, 0, 255, .13);
+        backdrop-filter: blur(8px);
+        transform: translateX(-50%);
+      }
+
+      @media (max-width: 700px) {
+        .lloamc-fixed-home {
+          top: 12px;
+          left: 12px;
+          transform: none;
+        }
+      }
+    `;
+    document.head.appendChild(fixedHomeStyles);
+
     const fixedHome = document.createElement('a');
     fixedHome.className = 'lloamc-fixed-home';
     fixedHome.href = dashboard.href;
     fixedHome.textContent = '◀ BACK TO HOME';
     fixedHome.setAttribute('aria-label', 'Back to Home');
-    fixedHome.style.cssText = 'position:fixed;top:12px;left:12px;z-index:2147483647;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:11px 16px;border:2px solid #00ffff;border-radius:999px;background:linear-gradient(135deg,rgba(8,13,24,.95),rgba(41,16,77,.95));color:#00ffff;font-family:"Press Start 2P",Orbitron,monospace;font-size:10px;font-weight:700;line-height:1.35;letter-spacing:.04em;text-decoration:none;box-shadow:0 0 16px rgba(0,255,255,.47),inset 0 0 14px rgba(255,0,255,.13);backdrop-filter:blur(8px)';
     document.body.appendChild(fixedHome);
   }
 
