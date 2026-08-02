@@ -443,7 +443,6 @@
       text-align: center;
     }
 
-    .intro-gate,
     .result-overlay {
       position: fixed;
       inset: 0;
@@ -455,21 +454,7 @@
       backdrop-filter: blur(15px);
     }
 
-    .intro-gate {
-      background-color: #01030a;
-      background-image:
-        linear-gradient(rgba(0, 2, 9, .64), rgba(0, 2, 9, .76)),
-        radial-gradient(circle at 50% 35%, rgba(34, 247, 255, .10), transparent 45%),
-        url('PaperbackCoverFinal.png'),
-        url('Book-Cover.png');
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-attachment: fixed;
-      background-size: cover;
-      backdrop-filter: none;
-    }
-    .intro-gate[hidden], .result-overlay[hidden] { display: none; }
-    .gate-card,
+    .result-overlay[hidden] { display: none; }
     .result-card {
       width: min(680px, 100%);
       padding: clamp(24px, 5vw, 48px);
@@ -481,7 +466,6 @@
       animation: modalIn .34s ease-out both;
     }
 
-    .gate-code,
     .result-code {
       margin: 0 0 14px;
       color: var(--yellow);
@@ -489,7 +473,6 @@
       letter-spacing: .1em;
     }
 
-    .gate-card h2,
     .result-card h2 {
       margin: 0 0 16px;
       color: var(--cyan);
@@ -500,7 +483,6 @@
 
     .result-card.mcp-result h2 { color: var(--red); text-shadow: 0 0 24px rgba(255,58,69,.62); }
     .result-card.human-result h2 { color: var(--cyan); }
-    .gate-card p,
     .result-card p {
       margin: 0 auto 24px;
       max-width: 54ch;
@@ -508,29 +490,6 @@
       line-height: 1.68;
     }
 
-    .enter-button {
-      appearance: none;
-      min-width: min(320px, 100%);
-      padding: 17px 24px;
-      border: 1px solid var(--yellow);
-      border-radius: 999px;
-      color: #05111d;
-      background: linear-gradient(90deg, var(--cyan), var(--yellow));
-      box-shadow: 0 0 30px rgba(34,247,255,.28);
-      font: 900 .84rem/1 'Orbitron', sans-serif;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform .17s ease, filter .17s ease;
-    }
-
-    .enter-button:hover,
-    .enter-button:focus-visible {
-      transform: scale(1.025);
-      filter: brightness(1.14);
-      outline: 2px solid #fff;
-      outline-offset: 4px;
-    }
 
     .result-actions {
       display: flex;
@@ -690,8 +649,7 @@
     }
 
     @media (max-width: 690px) {
-      body,
-      .intro-gate { background-attachment: scroll; }
+      body { background-attachment: scroll; }
       .shell { width: min(100% - 16px, 620px); padding-top: 18px; }
       .topbar { grid-template-columns: 1fr; }
       .sound-button { justify-self: start; }
@@ -860,14 +818,6 @@
     </section>
   </main>
 
-  <section id="intro-gate" class="intro-gate" aria-labelledby="gate-title">
-    <div class="gate-card">
-      <p class="gate-code">WOPR LINK ESTABLISHED // MCP GRID SHELL ONLINE</p>
-      <h2 id="gate-title">SHALL WE PLAY ANOTHER GAME?</h2>
-      <p>You are the DISC program. Joshua is the WOPR intelligence controlling this arena through an MCP-style Grid shell.</p>
-      <button id="enter-grid" class="enter-button" type="button">Initialize Duel</button>
-    </div>
-  </section>
 
   <section id="result-overlay" class="result-overlay" aria-labelledby="result-title" hidden>
     <div id="result-card" class="result-card">
@@ -919,9 +869,7 @@
       const statusEl = document.getElementById('status');
       const resetBtn = document.getElementById('reset');
       const soundToggle = document.getElementById('sound-toggle');
-      const enterGridBtn = document.getElementById('enter-grid');
-      const introGate = document.getElementById('intro-gate');
-      const resultOverlay = document.getElementById('result-overlay');
+       const resultOverlay = document.getElementById('result-overlay');
       const resultCard = document.getElementById('result-card');
       const resultCode = document.getElementById('result-code');
       const resultTitle = document.getElementById('result-title');
@@ -931,12 +879,11 @@
       const integrityValue = document.getElementById('integrity-value');
       const discTemplate = document.getElementById('disc-template');
       const mcpTemplate = document.getElementById('mcp-template');
-      const arenaPanel = document.querySelector('.arena-panel');
-      const boardWrap = document.querySelector('.board-wrap');
+       const boardWrap = document.querySelector('.board-wrap');
 
       let board = Array(9).fill(null);
       let gameOver = false;
-      let gameStarted = false;
+      let gameStarted = true;
       let gamesPlayed = Number.parseInt(localStorage.getItem(DRAW_KEY) || '0', 10);
       let soundEnabled = localStorage.getItem(MUSIC_PREF_KEY) !== 'off';
       let audio = null;
@@ -1314,6 +1261,7 @@
         const index = Number(event.currentTarget.dataset.index);
         if (!Number.isInteger(index) || board[index]) return;
         resumeAudio();
+        if (soundEnabled) startMusic();
         playAt(index, HUMAN);
         const humanResult = winner(board);
         if (handleEnd(humanResult)) return;
@@ -1387,30 +1335,12 @@
         return best;
       }
 
-      enterGridBtn.addEventListener('click', () => {
-        gameStarted = false;
-        introGate.hidden = true;
-        resumeAudio();
-        if (soundEnabled) startMusic();
-        arenaPanel.classList.remove('approach-sequence');
-        void arenaPanel.offsetWidth;
-        arenaPanel.classList.add('approach-sequence');
-        updateStatus('WOPR vector lock acquired. Pulling Grid into range…');
-        tone({ frequency: 55, slideTo: 220, duration: 1.45, type: 'sawtooth', volume: .09, cutoff: 1600 });
-        tone({ frequency: 880, slideTo: 1760, duration: 1.25, type: 'sine', volume: .055, when: .18, cutoff: 5400 });
-        window.setTimeout(() => {
-          arenaPanel.classList.remove('approach-sequence');
-          gameStarted = true;
-          buildBoard();
-          updateStatus('Shall we play another game? Your move, DISC.');
-          boardEl.querySelector('.cell')?.focus();
-        }, 1750);
-      });
 
       soundToggle.addEventListener('click', () => {
         setSound(!soundEnabled);
         if (soundEnabled) {
           resumeAudio();
+          startMusic();
           tone({ frequency: 520, slideTo: 880, duration: .16, type: 'sine', volume: .11 });
         }
       });
