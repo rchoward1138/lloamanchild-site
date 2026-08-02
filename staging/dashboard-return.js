@@ -44,6 +44,7 @@
     if (root.querySelectorAll) links.push(...[...root.querySelectorAll('a[href]')].filter(isHomeLink));
     links.forEach(link => {
       link.hidden = true;
+      link.style.setProperty('display', 'none', 'important');
       link.setAttribute('aria-hidden', 'true');
       link.tabIndex = -1;
     });

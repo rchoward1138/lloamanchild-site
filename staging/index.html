@@ -492,6 +492,7 @@
           }
           if (!isDashboardURL(destination)) return;
           link.hidden = true;
+          link.style.setProperty('display', 'none', 'important');
           link.setAttribute('aria-hidden', 'true');
           link.tabIndex = -1;
         });
