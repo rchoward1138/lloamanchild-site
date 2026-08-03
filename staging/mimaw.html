@@ -190,6 +190,8 @@
         .video-wrapper {
             position: relative;
             aspect-ratio: 16 / 9;
+            display: grid;
+            place-items: center;
             overflow: hidden;
             border-radius: 8px;
             background: #000;
@@ -202,11 +204,33 @@
         }
 
         .video-wrapper iframe {
-            position: absolute;
-            inset: 0;
+            display: block;
             width: 100%;
             height: 100%;
             border: 0;
+        }
+
+        .video-wrapper iframe:fullscreen {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        body.video-playing::after,
+        body.video-playing .main-content,
+        body.video-playing .page-title {
+            animation-play-state: paused;
+        }
+
+        body.video-playing .scanlines {
+            display: none;
+        }
+
+        body.video-playing .main-content {
+            backdrop-filter: none;
+        }
+
+        body.video-playing .video-wrapper:hover {
+            transform: none;
         }
 
         .video-launch {
@@ -444,12 +468,14 @@
                 if (activeVideo && activeVideo.screen !== videoScreen) {
                     activeVideo.screen.replaceChildren(activeVideo.launch);
                 }
+                document.body.classList.add('video-playing');
                 const player = document.createElement('iframe');
-                player.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoLaunch.dataset.videoId)}?autoplay=1&rel=0`;
                 player.title = videoLaunch.dataset.videoTitle;
+                player.loading = 'eager';
                 player.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
                 player.referrerPolicy = 'strict-origin-when-cross-origin';
                 player.allowFullscreen = true;
+                player.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoLaunch.dataset.videoId)}?autoplay=1&rel=0&playsinline=1&fs=1`;
                 videoScreen.replaceChildren(player);
                 activeVideo = { screen: videoScreen, launch: videoLaunch };
             });
