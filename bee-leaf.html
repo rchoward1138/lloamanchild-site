@@ -28,9 +28,10 @@
             background-image: url('PaperbackCoverFinal.png'), url('Book-Cover.png');
             background-repeat: no-repeat;
             background-position: center center;
-            background-attachment: fixed;
+            background-attachment: scroll;
             background-size: cover;
             min-height: 100vh;
+            min-height: 100svh;
             position: relative;
             overflow-x: hidden;
         }
@@ -53,11 +54,6 @@
                 linear-gradient(rgba(0, 255, 255, 0.06) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 255, 0.06) 1px, transparent 1px);
             background-size: 50px 50px;
-            animation: gridMove 20s linear infinite;
-        }
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
         }
         .scanlines {
             position: fixed;
@@ -71,11 +67,6 @@
                 rgba(0, 255, 255, 0.02) 2px,
                 rgba(0, 255, 255, 0.02) 4px
             );
-            animation: scanlineFlicker 0.1s linear infinite;
-        }
-        @keyframes scanlineFlicker {
-            0%, 99% { opacity: 1; }
-            100% { opacity: 0.98; }
         }
 
         .container {
@@ -85,6 +76,7 @@
             margin: 0 auto;
             padding: 2rem;
             min-height: 100vh;
+            min-height: 100svh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -98,13 +90,14 @@
             border: 2px solid #00ffff;
             border-radius: 10px;
             padding: 2rem;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.35), inset 0 0 20px rgba(0, 255, 255, 0.08);
-            backdrop-filter: blur(2px);
-            animation: borderGlow 2s ease-in-out infinite alternate;
+            box-shadow: 0 0 24px rgba(0, 255, 255, 0.46), inset 0 0 24px rgba(0, 255, 255, 0.1);
+            -webkit-backdrop-filter: none;
+            backdrop-filter: none;
         }
-        @keyframes borderGlow {
-            0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.35), inset 0 0 20px rgba(0, 255, 255, 0.08); }
-            100% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.6), inset 0 0 30px rgba(0, 255, 255, 0.12); }
+
+        body .lloamc-fixed-home {
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
         }
 
         .title {
@@ -571,7 +564,8 @@
     </style>
 </head>
 <body>
-<div class="scanlines"></div>
+
+    <div class="scanlines"></div>
 
     <audio id="bgMusic" preload="auto" loop autoplay>
         <source src="Bee%20Leaf/soft-background-music-432715.mp3" type="audio/mpeg">

@@ -132,7 +132,7 @@
         <a href="tictactoe.html" class="tile"><span class="icon">❌⭕</span><span class="title">TIC-TAC-TOE</span><span class="desc">Lose to Joshua. Review on Amazon.</span></a>
         <a href="mimaw.html" class="tile"><span class="icon">👵</span><span class="title">MIMAW</span><span class="desc">Watch rare interviews and memories from 1998</span></a>
         <a href="man-childness.html" class="tile"><span class="icon">📺</span><span class="title">MAN-CHILDNESS</span><span class="desc">Real-world sightings &amp; clips</span></a>
-        <a href="bee-leaf.html" class="tile"><span class="icon">🐝🍃</span><span class="title">BEE-LEAF</span><span class="desc">Interactive adventure picture book</span></a>
+        <a href="bee-leaf.html" class="tile" data-standalone><span class="icon">🐝🍃</span><span class="title">BEE-LEAF</span><span class="desc">Interactive adventure picture book</span></a>
         <a href="more.html" class="tile"><span class="icon">📖</span><span class="title">MORE LIFE LESSONS</span><span class="desc">Ongoing chapters and reflections beyond the memoir</span></a>
         <a href="about.html" class="tile"><span class="icon">👨‍💻</span><span class="title">ABOUT THE AUTHOR</span><span class="desc">Meet the man-child behind the memories</span></a>
       </div>
@@ -454,6 +454,18 @@
         const destination = new URL(href, location.href);
         if (destination.origin !== location.origin || !destination.pathname.startsWith(dashboardDirectory)
           || isDashboardURL(destination)) {
+          location.assign(destination.href);
+          return;
+        }
+
+        // Samsung's unfolded portrait viewport can repeatedly invalidate a game
+        // rendered inside the dashboard iframe, even though the same page is stable
+        // as a top-level document. Launch marked interactive modules through that
+        // stable path and let dashboard-return.js provide the Home control.
+        if (trigger?.hasAttribute('data-standalone')) {
+          destination.searchParams.delete('dashboardShell');
+          destination.searchParams.set('dashboardReturn', '1');
+          rememberPosition();
           location.assign(destination.href);
           return;
         }

@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="The Belief Collector — help Bea gather sweetness, find shelter, and bring sunshine back to the garden.">
-<title>The Belief Collector - Bee-Leaf Mini Game</title>
+    <title>The Belief Collector - Bee-Leaf Mini Game</title>
     <style>
         :root {
             --ink: #17233c;
@@ -23,7 +23,10 @@
 
         * { box-sizing: border-box; }
 
-        html { scroll-padding-top: 52px; }
+        html {
+            min-height: 100%;
+            scroll-padding-top: 52px;
+        }
 
         body {
             min-height: 100vh;
@@ -57,13 +60,18 @@
             outline-offset: 3px;
         }
 
+        body .lloamc-fixed-home {
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+        }
+
         .game-page {
             width: min(1040px, 100%);
             margin: 0 auto;
             padding-top: clamp(18px, 3vw, 34px);
         }
 
-        @media (min-width: 701px) {
+        @media (min-width: 641px) {
             .game-page {
                 padding-top: clamp(80px, 7vw, 96px);
             }
@@ -76,6 +84,9 @@
             margin-bottom: 17px;
             text-align: center;
         }
+
+        body.game-focused .page-heading { display: none; }
+        body.game-focused .game-page { padding-top: 62px; }
 
         .eyebrow {
             display: inline-flex;
@@ -126,9 +137,11 @@
         .game-shell {
             position: relative;
             width: 100%;
-            height: clamp(540px, 68vh, 660px);
-            min-height: 540px;
+            height: clamp(440px, 68vh, 660px);
+            height: clamp(440px, 68svh, 660px);
+            max-height: 660px;
             overflow: hidden;
+            overscroll-behavior: contain;
             border: 3px solid rgba(255, 255, 255, 0.9);
             border-radius: clamp(20px, 3.2vw, 34px);
             background: #8abbd3;
@@ -147,7 +160,11 @@
             box-shadow: inset 0 0 90px rgba(16, 35, 75, 0.18);
         }
 
-        .game-shell.playing { cursor: none; }
+        .game-shell.playing {
+            height: var(--playfield-height, clamp(440px, 68svh, 660px));
+            min-height: 360px;
+            cursor: none;
+        }
 
         .fullscreen-toggle {
             position: absolute;
@@ -163,13 +180,12 @@
             border: 1px solid rgba(255, 255, 255, 0.82);
             border-radius: 999px;
             color: white;
-            background: rgba(23, 35, 60, 0.78);
+            background: rgba(23, 35, 60, 0.9);
             font-size: 0.72rem;
             font-weight: 900;
             letter-spacing: 0.05em;
             text-transform: uppercase;
             box-shadow: 0 8px 28px rgba(16, 31, 65, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
             cursor: pointer;
             transition: transform 0.18s ease, background 0.18s ease;
         }
@@ -201,10 +217,20 @@
             position: fixed;
             inset: 0;
             z-index: 2147483646;
+            height: 100vh !important;
+            height: 100svh !important;
+            min-height: 100vh !important;
+            min-height: 100svh !important;
         }
 
         body.game-expanded {
+            position: fixed;
+            top: var(--game-scroll-lock-top, 0);
+            right: 0;
+            left: 0;
+            width: 100%;
             overflow: hidden;
+            overscroll-behavior: none;
         }
 
         body.game-expanded .lloamc-fixed-home {
@@ -227,6 +253,9 @@
             z-index: 5;
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+            grid-template-areas:
+                "belief shields breeze sunshine sound"
+                "meter meter meter meter meter";
             gap: 8px;
             opacity: 1;
             transition: opacity 0.25s ease, transform 0.25s ease;
@@ -243,9 +272,8 @@
             border: 1px solid rgba(255, 255, 255, 0.74);
             border-radius: 16px;
             color: white;
-            background: rgba(23, 35, 60, 0.72);
+            background: rgba(23, 35, 60, 0.88);
             box-shadow: 0 8px 28px rgba(16, 31, 65, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
         }
 
         .hud-chip {
@@ -275,8 +303,13 @@
 
         .hud-chip.sunshine .hud-value { color: #ffe081; }
         .hud-chip.shields .hud-value { color: #a8f5b8; }
+        .hud-chip.belief { grid-area: belief; }
+        .hud-chip.shields { grid-area: shields; }
+        .hud-chip.breeze { grid-area: breeze; }
+        .hud-chip.sunshine { grid-area: sunshine; }
 
         .sound-toggle {
+            grid-area: sound;
             width: 48px;
             min-width: 48px;
             padding: 0;
@@ -288,7 +321,7 @@
         .sound-toggle:hover { transform: translateY(-2px); background: rgba(45, 55, 92, 0.9); }
 
         .sun-meter {
-            grid-column: 1 / -1;
+            grid-area: meter;
             position: relative;
             height: 11px;
             overflow: hidden;
@@ -305,6 +338,19 @@
             background: linear-gradient(90deg, #59d8ec 0%, #9be880 44%, #ffe26c 78%, #fff4b0 100%);
             box-shadow: 0 0 20px rgba(255, 226, 108, 0.86);
             transition: width 0.28s ease;
+        }
+
+        .game-shell:fullscreen .hud,
+        .game-shell:-webkit-full-screen .hud,
+        .game-shell.pseudo-fullscreen .hud {
+            inset: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) auto max(14px, env(safe-area-inset-left));
+        }
+
+        .game-shell:fullscreen .fullscreen-toggle,
+        .game-shell:-webkit-full-screen .fullscreen-toggle,
+        .game-shell.pseudo-fullscreen .fullscreen-toggle {
+            right: max(14px, env(safe-area-inset-right));
+            bottom: max(14px, env(safe-area-inset-bottom));
         }
 
         .toast {
@@ -336,8 +382,9 @@
             position: absolute;
             inset: 0;
             z-index: 10;
-            display: grid;
-            place-items: center;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
             padding: clamp(16px, 4vw, 34px);
             overflow-y: auto;
             cursor: default;
@@ -350,39 +397,131 @@
         .overlay[hidden] { display: none; }
 
         .overlay-card {
+            flex: 0 0 auto;
             width: min(690px, 100%);
+            margin-block: auto;
             padding: clamp(22px, 4.3vw, 38px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             border-radius: clamp(20px, 3vw, 30px);
             background: var(--card);
             box-shadow: 0 28px 80px rgba(17, 29, 66, 0.34), inset 0 1px 0 white;
             text-align: center;
-            backdrop-filter: blur(14px);
         }
 
         .overlay-mark {
+            --bee-line: #6d4228;
             position: relative;
-            width: 74px;
-            height: 74px;
-            margin: 0 auto 10px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 34% 28%, #fff7a9 0 9%, #ffd34f 10% 44%, #f0a82f 45% 67%, #7250a4 68% 100%);
-            box-shadow: 0 10px 28px rgba(89, 61, 136, 0.27), inset 0 0 0 5px rgba(255, 255, 255, 0.58);
+            width: 78px;
+            height: 70px;
+            margin: 22px auto 10px;
+            overflow: visible;
+            border: 2px solid rgba(115, 66, 30, 0.52);
+            border-radius: 52% 52% 47% 47%;
+            background:
+                radial-gradient(circle at 30% 24%, rgba(255, 249, 177, 0.92) 0 8%, transparent 9%),
+                linear-gradient(145deg, #ffe267 0%, #ffc83f 56%, #eca02a 100%);
+            box-shadow: 0 10px 26px rgba(113, 69, 30, 0.2), inset 0 -7px 12px rgba(178, 91, 18, 0.12), inset 0 2px 0 rgba(255, 255, 255, 0.72);
+            isolation: isolate;
         }
 
-        .overlay-mark::before, .overlay-mark::after {
+        .overlay-mark::before {
             content: "";
             position: absolute;
-            top: 23px;
-            width: 22px;
+            inset: 5px 7px auto;
+            z-index: 0;
             height: 28px;
-            border: 3px solid rgba(74, 52, 109, 0.52);
-            border-radius: 70% 35% 65% 35%;
-            background: rgba(237, 252, 255, 0.74);
+            border-radius: 50%;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0));
+            pointer-events: none;
         }
 
-        .overlay-mark::before { left: 7px; transform: rotate(-26deg); }
-        .overlay-mark::after { right: 7px; transform: scaleX(-1) rotate(-26deg); }
+        .bee-halo,
+        .bee-antenna,
+        .bee-eye,
+        .bee-cheek,
+        .bee-smile { position: absolute; display: block; }
+
+        .bee-halo {
+            top: -24px;
+            left: 50%;
+            z-index: 1;
+            width: 50px;
+            height: 13px;
+            border: 2px solid rgba(255, 221, 92, 0.58);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255, 222, 103, 0.34);
+            transform: translateX(-50%);
+        }
+
+        .bee-antenna {
+            top: -9px;
+            z-index: 2;
+            width: 20px;
+            height: 25px;
+            border-radius: 70% 70% 0 0;
+        }
+
+        .bee-antenna::after {
+            content: "";
+            position: absolute;
+            top: -2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--bee-line);
+        }
+
+        .bee-antenna-left {
+            left: 16px;
+            border-left: 3px solid var(--bee-line);
+            transform: rotate(-22deg);
+        }
+
+        .bee-antenna-left::after { left: -4px; }
+
+        .bee-antenna-right {
+            right: 16px;
+            border-right: 3px solid var(--bee-line);
+            transform: rotate(22deg);
+        }
+
+        .bee-antenna-right::after { right: -4px; }
+
+        .bee-eye {
+            top: 25px;
+            z-index: 2;
+            width: 7px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3f342f;
+            box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.32);
+        }
+
+        .bee-eye-left { left: 22px; }
+        .bee-eye-right { right: 22px; }
+
+        .bee-cheek {
+            top: 43px;
+            z-index: 2;
+            width: 10px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(231, 104, 111, 0.35);
+        }
+
+        .bee-cheek-left { left: 12px; }
+        .bee-cheek-right { right: 12px; }
+
+        .bee-smile {
+            top: 36px;
+            left: 50%;
+            z-index: 2;
+            width: 25px;
+            height: 15px;
+            border-bottom: 3px solid var(--bee-line);
+            border-radius: 0 0 50% 50%;
+            transform: translateX(-50%);
+        }
 
         .overlay h2 {
             margin: 0;
@@ -524,25 +663,44 @@
             border: 0;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 640px) {
             body { padding: 64px 10px 18px !important; }
             .game-page { padding-top: 14px; }
+            body.game-focused .game-page { padding-top: 8px; }
             .page-heading { margin-bottom: 12px; }
             .eyebrow { padding: 6px 10px; font-size: 0.62rem; }
-            .game-shell { height: 640px; min-height: 600px; border-radius: 22px; }
-            .hud { inset: 9px 9px auto; grid-template-columns: repeat(2, minmax(0, 1fr)) 44px; gap: 6px; }
+            .game-shell {
+                height: clamp(500px, 76vh, 640px);
+                height: clamp(500px, 76svh, 640px);
+                border-radius: 22px;
+            }
+            .hud {
+                inset: 9px 9px auto;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) 44px;
+                grid-template-areas:
+                    "belief shields sound"
+                    "breeze sunshine sound"
+                    "meter meter meter";
+                gap: 6px;
+            }
             .hud-chip { padding: 6px 8px; border-radius: 12px; }
-            .hud-chip.sunshine { grid-column: 1; }
-            .hud-chip.breeze { grid-column: 2; }
-            .sound-toggle { grid-column: 3; grid-row: 1 / span 2; width: 44px; min-width: 44px; }
-            .sun-meter { grid-column: 1 / -1; height: 9px; }
+            .sound-toggle { width: 44px; min-width: 44px; }
+            .sun-meter { height: 9px; }
             .toast { top: 119px; font-size: 0.8rem; }
             .overlay { padding: 12px; place-items: start center; }
             .overlay-card { margin: auto 0; padding: 19px 15px 23px; border-radius: 20px; }
-            .overlay-mark { width: 58px; height: 58px; margin-bottom: 7px; }
-            .overlay-mark::before, .overlay-mark::after { top: 18px; width: 18px; height: 22px; }
-            .overlay-mark::before { left: 5px; }
-            .overlay-mark::after { right: 5px; }
+            .overlay-mark { width: 64px; height: 58px; margin: 19px auto 7px; }
+            .bee-halo { top: -20px; width: 42px; height: 11px; }
+            .bee-antenna { top: -7px; width: 17px; height: 20px; }
+            .bee-antenna-left { left: 13px; }
+            .bee-antenna-right { right: 13px; }
+            .bee-eye { top: 20px; width: 6px; height: 9px; }
+            .bee-eye-left { left: 18px; }
+            .bee-eye-right { right: 18px; }
+            .bee-cheek { top: 36px; width: 8px; height: 5px; }
+            .bee-cheek-left { left: 10px; }
+            .bee-cheek-right { right: 10px; }
+            .bee-smile { top: 29px; width: 21px; height: 13px; }
             .overlay-intro { margin-bottom: 12px; font-size: 0.88rem; }
             .rules { gap: 6px; }
             .rule { grid-template-columns: 35px 1fr; gap: 7px; padding: 8px; }
@@ -566,12 +724,20 @@
         @media (max-width: 430px) {
             h1 { font-size: 2rem; }
             .tagline { font-size: 0.9rem; }
-            .game-shell { height: 620px; min-height: 580px; }
+            .game-shell {
+                height: clamp(500px, 78vh, 620px);
+                height: clamp(500px, 78svh, 620px);
+            }
             .rules { grid-template-columns: 1fr; }
             .overlay h2 { font-size: 1.72rem; }
             .overlay-mark { display: none; }
             .rule { padding: 7px 9px; }
             .primary-button { min-width: 86%; }
+        }
+
+        @media (max-width: 360px) {
+            .hud-label { font-size: 0.55rem; letter-spacing: 0.075em; }
+            .hud-value { font-size: 0.88rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -580,7 +746,7 @@
     </style>
 </head>
 <body>
-<main class="game-page">
+    <main class="game-page">
         <header class="page-heading">
             <p class="eyebrow">A Bee-Leaf Adventure</p>
             <h1>The Belief Collector</h1>
@@ -609,7 +775,16 @@
 
             <div id="startScreen" class="overlay">
                 <div class="overlay-card">
-                    <div class="overlay-mark" aria-hidden="true"></div>
+                    <div class="overlay-mark" aria-hidden="true">
+                        <span class="bee-halo"></span>
+                        <span class="bee-antenna bee-antenna-left"></span>
+                        <span class="bee-antenna bee-antenna-right"></span>
+                        <span class="bee-eye bee-eye-left"></span>
+                        <span class="bee-eye bee-eye-right"></span>
+                        <span class="bee-cheek bee-cheek-left"></span>
+                        <span class="bee-cheek bee-cheek-right"></span>
+                        <span class="bee-smile"></span>
+                    </div>
                     <h2>Ready, Bea?</h2>
                     <p class="overlay-intro">Guide Bea through the garden and fill the sunshine meter. Small acts of belief make a bright difference.</p>
 
@@ -652,7 +827,16 @@
 
             <div id="gameOverScreen" class="overlay" hidden>
                 <div class="overlay-card">
-                    <div class="overlay-mark" aria-hidden="true"></div>
+                    <div class="overlay-mark" aria-hidden="true">
+                        <span class="bee-halo"></span>
+                        <span class="bee-antenna bee-antenna-left"></span>
+                        <span class="bee-antenna bee-antenna-right"></span>
+                        <span class="bee-eye bee-eye-left"></span>
+                        <span class="bee-eye bee-eye-right"></span>
+                        <span class="bee-cheek bee-cheek-left"></span>
+                        <span class="bee-cheek bee-cheek-right"></span>
+                        <span class="bee-smile"></span>
+                    </div>
                     <h2>Stormy Skies</h2>
                     <p class="overlay-intro">Every brave flight has a cloudy moment. Faith means trying again.</p>
                     <p id="finalScore" class="final-score">Belief Collected: 0</p>
@@ -666,7 +850,16 @@
 
             <div id="winScreen" class="overlay" hidden>
                 <div class="overlay-card">
-                    <div class="overlay-mark" aria-hidden="true"></div>
+                    <div class="overlay-mark" aria-hidden="true">
+                        <span class="bee-halo"></span>
+                        <span class="bee-antenna bee-antenna-left"></span>
+                        <span class="bee-antenna bee-antenna-right"></span>
+                        <span class="bee-eye bee-eye-left"></span>
+                        <span class="bee-eye bee-eye-right"></span>
+                        <span class="bee-cheek bee-cheek-left"></span>
+                        <span class="bee-cheek bee-cheek-right"></span>
+                        <span class="bee-smile"></span>
+                    </div>
                     <h2>You Brought Back the Sun!</h2>
                     <p class="overlay-intro">You believed, kept flying, and helped the whole garden shine.</p>
                     <p id="winScore" class="final-score">Belief Collected: 0</p>
@@ -741,6 +934,11 @@
             let audioCtx = null;
             let toastTimer = 0;
             let pseudoFullscreen = false;
+            let fullscreenScrollY = 0;
+            let viewportSyncFrame = 0;
+            let viewportSettleTimer = 0;
+            let lockedLayoutWidth = 0;
+            let lockedOrientation = "";
             const items = [];
             const particles = [];
             const floaters = [];
@@ -776,16 +974,139 @@
             function resizeCanvas() {
                 const rect = gameContainer.getBoundingClientRect();
                 const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                viewWidth = Math.max(1, rect.width);
-                viewHeight = Math.max(1, rect.height);
-                canvas.width = Math.round(viewWidth * dpr);
-                canvas.height = Math.round(viewHeight * dpr);
-                canvas.style.width = `${viewWidth}px`;
-                canvas.style.height = `${viewHeight}px`;
+                const nextWidth = Math.max(1, rect.width);
+                const nextHeight = Math.max(1, rect.height);
+                const widthScale = viewWidth > 1 ? nextWidth / viewWidth : 1;
+                const heightScale = viewHeight > 1 ? nextHeight / viewHeight : 1;
+                const widthChanged = viewWidth <= 1 || Math.abs(nextWidth - viewWidth) >= 0.5;
+                const heightChanged = viewHeight <= 1 || Math.abs(nextHeight - viewHeight) >= 0.5;
+                const bitmapWidth = Math.round(nextWidth * dpr);
+                const bitmapHeight = Math.round(nextHeight * dpr);
+                const cssWidth = `${nextWidth}px`;
+                const cssHeight = `${nextHeight}px`;
+
+                // Samsung's open Fold can report harmless visual-viewport changes several
+                // times per second in portrait. Do not repaint an unchanged canvas: those
+                // redundant clears are visible as a pulse beneath the ready screen.
+                if (!widthChanged && !heightChanged
+                    && canvas.width === bitmapWidth
+                    && canvas.height === bitmapHeight
+                    && canvas.style.width === cssWidth
+                    && canvas.style.height === cssHeight) {
+                    return false;
+                }
+
+                if (viewWidth > 1 && widthChanged) {
+                    bee.x *= widthScale;
+                    items.forEach(item => {
+                        item.x *= widthScale;
+                        item.anchorX *= widthScale;
+                    });
+                    particles.forEach(particle => { particle.x *= widthScale; });
+                    floaters.forEach(floater => { floater.x *= widthScale; });
+                }
+
+                if (viewHeight > 1 && heightChanged) {
+                    items.forEach(item => {
+                        if (item.y > 0) item.y *= heightScale;
+                    });
+                    particles.forEach(particle => { particle.y *= heightScale; });
+                    floaters.forEach(floater => { floater.y *= heightScale; });
+                }
+
+                viewWidth = nextWidth;
+                viewHeight = nextHeight;
+
+                // Assigning canvas.width or canvas.height clears the current frame. Android
+                // browsers can emit many viewport events while their toolbars settle, so only
+                // reset the bitmap when its pixel dimensions genuinely changed.
+                if (canvas.width !== bitmapWidth) canvas.width = bitmapWidth;
+                if (canvas.height !== bitmapHeight) canvas.height = bitmapHeight;
+                if (canvas.style.width !== cssWidth) canvas.style.width = cssWidth;
+                if (canvas.style.height !== cssHeight) canvas.style.height = cssHeight;
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 bee.x = clamp(bee.x || viewWidth / 2, 34, viewWidth - 34);
                 bee.y = viewHeight - Math.max(65, viewHeight * 0.105);
                 if (!isPlaying) drawScene(0);
+                return true;
+            }
+
+            function usableViewportHeight() {
+                return Math.max(1, Math.round(window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight));
+            }
+
+            function gameTopInset(viewportHeight = usableViewportHeight()) {
+                let inset = 10;
+                document.querySelectorAll(".lloamc-fixed-home").forEach(element => {
+                    const style = getComputedStyle(element);
+                    if (style.display === "none" || style.visibility === "hidden" || style.position !== "fixed") return;
+                    const rect = element.getBoundingClientRect();
+                    if (rect.bottom > 0 && rect.top < viewportHeight) inset = Math.max(inset, rect.bottom + 8);
+                });
+                return clamp(Math.ceil(inset), 8, Math.max(8, viewportHeight - 360));
+            }
+
+            function currentOrientation() {
+                return matchMedia("(orientation: portrait)").matches ? "portrait" : "landscape";
+            }
+
+            function syncGameViewport({ reveal = false, forceLayout = false } = {}) {
+                cancelAnimationFrame(viewportSyncFrame);
+                viewportSyncFrame = requestAnimationFrame(() => {
+                    viewportSyncFrame = 0;
+                    const nativeFullscreen = nativeFullscreenElement() === gameContainer;
+
+                    if (!isPlaying || nativeFullscreen || pseudoFullscreen) {
+                        if (!isPlaying && gameContainer.style.getPropertyValue("--playfield-height")) {
+                            gameContainer.style.removeProperty("--playfield-height");
+                        }
+                        resizeCanvas();
+                        return;
+                    }
+
+                    const layoutWidth = Math.round(document.documentElement.clientWidth || window.innerWidth || 1);
+                    const orientation = currentOrientation();
+                    const layoutChanged = forceLayout
+                        || !lockedLayoutWidth
+                        || orientation !== lockedOrientation
+                        || Math.abs(layoutWidth - lockedLayoutWidth) >= 48;
+                    if (!layoutChanged && !reveal) {
+                        resizeCanvas();
+                        return;
+                    }
+
+                    const viewportHeight = usableViewportHeight();
+                    const topInset = gameTopInset(viewportHeight);
+                    const bottomInset = 12;
+                    if (layoutChanged) {
+                        const nextHeight = clamp(Math.floor(viewportHeight - topInset - bottomInset), 360, 660);
+                        gameContainer.style.setProperty("--playfield-height", `${nextHeight}px`);
+                        lockedLayoutWidth = layoutWidth;
+                        lockedOrientation = orientation;
+                    }
+
+                    requestAnimationFrame(() => {
+                        resizeCanvas();
+                        if (!reveal) return;
+
+                        const rect = gameContainer.getBoundingClientRect();
+                        const desiredTop = gameTopInset();
+                        const visibleBottom = usableViewportHeight() - bottomInset;
+                        if (rect.top >= desiredTop - 4 && rect.bottom <= visibleBottom + 4) return;
+
+                        const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+                        const targetScroll = clamp(window.scrollY + rect.top - desiredTop, 0, maxScroll);
+                        window.scrollTo({
+                            top: targetScroll,
+                            behavior: "auto"
+                        });
+                    });
+                });
+            }
+
+            function scheduleViewportSync({ reveal = false, forceLayout = false, delay = 150 } = {}) {
+                window.clearTimeout(viewportSettleTimer);
+                viewportSettleTimer = window.setTimeout(() => syncGameViewport({ reveal, forceLayout }), delay);
             }
 
             function ensureAudioContext() {
@@ -1014,6 +1335,18 @@
                 ctx.shadowBlur = 14;
                 ctx.shadowOffsetY = 9;
 
+                ctx.save();
+                ctx.globalAlpha = 0.52;
+                ctx.strokeStyle = "#ffe995";
+                ctx.lineWidth = 2.2;
+                ctx.shadowColor = "rgba(255, 226, 105, 0.44)";
+                ctx.shadowBlur = 7;
+                ctx.shadowOffsetY = 0;
+                ctx.beginPath();
+                ctx.ellipse(0, -45, 17, 4.5, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+
                 if (shieldCount > 0) {
                     const pulse = reducedMotion ? 0 : Math.sin(time * 0.006) * 3;
                     const shieldGlow = ctx.createRadialGradient(0, 0, 25, 0, 0, 43 + pulse);
@@ -1075,6 +1408,11 @@
                 ctx.beginPath();
                 ctx.arc(-7, -9, 2.4, 0, Math.PI * 2);
                 ctx.arc(7, -9, 2.4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = "rgba(224, 104, 105, 0.42)";
+                ctx.beginPath();
+                ctx.ellipse(-12, -2, 4.2, 2.6, -0.12, 0, Math.PI * 2);
+                ctx.ellipse(12, -2, 4.2, 2.6, 0.12, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = "#6a3f24";
                 ctx.lineWidth = 1.8;
@@ -1185,24 +1523,21 @@
             }
 
             function drawLightning(item) {
-                const phase = (item.age + item.flashOffset) % 88;
-                if (phase > 12) return;
-                const strength = 1 - phase / 12;
                 ctx.save();
-                ctx.globalAlpha = strength;
-                ctx.strokeStyle = "#fff8b2";
-                ctx.lineWidth = 7;
+                ctx.globalAlpha = 0.68;
+                ctx.strokeStyle = "#ffe889";
+                ctx.lineWidth = 6;
                 ctx.lineJoin = "round";
-                ctx.shadowColor = "#ffe25c";
-                ctx.shadowBlur = 20;
+                ctx.shadowColor = "rgba(255, 226, 92, 0.44)";
+                ctx.shadowBlur = 6;
                 ctx.beginPath();
                 ctx.moveTo(item.x + 4, item.y + 15);
                 ctx.lineTo(item.x - 4, item.y + 34);
                 ctx.lineTo(item.x + 4, item.y + 34);
                 ctx.lineTo(item.x - 8, item.y + 59);
                 ctx.stroke();
-                ctx.strokeStyle = "#fff";
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = "rgba(255, 255, 232, 0.82)";
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
                 ctx.restore();
             }
@@ -1525,12 +1860,14 @@
                 bee.y = viewHeight - Math.max(65, viewHeight * 0.105);
                 bee.tilt = 0;
                 bee.targetTilt = 0;
+                document.body.classList.add("game-focused");
                 gameContainer.classList.add("playing");
                 gameHud.inert = false;
                 startScreen.hidden = true;
                 gameOverScreen.hidden = true;
                 winScreen.hidden = true;
                 gameToast.classList.remove("show");
+                syncGameViewport({ reveal: true, forceLayout: true });
                 prepareAudio();
                 updateHud("Flight started. Sunshine is at zero percent.");
                 animationId = requestAnimationFrame(gameLoop);
@@ -1540,9 +1877,13 @@
                 isPlaying = false;
                 cancelAnimationFrame(animationId);
                 gameContainer.classList.remove("playing");
+                gameContainer.style.removeProperty("--playfield-height");
+                lockedLayoutWidth = 0;
+                lockedOrientation = "";
                 gameHud.inert = true;
                 keys.left = false;
                 keys.right = false;
+                window.requestAnimationFrame(resizeCanvas);
             }
 
             function gameOver() {
@@ -1587,10 +1928,63 @@
             }
 
             function setPseudoFullscreen(expanded) {
+                if (pseudoFullscreen === expanded) {
+                    updateFullscreenButton();
+                    return;
+                }
+
+                if (expanded) {
+                    fullscreenScrollY = window.scrollY;
+                    document.body.style.setProperty("--game-scroll-lock-top", `${-fullscreenScrollY}px`);
+                }
+
                 pseudoFullscreen = expanded;
                 gameContainer.classList.toggle("pseudo-fullscreen", expanded);
                 document.body.classList.toggle("game-expanded", expanded);
+                if (!expanded) {
+                    document.body.style.removeProperty("--game-scroll-lock-top");
+                    requestAnimationFrame(() => {
+                        window.scrollTo({ top: fullscreenScrollY, behavior: "auto" });
+                        syncGameViewport({ reveal: isPlaying });
+                    });
+                }
                 updateFullscreenButton();
+            }
+
+            function waitForNativeFullscreen(timeout = 700) {
+                if (nativeFullscreenElement() === gameContainer) return Promise.resolve(true);
+
+                return new Promise(resolve => {
+                    let timer = 0;
+                    const finish = value => {
+                        clearTimeout(timer);
+                        document.removeEventListener("fullscreenchange", check);
+                        document.removeEventListener("webkitfullscreenchange", check);
+                        resolve(value);
+                    };
+                    const check = () => {
+                        if (nativeFullscreenElement() === gameContainer) finish(true);
+                    };
+
+                    document.addEventListener("fullscreenchange", check);
+                    document.addEventListener("webkitfullscreenchange", check);
+                    timer = window.setTimeout(() => finish(nativeFullscreenElement() === gameContainer), timeout);
+                });
+            }
+
+            async function tryNativeFullscreen(enter) {
+                try {
+                    const request = enter.call(gameContainer);
+                    if (request && typeof request.then === "function") {
+                        await Promise.race([
+                            request.catch(() => {}),
+                            new Promise(resolve => window.setTimeout(resolve, 250))
+                        ]);
+                    }
+                } catch (_) {
+                    return false;
+                }
+                return waitForNativeFullscreen();
             }
 
             async function toggleFullscreen() {
@@ -1610,16 +2004,21 @@
                 }
 
                 const enter = gameContainer.requestFullscreen || gameContainer.webkitRequestFullscreen;
-                if (enter) {
-                    try {
-                        await enter.call(gameContainer);
-                        updateFullscreenButton();
-                        return;
-                    } catch (_) {
-                        // Some mobile browsers expose the API but reject non-video elements.
-                    }
+                if (enter && await tryNativeFullscreen(enter)) {
+                    updateFullscreenButton();
+                    return;
                 }
+
+                // iOS and some Android browsers expose fullscreen methods for elements
+                // but silently refuse them. The fixed-position mode keeps the game usable.
                 setPseudoFullscreen(true);
+            }
+
+            function handleFullscreenChange() {
+                updateFullscreenButton();
+                if (!nativeFullscreenElement() && !pseudoFullscreen && isPlaying) {
+                    syncGameViewport({ reveal: true });
+                }
             }
 
             fullscreenToggle.addEventListener("click", event => {
@@ -1627,8 +2026,8 @@
                 toggleFullscreen();
             });
 
-            document.addEventListener("fullscreenchange", updateFullscreenButton);
-            document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+            document.addEventListener("fullscreenchange", handleFullscreenChange);
+            document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
             canvas.addEventListener("pointermove", event => {
                 if (isPlaying) updateBeePosition(event.clientX);
@@ -1645,6 +2044,11 @@
             });
 
             window.addEventListener("keydown", event => {
+                if (event.key === "Escape" && pseudoFullscreen) {
+                    setPseudoFullscreen(false);
+                    event.preventDefault();
+                    return;
+                }
                 if (!isPlaying) return;
                 if (["ArrowLeft", "a", "A"].includes(event.key)) {
                     keys.left = true;
@@ -1664,7 +2068,11 @@
             const resizeObserver = new ResizeObserver(resizeCanvas);
             resizeObserver.observe(gameContainer);
             backgroundImage.addEventListener("load", () => drawScene(performance.now()));
-            window.addEventListener("resize", resizeCanvas);
+            window.addEventListener("resize", () => scheduleViewportSync({ delay: 140 }));
+            window.visualViewport?.addEventListener("resize", () => scheduleViewportSync({ delay: 180 }));
+            window.addEventListener("orientationchange", () => {
+                scheduleViewportSync({ reveal: isPlaying, forceLayout: isPlaying, delay: 320 });
+            });
             setSoundState();
             resizeCanvas();
         })();
