@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="The Belief Collector — help Bea gather sweetness, find shelter, and bring sunshine back to the garden.">
     <meta name="robots" content="noindex, nofollow, noarchive">
     <title>The Belief Collector - Bee-Leaf Mini Game</title>
@@ -24,7 +24,10 @@
 
         * { box-sizing: border-box; }
 
-        html { scroll-padding-top: 52px; }
+        html {
+            min-height: 100%;
+            scroll-padding-top: 52px;
+        }
 
         body {
             min-height: 100vh;
@@ -96,6 +99,9 @@
             text-align: center;
         }
 
+        body.game-focused .page-heading { display: none; }
+        body.game-focused .game-page { padding-top: 62px; }
+
         .eyebrow {
             display: inline-flex;
             align-items: center;
@@ -145,9 +151,11 @@
         .game-shell {
             position: relative;
             width: 100%;
-            height: clamp(540px, 68vh, 660px);
-            min-height: 540px;
+            height: clamp(440px, 68vh, 660px);
+            height: clamp(440px, 68dvh, 660px);
+            max-height: 660px;
             overflow: hidden;
+            overscroll-behavior: contain;
             border: 3px solid rgba(255, 255, 255, 0.9);
             border-radius: clamp(20px, 3.2vw, 34px);
             background: #8abbd3;
@@ -166,7 +174,11 @@
             box-shadow: inset 0 0 90px rgba(16, 35, 75, 0.18);
         }
 
-        .game-shell.playing { cursor: none; }
+        .game-shell.playing {
+            height: var(--playfield-height, clamp(440px, 68dvh, 660px));
+            min-height: 360px;
+            cursor: none;
+        }
 
         .fullscreen-toggle {
             position: absolute;
@@ -223,7 +235,13 @@
         }
 
         body.game-expanded {
+            position: fixed;
+            top: var(--game-scroll-lock-top, 0);
+            right: 0;
+            left: 0;
+            width: 100%;
             overflow: hidden;
+            overscroll-behavior: none;
         }
 
         body.game-expanded #lloamc-staging-banner,
@@ -247,6 +265,9 @@
             z-index: 5;
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+            grid-template-areas:
+                "belief shields breeze sunshine sound"
+                "meter meter meter meter meter";
             gap: 8px;
             opacity: 1;
             transition: opacity 0.25s ease, transform 0.25s ease;
@@ -295,8 +316,13 @@
 
         .hud-chip.sunshine .hud-value { color: #ffe081; }
         .hud-chip.shields .hud-value { color: #a8f5b8; }
+        .hud-chip.belief { grid-area: belief; }
+        .hud-chip.shields { grid-area: shields; }
+        .hud-chip.breeze { grid-area: breeze; }
+        .hud-chip.sunshine { grid-area: sunshine; }
 
         .sound-toggle {
+            grid-area: sound;
             width: 48px;
             min-width: 48px;
             padding: 0;
@@ -308,7 +334,7 @@
         .sound-toggle:hover { transform: translateY(-2px); background: rgba(45, 55, 92, 0.9); }
 
         .sun-meter {
-            grid-column: 1 / -1;
+            grid-area: meter;
             position: relative;
             height: 11px;
             overflow: hidden;
@@ -325,6 +351,19 @@
             background: linear-gradient(90deg, #59d8ec 0%, #9be880 44%, #ffe26c 78%, #fff4b0 100%);
             box-shadow: 0 0 20px rgba(255, 226, 108, 0.86);
             transition: width 0.28s ease;
+        }
+
+        .game-shell:fullscreen .hud,
+        .game-shell:-webkit-full-screen .hud,
+        .game-shell.pseudo-fullscreen .hud {
+            inset: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) auto max(14px, env(safe-area-inset-left));
+        }
+
+        .game-shell:fullscreen .fullscreen-toggle,
+        .game-shell:-webkit-full-screen .fullscreen-toggle,
+        .game-shell.pseudo-fullscreen .fullscreen-toggle {
+            right: max(14px, env(safe-area-inset-right));
+            bottom: max(14px, env(safe-area-inset-bottom));
         }
 
         .toast {
@@ -548,15 +587,26 @@
             body { padding: 64px 10px 18px !important; }
             #lloamc-staging-banner { min-height: 64px; font-size: 12px; }
             .game-page { padding-top: 14px; }
+            body.game-focused .game-page { padding-top: 8px; }
             .page-heading { margin-bottom: 12px; }
             .eyebrow { padding: 6px 10px; font-size: 0.62rem; }
-            .game-shell { height: 640px; min-height: 600px; border-radius: 22px; }
-            .hud { inset: 9px 9px auto; grid-template-columns: repeat(2, minmax(0, 1fr)) 44px; gap: 6px; }
+            .game-shell {
+                height: clamp(500px, 76vh, 640px);
+                height: clamp(500px, 76dvh, 640px);
+                border-radius: 22px;
+            }
+            .hud {
+                inset: 9px 9px auto;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) 44px;
+                grid-template-areas:
+                    "belief shields sound"
+                    "breeze sunshine sound"
+                    "meter meter meter";
+                gap: 6px;
+            }
             .hud-chip { padding: 6px 8px; border-radius: 12px; }
-            .hud-chip.sunshine { grid-column: 1; }
-            .hud-chip.breeze { grid-column: 2; }
-            .sound-toggle { grid-column: 3; grid-row: 1 / span 2; width: 44px; min-width: 44px; }
-            .sun-meter { grid-column: 1 / -1; height: 9px; }
+            .sound-toggle { width: 44px; min-width: 44px; }
+            .sun-meter { height: 9px; }
             .toast { top: 119px; font-size: 0.8rem; }
             .overlay { padding: 12px; place-items: start center; }
             .overlay-card { margin: auto 0; padding: 19px 15px 23px; border-radius: 20px; }
@@ -587,12 +637,20 @@
         @media (max-width: 430px) {
             h1 { font-size: 2rem; }
             .tagline { font-size: 0.9rem; }
-            .game-shell { height: 620px; min-height: 580px; }
+            .game-shell {
+                height: clamp(500px, 78vh, 620px);
+                height: clamp(500px, 78dvh, 620px);
+            }
             .rules { grid-template-columns: 1fr; }
             .overlay h2 { font-size: 1.72rem; }
             .overlay-mark { display: none; }
             .rule { padding: 7px 9px; }
             .primary-button { min-width: 86%; }
+        }
+
+        @media (max-width: 360px) {
+            .hud-label { font-size: 0.55rem; letter-spacing: 0.075em; }
+            .hud-value { font-size: 0.88rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -766,6 +824,8 @@
             let audioCtx = null;
             let toastTimer = 0;
             let pseudoFullscreen = false;
+            let fullscreenScrollY = 0;
+            let viewportSyncFrame = 0;
             const items = [];
             const particles = [];
             const floaters = [];
@@ -801,8 +861,31 @@
             function resizeCanvas() {
                 const rect = gameContainer.getBoundingClientRect();
                 const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                viewWidth = Math.max(1, rect.width);
-                viewHeight = Math.max(1, rect.height);
+                const nextWidth = Math.max(1, rect.width);
+                const nextHeight = Math.max(1, rect.height);
+                const widthScale = viewWidth > 1 ? nextWidth / viewWidth : 1;
+                const heightScale = viewHeight > 1 ? nextHeight / viewHeight : 1;
+
+                if (viewWidth > 1 && Math.abs(widthScale - 1) > 0.001) {
+                    bee.x *= widthScale;
+                    items.forEach(item => {
+                        item.x *= widthScale;
+                        item.anchorX *= widthScale;
+                    });
+                    particles.forEach(particle => { particle.x *= widthScale; });
+                    floaters.forEach(floater => { floater.x *= widthScale; });
+                }
+
+                if (viewHeight > 1 && Math.abs(heightScale - 1) > 0.001) {
+                    items.forEach(item => {
+                        if (item.y > 0) item.y *= heightScale;
+                    });
+                    particles.forEach(particle => { particle.y *= heightScale; });
+                    floaters.forEach(floater => { floater.y *= heightScale; });
+                }
+
+                viewWidth = nextWidth;
+                viewHeight = nextHeight;
                 canvas.width = Math.round(viewWidth * dpr);
                 canvas.height = Math.round(viewHeight * dpr);
                 canvas.style.width = `${viewWidth}px`;
@@ -811,6 +894,62 @@
                 bee.x = clamp(bee.x || viewWidth / 2, 34, viewWidth - 34);
                 bee.y = viewHeight - Math.max(65, viewHeight * 0.105);
                 if (!isPlaying) drawScene(0);
+            }
+
+            function usableViewportHeight() {
+                return Math.max(1, Math.round(window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight));
+            }
+
+            function gameTopInset() {
+                const viewportHeight = usableViewportHeight();
+                let inset = 10;
+                document.querySelectorAll("#lloamc-staging-banner, .lloamc-fixed-home").forEach(element => {
+                    const style = getComputedStyle(element);
+                    if (style.display === "none" || style.visibility === "hidden" || style.position !== "fixed") return;
+                    const rect = element.getBoundingClientRect();
+                    if (rect.bottom > 0 && rect.top < viewportHeight) inset = Math.max(inset, rect.bottom + 8);
+                });
+                return clamp(Math.ceil(inset), 8, Math.max(8, viewportHeight - 360));
+            }
+
+            function syncGameViewport({ reveal = false } = {}) {
+                cancelAnimationFrame(viewportSyncFrame);
+                viewportSyncFrame = requestAnimationFrame(() => {
+                    viewportSyncFrame = 0;
+                    const nativeFullscreen = nativeFullscreenElement() === gameContainer;
+
+                    if (!isPlaying || nativeFullscreen || pseudoFullscreen) {
+                        if (!isPlaying) gameContainer.style.removeProperty("--playfield-height");
+                        resizeCanvas();
+                        return;
+                    }
+
+                    const viewportHeight = usableViewportHeight();
+                    const topInset = gameTopInset();
+                    const bottomInset = 12;
+                    const nextHeight = clamp(Math.floor(viewportHeight - topInset - bottomInset), 360, 660);
+                    const heightValue = `${nextHeight}px`;
+                    if (gameContainer.style.getPropertyValue("--playfield-height") !== heightValue) {
+                        gameContainer.style.setProperty("--playfield-height", heightValue);
+                    }
+
+                    requestAnimationFrame(() => {
+                        resizeCanvas();
+                        if (!reveal) return;
+
+                        const rect = gameContainer.getBoundingClientRect();
+                        const desiredTop = gameTopInset();
+                        const visibleBottom = usableViewportHeight() - bottomInset;
+                        if (rect.top >= desiredTop - 4 && rect.bottom <= visibleBottom + 4) return;
+
+                        const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+                        const targetScroll = clamp(window.scrollY + rect.top - desiredTop, 0, maxScroll);
+                        window.scrollTo({
+                            top: targetScroll,
+                            behavior: reducedMotion ? "auto" : "smooth"
+                        });
+                    });
+                });
             }
 
             function ensureAudioContext() {
@@ -1550,12 +1689,14 @@
                 bee.y = viewHeight - Math.max(65, viewHeight * 0.105);
                 bee.tilt = 0;
                 bee.targetTilt = 0;
+                document.body.classList.add("game-focused");
                 gameContainer.classList.add("playing");
                 gameHud.inert = false;
                 startScreen.hidden = true;
                 gameOverScreen.hidden = true;
                 winScreen.hidden = true;
                 gameToast.classList.remove("show");
+                syncGameViewport({ reveal: true });
                 prepareAudio();
                 updateHud("Flight started. Sunshine is at zero percent.");
                 animationId = requestAnimationFrame(gameLoop);
@@ -1565,9 +1706,11 @@
                 isPlaying = false;
                 cancelAnimationFrame(animationId);
                 gameContainer.classList.remove("playing");
+                gameContainer.style.removeProperty("--playfield-height");
                 gameHud.inert = true;
                 keys.left = false;
                 keys.right = false;
+                window.requestAnimationFrame(resizeCanvas);
             }
 
             function gameOver() {
@@ -1612,10 +1755,63 @@
             }
 
             function setPseudoFullscreen(expanded) {
+                if (pseudoFullscreen === expanded) {
+                    updateFullscreenButton();
+                    return;
+                }
+
+                if (expanded) {
+                    fullscreenScrollY = window.scrollY;
+                    document.body.style.setProperty("--game-scroll-lock-top", `${-fullscreenScrollY}px`);
+                }
+
                 pseudoFullscreen = expanded;
                 gameContainer.classList.toggle("pseudo-fullscreen", expanded);
                 document.body.classList.toggle("game-expanded", expanded);
+                if (!expanded) {
+                    document.body.style.removeProperty("--game-scroll-lock-top");
+                    requestAnimationFrame(() => {
+                        window.scrollTo({ top: fullscreenScrollY, behavior: "auto" });
+                        syncGameViewport({ reveal: isPlaying });
+                    });
+                }
                 updateFullscreenButton();
+            }
+
+            function waitForNativeFullscreen(timeout = 700) {
+                if (nativeFullscreenElement() === gameContainer) return Promise.resolve(true);
+
+                return new Promise(resolve => {
+                    let timer = 0;
+                    const finish = value => {
+                        clearTimeout(timer);
+                        document.removeEventListener("fullscreenchange", check);
+                        document.removeEventListener("webkitfullscreenchange", check);
+                        resolve(value);
+                    };
+                    const check = () => {
+                        if (nativeFullscreenElement() === gameContainer) finish(true);
+                    };
+
+                    document.addEventListener("fullscreenchange", check);
+                    document.addEventListener("webkitfullscreenchange", check);
+                    timer = window.setTimeout(() => finish(nativeFullscreenElement() === gameContainer), timeout);
+                });
+            }
+
+            async function tryNativeFullscreen(enter) {
+                try {
+                    const request = enter.call(gameContainer);
+                    if (request && typeof request.then === "function") {
+                        await Promise.race([
+                            request.catch(() => {}),
+                            new Promise(resolve => window.setTimeout(resolve, 250))
+                        ]);
+                    }
+                } catch (_) {
+                    return false;
+                }
+                return waitForNativeFullscreen();
             }
 
             async function toggleFullscreen() {
@@ -1635,16 +1831,21 @@
                 }
 
                 const enter = gameContainer.requestFullscreen || gameContainer.webkitRequestFullscreen;
-                if (enter) {
-                    try {
-                        await enter.call(gameContainer);
-                        updateFullscreenButton();
-                        return;
-                    } catch (_) {
-                        // Some mobile browsers expose the API but reject non-video elements.
-                    }
+                if (enter && await tryNativeFullscreen(enter)) {
+                    updateFullscreenButton();
+                    return;
                 }
+
+                // iOS and some Android browsers expose fullscreen methods for elements
+                // but silently refuse them. The fixed-position mode keeps the game usable.
                 setPseudoFullscreen(true);
+            }
+
+            function handleFullscreenChange() {
+                updateFullscreenButton();
+                if (!nativeFullscreenElement() && !pseudoFullscreen && isPlaying) {
+                    syncGameViewport({ reveal: true });
+                }
             }
 
             fullscreenToggle.addEventListener("click", event => {
@@ -1652,8 +1853,8 @@
                 toggleFullscreen();
             });
 
-            document.addEventListener("fullscreenchange", updateFullscreenButton);
-            document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+            document.addEventListener("fullscreenchange", handleFullscreenChange);
+            document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
             canvas.addEventListener("pointermove", event => {
                 if (isPlaying) updateBeePosition(event.clientX);
@@ -1670,6 +1871,11 @@
             });
 
             window.addEventListener("keydown", event => {
+                if (event.key === "Escape" && pseudoFullscreen) {
+                    setPseudoFullscreen(false);
+                    event.preventDefault();
+                    return;
+                }
                 if (!isPlaying) return;
                 if (["ArrowLeft", "a", "A"].includes(event.key)) {
                     keys.left = true;
@@ -1689,7 +1895,11 @@
             const resizeObserver = new ResizeObserver(resizeCanvas);
             resizeObserver.observe(gameContainer);
             backgroundImage.addEventListener("load", () => drawScene(performance.now()));
-            window.addEventListener("resize", resizeCanvas);
+            window.addEventListener("resize", () => syncGameViewport({ reveal: isPlaying }));
+            window.visualViewport?.addEventListener("resize", () => syncGameViewport());
+            window.addEventListener("orientationchange", () => {
+                window.setTimeout(() => syncGameViewport({ reveal: isPlaying }), 160);
+            });
             setSoundState();
             resizeCanvas();
         })();
