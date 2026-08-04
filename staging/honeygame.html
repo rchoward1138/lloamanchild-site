@@ -157,7 +157,7 @@
             position: relative;
             width: 100%;
             height: clamp(440px, 68vh, 660px);
-            height: clamp(440px, 68dvh, 660px);
+            height: clamp(440px, 68svh, 660px);
             max-height: 660px;
             overflow: hidden;
             overscroll-behavior: contain;
@@ -180,7 +180,7 @@
         }
 
         .game-shell.playing {
-            height: var(--playfield-height, clamp(440px, 68dvh, 660px));
+            height: var(--playfield-height, clamp(440px, 68svh, 660px));
             min-height: 360px;
             cursor: none;
         }
@@ -236,6 +236,10 @@
             position: fixed;
             inset: 0;
             z-index: 2147483646;
+            height: 100vh !important;
+            height: 100svh !important;
+            min-height: 100vh !important;
+            min-height: 100svh !important;
         }
 
         body.game-expanded {
@@ -688,7 +692,7 @@
             .eyebrow { padding: 6px 10px; font-size: 0.62rem; }
             .game-shell {
                 height: clamp(500px, 76vh, 640px);
-                height: clamp(500px, 76dvh, 640px);
+                height: clamp(500px, 76svh, 640px);
                 border-radius: 22px;
             }
             .hud {
@@ -751,7 +755,7 @@
             .tagline { font-size: 0.9rem; }
             .game-shell {
                 height: clamp(500px, 78vh, 620px);
-                height: clamp(500px, 78dvh, 620px);
+                height: clamp(500px, 78svh, 620px);
             }
             .rules { grid-template-columns: 1fr; }
             .overlay h2 { font-size: 1.72rem; }
@@ -966,6 +970,8 @@
             let fullscreenScrollY = 0;
             let viewportSyncFrame = 0;
             let viewportSettleTimer = 0;
+            let lockedLayoutWidth = 0;
+            let lockedOrientation = "";
             const items = [];
             const particles = [];
             const floaters = [];
@@ -1007,6 +1013,21 @@
                 const heightScale = viewHeight > 1 ? nextHeight / viewHeight : 1;
                 const widthChanged = viewWidth <= 1 || Math.abs(nextWidth - viewWidth) >= 0.5;
                 const heightChanged = viewHeight <= 1 || Math.abs(nextHeight - viewHeight) >= 0.5;
+                const bitmapWidth = Math.round(nextWidth * dpr);
+                const bitmapHeight = Math.round(nextHeight * dpr);
+                const cssWidth = `${nextWidth}px`;
+                const cssHeight = `${nextHeight}px`;
+
+                // Samsung's open Fold can report harmless visual-viewport changes several
+                // times per second in portrait. Do not repaint an unchanged canvas: those
+                // redundant clears are visible as a pulse beneath the ready screen.
+                if (!widthChanged && !heightChanged
+                    && canvas.width === bitmapWidth
+                    && canvas.height === bitmapHeight
+                    && canvas.style.width === cssWidth
+                    && canvas.style.height === cssHeight) {
+                    return false;
+                }
 
                 if (viewWidth > 1 && widthChanged) {
                     bee.x *= widthScale;
@@ -1028,10 +1049,6 @@
 
                 viewWidth = nextWidth;
                 viewHeight = nextHeight;
-                const bitmapWidth = Math.round(viewWidth * dpr);
-                const bitmapHeight = Math.round(viewHeight * dpr);
-                const cssWidth = `${viewWidth}px`;
-                const cssHeight = `${viewHeight}px`;
 
                 // Assigning canvas.width or canvas.height clears the current frame. Android
                 // browsers can emit many viewport events while their toolbars settle, so only
@@ -1044,14 +1061,14 @@
                 bee.x = clamp(bee.x || viewWidth / 2, 34, viewWidth - 34);
                 bee.y = viewHeight - Math.max(65, viewHeight * 0.105);
                 if (!isPlaying) drawScene(0);
+                return true;
             }
 
             function usableViewportHeight() {
                 return Math.max(1, Math.round(window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight));
             }
 
-            function gameTopInset() {
-                const viewportHeight = usableViewportHeight();
+            function gameTopInset(viewportHeight = usableViewportHeight()) {
                 let inset = 10;
                 document.querySelectorAll("#lloamc-staging-banner, .lloamc-fixed-home").forEach(element => {
                     const style = getComputedStyle(element);
@@ -1062,26 +1079,43 @@
                 return clamp(Math.ceil(inset), 8, Math.max(8, viewportHeight - 360));
             }
 
-            function syncGameViewport({ reveal = false } = {}) {
+            function currentOrientation() {
+                return matchMedia("(orientation: portrait)").matches ? "portrait" : "landscape";
+            }
+
+            function syncGameViewport({ reveal = false, forceLayout = false } = {}) {
                 cancelAnimationFrame(viewportSyncFrame);
                 viewportSyncFrame = requestAnimationFrame(() => {
                     viewportSyncFrame = 0;
                     const nativeFullscreen = nativeFullscreenElement() === gameContainer;
 
                     if (!isPlaying || nativeFullscreen || pseudoFullscreen) {
-                        if (!isPlaying) gameContainer.style.removeProperty("--playfield-height");
+                        if (!isPlaying && gameContainer.style.getPropertyValue("--playfield-height")) {
+                            gameContainer.style.removeProperty("--playfield-height");
+                        }
+                        resizeCanvas();
+                        return;
+                    }
+
+                    const layoutWidth = Math.round(document.documentElement.clientWidth || window.innerWidth || 1);
+                    const orientation = currentOrientation();
+                    const layoutChanged = forceLayout
+                        || !lockedLayoutWidth
+                        || orientation !== lockedOrientation
+                        || Math.abs(layoutWidth - lockedLayoutWidth) >= 48;
+                    if (!layoutChanged && !reveal) {
                         resizeCanvas();
                         return;
                     }
 
                     const viewportHeight = usableViewportHeight();
-                    const topInset = gameTopInset();
+                    const topInset = gameTopInset(viewportHeight);
                     const bottomInset = 12;
-                    const nextHeight = clamp(Math.floor(viewportHeight - topInset - bottomInset), 360, 660);
-                    const heightValue = `${nextHeight}px`;
-                    const currentHeight = Number.parseFloat(gameContainer.style.getPropertyValue("--playfield-height"));
-                    if (!Number.isFinite(currentHeight) || Math.abs(currentHeight - nextHeight) >= 2) {
-                        gameContainer.style.setProperty("--playfield-height", heightValue);
+                    if (layoutChanged) {
+                        const nextHeight = clamp(Math.floor(viewportHeight - topInset - bottomInset), 360, 660);
+                        gameContainer.style.setProperty("--playfield-height", `${nextHeight}px`);
+                        lockedLayoutWidth = layoutWidth;
+                        lockedOrientation = orientation;
                     }
 
                     requestAnimationFrame(() => {
@@ -1103,9 +1137,9 @@
                 });
             }
 
-            function scheduleViewportSync({ reveal = false, delay = 150 } = {}) {
+            function scheduleViewportSync({ reveal = false, forceLayout = false, delay = 150 } = {}) {
                 window.clearTimeout(viewportSettleTimer);
-                viewportSettleTimer = window.setTimeout(() => syncGameViewport({ reveal }), delay);
+                viewportSettleTimer = window.setTimeout(() => syncGameViewport({ reveal, forceLayout }), delay);
             }
 
             function ensureAudioContext() {
@@ -1866,7 +1900,7 @@
                 gameOverScreen.hidden = true;
                 winScreen.hidden = true;
                 gameToast.classList.remove("show");
-                syncGameViewport({ reveal: true });
+                syncGameViewport({ reveal: true, forceLayout: true });
                 prepareAudio();
                 updateHud("Flight started. Sunshine is at zero percent.");
                 animationId = requestAnimationFrame(gameLoop);
@@ -1877,6 +1911,8 @@
                 cancelAnimationFrame(animationId);
                 gameContainer.classList.remove("playing");
                 gameContainer.style.removeProperty("--playfield-height");
+                lockedLayoutWidth = 0;
+                lockedOrientation = "";
                 gameHud.inert = true;
                 keys.left = false;
                 keys.right = false;
@@ -2068,7 +2104,7 @@
             window.addEventListener("resize", () => scheduleViewportSync({ delay: 140 }));
             window.visualViewport?.addEventListener("resize", () => scheduleViewportSync({ delay: 180 }));
             window.addEventListener("orientationchange", () => {
-                scheduleViewportSync({ reveal: isPlaying, delay: 240 });
+                scheduleViewportSync({ reveal: isPlaying, forceLayout: isPlaying, delay: 320 });
             });
             setSoundState();
             resizeCanvas();
