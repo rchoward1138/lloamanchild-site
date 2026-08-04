@@ -398,8 +398,9 @@
             position: absolute;
             inset: 0;
             z-index: 10;
-            display: grid;
-            place-items: center;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
             padding: clamp(16px, 4vw, 34px);
             overflow-y: auto;
             cursor: default;
@@ -412,7 +413,9 @@
         .overlay[hidden] { display: none; }
 
         .overlay-card {
+            flex: 0 0 auto;
             width: min(690px, 100%);
+            margin-block: auto;
             padding: clamp(22px, 4.3vw, 38px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             border-radius: clamp(20px, 3vw, 30px);
@@ -743,11 +746,6 @@
             }
         }
 
-        @media (max-height: 800px) and (min-width: 641px) {
-            .overlay { place-items: start center; padding: 12px; }
-            .overlay-card { margin: 0 auto; }
-        }
-
         @media (max-width: 430px) {
             h1 { font-size: 2rem; }
             .tagline { font-size: 0.9rem; }
@@ -960,6 +958,7 @@
             let lastSpawnType = "";
             let lastTime = 0;
             let animationId = 0;
+            let screenFlash = 0;
             let audioEnabled = true;
             let audioCtx = null;
             let toastTimer = 0;
@@ -1686,7 +1685,8 @@
                     drift: Math.random() * Math.PI * 2,
                     swayAmplitude,
                     swayRate: type === "storm" ? 0.025 + Math.random() * 0.012 : 0.032,
-                    age: 0
+                    age: 0,
+                    flashOffset: Math.random() * 80
                 });
                 lastSpawnType = type;
                 spawnCount += 1;
@@ -1741,6 +1741,7 @@
 
             function hitStorm(item) {
                 sfxThunder();
+                screenFlash = 1;
                 hopeStreak = 0;
                 burst(item.x, item.y, ["#d5dcff", "#7e8fb8", "#ffe563"], 20);
                 if (shieldCount > 0) {
@@ -1815,6 +1816,12 @@
                 updateAndDrawEffects(delta);
                 drawBee(timestamp);
 
+                if (screenFlash > 0.01) {
+                    ctx.fillStyle = `rgba(231, 239, 255, ${screenFlash * 0.58})`;
+                    ctx.fillRect(0, 0, viewWidth, viewHeight);
+                    screenFlash *= reducedMotion ? 0.25 : 0.78;
+                }
+
                 animationId = requestAnimationFrame(gameLoop);
             }
 
@@ -1844,6 +1851,7 @@
                 spawnCount = 0;
                 lastSpawnType = "";
                 lastTime = 0;
+                screenFlash = 0;
                 items.length = 0;
                 particles.length = 0;
                 floaters.length = 0;
