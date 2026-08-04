@@ -61,6 +61,11 @@
             outline-offset: 3px;
         }
 
+        body .lloamc-fixed-home {
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+        }
+
         #lloamc-staging-banner {
             position: fixed;
             inset: 0 0 auto 0;
@@ -85,7 +90,7 @@
             padding-top: clamp(18px, 3vw, 34px);
         }
 
-        @media (min-width: 701px) {
+        @media (min-width: 641px) {
             .game-page {
                 padding-top: clamp(80px, 7vw, 96px);
             }
@@ -194,13 +199,12 @@
             border: 1px solid rgba(255, 255, 255, 0.82);
             border-radius: 999px;
             color: white;
-            background: rgba(23, 35, 60, 0.78);
+            background: rgba(23, 35, 60, 0.9);
             font-size: 0.72rem;
             font-weight: 900;
             letter-spacing: 0.05em;
             text-transform: uppercase;
             box-shadow: 0 8px 28px rgba(16, 31, 65, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
             cursor: pointer;
             transition: transform 0.18s ease, background 0.18s ease;
         }
@@ -284,9 +288,8 @@
             border: 1px solid rgba(255, 255, 255, 0.74);
             border-radius: 16px;
             color: white;
-            background: rgba(23, 35, 60, 0.72);
+            background: rgba(23, 35, 60, 0.88);
             box-shadow: 0 8px 28px rgba(16, 31, 65, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
         }
 
         .hud-chip {
@@ -416,32 +419,122 @@
             background: var(--card);
             box-shadow: 0 28px 80px rgba(17, 29, 66, 0.34), inset 0 1px 0 white;
             text-align: center;
-            backdrop-filter: blur(14px);
         }
 
         .overlay-mark {
+            --bee-line: #6d4228;
             position: relative;
-            width: 74px;
-            height: 74px;
-            margin: 0 auto 10px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 34% 28%, #fff7a9 0 9%, #ffd34f 10% 44%, #f0a82f 45% 67%, #7250a4 68% 100%);
-            box-shadow: 0 10px 28px rgba(89, 61, 136, 0.27), inset 0 0 0 5px rgba(255, 255, 255, 0.58);
+            width: 78px;
+            height: 70px;
+            margin: 22px auto 10px;
+            overflow: visible;
+            border: 2px solid rgba(115, 66, 30, 0.52);
+            border-radius: 52% 52% 47% 47%;
+            background:
+                radial-gradient(circle at 30% 24%, rgba(255, 249, 177, 0.92) 0 8%, transparent 9%),
+                linear-gradient(145deg, #ffe267 0%, #ffc83f 56%, #eca02a 100%);
+            box-shadow: 0 10px 26px rgba(113, 69, 30, 0.2), inset 0 -7px 12px rgba(178, 91, 18, 0.12), inset 0 2px 0 rgba(255, 255, 255, 0.72);
+            isolation: isolate;
         }
 
-        .overlay-mark::before, .overlay-mark::after {
+        .overlay-mark::before {
             content: "";
             position: absolute;
-            top: 23px;
-            width: 22px;
+            inset: 5px 7px auto;
+            z-index: 0;
             height: 28px;
-            border: 3px solid rgba(74, 52, 109, 0.52);
-            border-radius: 70% 35% 65% 35%;
-            background: rgba(237, 252, 255, 0.74);
+            border-radius: 50%;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0));
+            pointer-events: none;
         }
 
-        .overlay-mark::before { left: 7px; transform: rotate(-26deg); }
-        .overlay-mark::after { right: 7px; transform: scaleX(-1) rotate(-26deg); }
+        .bee-halo,
+        .bee-antenna,
+        .bee-eye,
+        .bee-cheek,
+        .bee-smile { position: absolute; display: block; }
+
+        .bee-halo {
+            top: -24px;
+            left: 50%;
+            z-index: 1;
+            width: 50px;
+            height: 13px;
+            border: 2px solid rgba(255, 221, 92, 0.58);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255, 222, 103, 0.34);
+            transform: translateX(-50%);
+        }
+
+        .bee-antenna {
+            top: -9px;
+            z-index: 2;
+            width: 20px;
+            height: 25px;
+            border-radius: 70% 70% 0 0;
+        }
+
+        .bee-antenna::after {
+            content: "";
+            position: absolute;
+            top: -2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--bee-line);
+        }
+
+        .bee-antenna-left {
+            left: 16px;
+            border-left: 3px solid var(--bee-line);
+            transform: rotate(-22deg);
+        }
+
+        .bee-antenna-left::after { left: -4px; }
+
+        .bee-antenna-right {
+            right: 16px;
+            border-right: 3px solid var(--bee-line);
+            transform: rotate(22deg);
+        }
+
+        .bee-antenna-right::after { right: -4px; }
+
+        .bee-eye {
+            top: 25px;
+            z-index: 2;
+            width: 7px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3f342f;
+            box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.32);
+        }
+
+        .bee-eye-left { left: 22px; }
+        .bee-eye-right { right: 22px; }
+
+        .bee-cheek {
+            top: 43px;
+            z-index: 2;
+            width: 10px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(231, 104, 111, 0.35);
+        }
+
+        .bee-cheek-left { left: 12px; }
+        .bee-cheek-right { right: 12px; }
+
+        .bee-smile {
+            top: 36px;
+            left: 50%;
+            z-index: 2;
+            width: 25px;
+            height: 15px;
+            border-bottom: 3px solid var(--bee-line);
+            border-radius: 0 0 50% 50%;
+            transform: translateX(-50%);
+        }
 
         .overlay h2 {
             margin: 0;
@@ -583,7 +676,7 @@
             border: 0;
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 640px) {
             body { padding: 64px 10px 18px !important; }
             #lloamc-staging-banner { min-height: 64px; font-size: 12px; }
             .game-page { padding-top: 14px; }
@@ -610,10 +703,18 @@
             .toast { top: 119px; font-size: 0.8rem; }
             .overlay { padding: 12px; place-items: start center; }
             .overlay-card { margin: auto 0; padding: 19px 15px 23px; border-radius: 20px; }
-            .overlay-mark { width: 58px; height: 58px; margin-bottom: 7px; }
-            .overlay-mark::before, .overlay-mark::after { top: 18px; width: 18px; height: 22px; }
-            .overlay-mark::before { left: 5px; }
-            .overlay-mark::after { right: 5px; }
+            .overlay-mark { width: 64px; height: 58px; margin: 19px auto 7px; }
+            .bee-halo { top: -20px; width: 42px; height: 11px; }
+            .bee-antenna { top: -7px; width: 17px; height: 20px; }
+            .bee-antenna-left { left: 13px; }
+            .bee-antenna-right { right: 13px; }
+            .bee-eye { top: 20px; width: 6px; height: 9px; }
+            .bee-eye-left { left: 18px; }
+            .bee-eye-right { right: 18px; }
+            .bee-cheek { top: 36px; width: 8px; height: 5px; }
+            .bee-cheek-left { left: 10px; }
+            .bee-cheek-right { right: 10px; }
+            .bee-smile { top: 29px; width: 21px; height: 13px; }
             .overlay-intro { margin-bottom: 12px; font-size: 0.88rem; }
             .rules { gap: 6px; }
             .rule { grid-template-columns: 35px 1fr; gap: 7px; padding: 8px; }
@@ -632,6 +733,19 @@
                 padding: 9px;
             }
             .fullscreen-label { display: none; }
+        }
+
+        @media (min-width: 641px) and (max-width: 700px) {
+            body.staging-page .lloamc-fixed-home {
+                top: 66px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+            }
+        }
+
+        @media (max-height: 800px) and (min-width: 641px) {
+            .overlay { place-items: start center; padding: 12px; }
+            .overlay-card { margin: 0 auto; }
         }
 
         @media (max-width: 430px) {
@@ -658,7 +772,7 @@
         }
     </style>
 </head>
-<body>
+<body class="staging-page">
     <div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
         <span>STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</span>
     </div>
@@ -692,7 +806,16 @@
 
             <div id="startScreen" class="overlay">
                 <div class="overlay-card">
-                    <div class="overlay-mark" aria-hidden="true"></div>
+                    <div class="overlay-mark" aria-hidden="true">
+                        <span class="bee-halo"></span>
+                        <span class="bee-antenna bee-antenna-left"></span>
+                        <span class="bee-antenna bee-antenna-right"></span>
+                        <span class="bee-eye bee-eye-left"></span>
+                        <span class="bee-eye bee-eye-right"></span>
+                        <span class="bee-cheek bee-cheek-left"></span>
+                        <span class="bee-cheek bee-cheek-right"></span>
+                        <span class="bee-smile"></span>
+                    </div>
                     <h2>Ready, Bea?</h2>
                     <p class="overlay-intro">Guide Bea through the garden and fill the sunshine meter. Small acts of belief make a bright difference.</p>
 
@@ -735,7 +858,16 @@
 
             <div id="gameOverScreen" class="overlay" hidden>
                 <div class="overlay-card">
-                    <div class="overlay-mark" aria-hidden="true"></div>
+                    <div class="overlay-mark" aria-hidden="true">
+                        <span class="bee-halo"></span>
+                        <span class="bee-antenna bee-antenna-left"></span>
+                        <span class="bee-antenna bee-antenna-right"></span>
+                        <span class="bee-eye bee-eye-left"></span>
+                        <span class="bee-eye bee-eye-right"></span>
+                        <span class="bee-cheek bee-cheek-left"></span>
+                        <span class="bee-cheek bee-cheek-right"></span>
+                        <span class="bee-smile"></span>
+                    </div>
                     <h2>Stormy Skies</h2>
                     <p class="overlay-intro">Every brave flight has a cloudy moment. Faith means trying again.</p>
                     <p id="finalScore" class="final-score">Belief Collected: 0</p>
@@ -749,7 +881,16 @@
 
             <div id="winScreen" class="overlay" hidden>
                 <div class="overlay-card">
-                    <div class="overlay-mark" aria-hidden="true"></div>
+                    <div class="overlay-mark" aria-hidden="true">
+                        <span class="bee-halo"></span>
+                        <span class="bee-antenna bee-antenna-left"></span>
+                        <span class="bee-antenna bee-antenna-right"></span>
+                        <span class="bee-eye bee-eye-left"></span>
+                        <span class="bee-eye bee-eye-right"></span>
+                        <span class="bee-cheek bee-cheek-left"></span>
+                        <span class="bee-cheek bee-cheek-right"></span>
+                        <span class="bee-smile"></span>
+                    </div>
                     <h2>You Brought Back the Sun!</h2>
                     <p class="overlay-intro">You believed, kept flying, and helped the whole garden shine.</p>
                     <p id="winScore" class="final-score">Belief Collected: 0</p>
@@ -819,13 +960,13 @@
             let lastSpawnType = "";
             let lastTime = 0;
             let animationId = 0;
-            let screenFlash = 0;
             let audioEnabled = true;
             let audioCtx = null;
             let toastTimer = 0;
             let pseudoFullscreen = false;
             let fullscreenScrollY = 0;
             let viewportSyncFrame = 0;
+            let viewportSettleTimer = 0;
             const items = [];
             const particles = [];
             const floaters = [];
@@ -865,8 +1006,10 @@
                 const nextHeight = Math.max(1, rect.height);
                 const widthScale = viewWidth > 1 ? nextWidth / viewWidth : 1;
                 const heightScale = viewHeight > 1 ? nextHeight / viewHeight : 1;
+                const widthChanged = viewWidth <= 1 || Math.abs(nextWidth - viewWidth) >= 0.5;
+                const heightChanged = viewHeight <= 1 || Math.abs(nextHeight - viewHeight) >= 0.5;
 
-                if (viewWidth > 1 && Math.abs(widthScale - 1) > 0.001) {
+                if (viewWidth > 1 && widthChanged) {
                     bee.x *= widthScale;
                     items.forEach(item => {
                         item.x *= widthScale;
@@ -876,7 +1019,7 @@
                     floaters.forEach(floater => { floater.x *= widthScale; });
                 }
 
-                if (viewHeight > 1 && Math.abs(heightScale - 1) > 0.001) {
+                if (viewHeight > 1 && heightChanged) {
                     items.forEach(item => {
                         if (item.y > 0) item.y *= heightScale;
                     });
@@ -886,10 +1029,18 @@
 
                 viewWidth = nextWidth;
                 viewHeight = nextHeight;
-                canvas.width = Math.round(viewWidth * dpr);
-                canvas.height = Math.round(viewHeight * dpr);
-                canvas.style.width = `${viewWidth}px`;
-                canvas.style.height = `${viewHeight}px`;
+                const bitmapWidth = Math.round(viewWidth * dpr);
+                const bitmapHeight = Math.round(viewHeight * dpr);
+                const cssWidth = `${viewWidth}px`;
+                const cssHeight = `${viewHeight}px`;
+
+                // Assigning canvas.width or canvas.height clears the current frame. Android
+                // browsers can emit many viewport events while their toolbars settle, so only
+                // reset the bitmap when its pixel dimensions genuinely changed.
+                if (canvas.width !== bitmapWidth) canvas.width = bitmapWidth;
+                if (canvas.height !== bitmapHeight) canvas.height = bitmapHeight;
+                if (canvas.style.width !== cssWidth) canvas.style.width = cssWidth;
+                if (canvas.style.height !== cssHeight) canvas.style.height = cssHeight;
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 bee.x = clamp(bee.x || viewWidth / 2, 34, viewWidth - 34);
                 bee.y = viewHeight - Math.max(65, viewHeight * 0.105);
@@ -929,7 +1080,8 @@
                     const bottomInset = 12;
                     const nextHeight = clamp(Math.floor(viewportHeight - topInset - bottomInset), 360, 660);
                     const heightValue = `${nextHeight}px`;
-                    if (gameContainer.style.getPropertyValue("--playfield-height") !== heightValue) {
+                    const currentHeight = Number.parseFloat(gameContainer.style.getPropertyValue("--playfield-height"));
+                    if (!Number.isFinite(currentHeight) || Math.abs(currentHeight - nextHeight) >= 2) {
                         gameContainer.style.setProperty("--playfield-height", heightValue);
                     }
 
@@ -946,10 +1098,15 @@
                         const targetScroll = clamp(window.scrollY + rect.top - desiredTop, 0, maxScroll);
                         window.scrollTo({
                             top: targetScroll,
-                            behavior: reducedMotion ? "auto" : "smooth"
+                            behavior: "auto"
                         });
                     });
                 });
+            }
+
+            function scheduleViewportSync({ reveal = false, delay = 150 } = {}) {
+                window.clearTimeout(viewportSettleTimer);
+                viewportSettleTimer = window.setTimeout(() => syncGameViewport({ reveal }), delay);
             }
 
             function ensureAudioContext() {
@@ -1178,6 +1335,18 @@
                 ctx.shadowBlur = 14;
                 ctx.shadowOffsetY = 9;
 
+                ctx.save();
+                ctx.globalAlpha = 0.52;
+                ctx.strokeStyle = "#ffe995";
+                ctx.lineWidth = 2.2;
+                ctx.shadowColor = "rgba(255, 226, 105, 0.44)";
+                ctx.shadowBlur = 7;
+                ctx.shadowOffsetY = 0;
+                ctx.beginPath();
+                ctx.ellipse(0, -45, 17, 4.5, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+
                 if (shieldCount > 0) {
                     const pulse = reducedMotion ? 0 : Math.sin(time * 0.006) * 3;
                     const shieldGlow = ctx.createRadialGradient(0, 0, 25, 0, 0, 43 + pulse);
@@ -1239,6 +1408,11 @@
                 ctx.beginPath();
                 ctx.arc(-7, -9, 2.4, 0, Math.PI * 2);
                 ctx.arc(7, -9, 2.4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = "rgba(224, 104, 105, 0.42)";
+                ctx.beginPath();
+                ctx.ellipse(-12, -2, 4.2, 2.6, -0.12, 0, Math.PI * 2);
+                ctx.ellipse(12, -2, 4.2, 2.6, 0.12, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = "#6a3f24";
                 ctx.lineWidth = 1.8;
@@ -1349,24 +1523,21 @@
             }
 
             function drawLightning(item) {
-                const phase = (item.age + item.flashOffset) % 88;
-                if (phase > 12) return;
-                const strength = 1 - phase / 12;
                 ctx.save();
-                ctx.globalAlpha = strength;
-                ctx.strokeStyle = "#fff8b2";
-                ctx.lineWidth = 7;
+                ctx.globalAlpha = 0.68;
+                ctx.strokeStyle = "#ffe889";
+                ctx.lineWidth = 6;
                 ctx.lineJoin = "round";
-                ctx.shadowColor = "#ffe25c";
-                ctx.shadowBlur = 20;
+                ctx.shadowColor = "rgba(255, 226, 92, 0.44)";
+                ctx.shadowBlur = 6;
                 ctx.beginPath();
                 ctx.moveTo(item.x + 4, item.y + 15);
                 ctx.lineTo(item.x - 4, item.y + 34);
                 ctx.lineTo(item.x + 4, item.y + 34);
                 ctx.lineTo(item.x - 8, item.y + 59);
                 ctx.stroke();
-                ctx.strokeStyle = "#fff";
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = "rgba(255, 255, 232, 0.82)";
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
                 ctx.restore();
             }
@@ -1515,8 +1686,7 @@
                     drift: Math.random() * Math.PI * 2,
                     swayAmplitude,
                     swayRate: type === "storm" ? 0.025 + Math.random() * 0.012 : 0.032,
-                    age: 0,
-                    flashOffset: Math.random() * 80
+                    age: 0
                 });
                 lastSpawnType = type;
                 spawnCount += 1;
@@ -1571,7 +1741,6 @@
 
             function hitStorm(item) {
                 sfxThunder();
-                screenFlash = 1;
                 hopeStreak = 0;
                 burst(item.x, item.y, ["#d5dcff", "#7e8fb8", "#ffe563"], 20);
                 if (shieldCount > 0) {
@@ -1646,12 +1815,6 @@
                 updateAndDrawEffects(delta);
                 drawBee(timestamp);
 
-                if (screenFlash > 0.01) {
-                    ctx.fillStyle = `rgba(231, 239, 255, ${screenFlash * 0.58})`;
-                    ctx.fillRect(0, 0, viewWidth, viewHeight);
-                    screenFlash *= reducedMotion ? 0.25 : 0.78;
-                }
-
                 animationId = requestAnimationFrame(gameLoop);
             }
 
@@ -1681,7 +1844,6 @@
                 spawnCount = 0;
                 lastSpawnType = "";
                 lastTime = 0;
-                screenFlash = 0;
                 items.length = 0;
                 particles.length = 0;
                 floaters.length = 0;
@@ -1895,10 +2057,10 @@
             const resizeObserver = new ResizeObserver(resizeCanvas);
             resizeObserver.observe(gameContainer);
             backgroundImage.addEventListener("load", () => drawScene(performance.now()));
-            window.addEventListener("resize", () => syncGameViewport({ reveal: isPlaying }));
-            window.visualViewport?.addEventListener("resize", () => syncGameViewport());
+            window.addEventListener("resize", () => scheduleViewportSync({ delay: 140 }));
+            window.visualViewport?.addEventListener("resize", () => scheduleViewportSync({ delay: 180 }));
             window.addEventListener("orientationchange", () => {
-                window.setTimeout(() => syncGameViewport({ reveal: isPlaying }), 160);
+                scheduleViewportSync({ reveal: isPlaying, delay: 240 });
             });
             setSoundState();
             resizeCanvas();
