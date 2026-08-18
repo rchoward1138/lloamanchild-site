@@ -76,7 +76,6 @@
     @media(max-width:700px){body{padding-top:68px;background-attachment:scroll}.stage{min-height:68px;font-size:.78rem}.welcome-gate{padding-top:calc(68px + 20px);padding-bottom:32px;background-position:center center}.welcome-title{font-size:clamp(1.45rem,8vw,2.35rem)}.welcome-memory{font-size:.46rem}.start-button{min-width:min(92vw,360px);padding:.85rem 1rem;font-size:.58rem}.start-button:before{width:23px;height:23px;flex-basis:23px}.module-home{top:10px;left:10px;min-height:38px;padding:.65rem .8rem;font-size:.46rem;transform:none}.module-home:hover,.module-home:focus-visible{transform:translateY(-1px)}.module-home:active{transform:translateY(1px)}.media-features,.nav{grid-template-columns:1fr}.panel{padding:24px 16px}.music-toggle{font-size:.43rem}.lens-shortcut{top:auto;width:46px;height:46px;bottom:1rem;left:.6rem}.lens-symbol{width:29px;height:29px;border-width:3px}.lens-symbol:after{width:18px;height:4px;right:-15px;bottom:-7px}.lens-tooltip{display:none}}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
-  <link rel="stylesheet" href="fly-home.css?v=20260817-2">
 </head>
 <body class="gate-locked">
   <div class="stage">STAGING PREVIEW — NOT THE LIVE AUTHOR SITE</div>
@@ -97,50 +96,6 @@
     <source src="audio/helkimer-80s-love.mp3" type="audio/mpeg">
   </audio>
   <section class="module-shell" id="module-shell" aria-label="Author site section" hidden>
-    <aside class="lloamc-fly-home-dock module-home-dock" aria-label="Return navigation">
-      <button class="module-home lloamc-fly-home" id="module-home" type="button" aria-label="Fly home to the Life Lessons dashboard" title="Fly Home">
-        <span class="lloamc-fly-home-art" aria-hidden="true">
-          <svg viewBox="0 0 120 110" role="presentation" focusable="false">
-            <defs>
-              <radialGradient id="lloamc-moon-surface" cx="34%" cy="28%" r="72%">
-                <stop offset="0%" stop-color="#fff9c9"/>
-                <stop offset="44%" stop-color="#ffd978"/>
-                <stop offset="78%" stop-color="#d88a42"/>
-                <stop offset="100%" stop-color="#7d3650"/>
-              </radialGradient>
-              <linearGradient id="lloamc-raven-feather" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#26163d"/>
-                <stop offset="48%" stop-color="#05040b"/>
-                <stop offset="100%" stop-color="#23064a"/>
-              </linearGradient>
-              <filter id="lloamc-moon-glow" x="-60%" y="-60%" width="220%" height="220%">
-                <feGaussianBlur stdDeviation="4" result="glow"/>
-                <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-            <circle class="lloamc-moon-halo" cx="60" cy="51" r="47"/>
-            <circle class="lloamc-moon" cx="60" cy="51" r="41" fill="url(#lloamc-moon-surface)" filter="url(#lloamc-moon-glow)"/>
-            <g class="lloamc-moon-craters">
-              <ellipse cx="43" cy="35" rx="8" ry="5"/>
-              <ellipse cx="73" cy="29" rx="5" ry="8"/>
-              <ellipse cx="80" cy="60" rx="9" ry="6"/>
-              <ellipse cx="47" cy="70" rx="6" ry="9"/>
-              <circle cx="64" cy="47" r="4"/>
-            </g>
-            <g class="lloamc-raven">
-              <path class="lloamc-wing lloamc-wing-left" d="M58 49C47 38 36 25 17 22c10 12 15 20-2 27 16 1 29 8 44 14z"/>
-              <path class="lloamc-wing lloamc-wing-right" d="M64 49c13-12 25-22 42-20-11 10-13 17 4 23-16 1-30 7-45 12z"/>
-              <path class="lloamc-raven-tail" d="M56 64 43 82l16-8 8 13 5-20z"/>
-              <path class="lloamc-raven-body" d="M51 49c6-8 19-9 27-2 7 6 6 16 0 22-8 8-23 5-28-5-3-6-2-11 1-15z"/>
-              <circle class="lloamc-raven-head" cx="78" cy="47" r="8"/>
-              <path class="lloamc-raven-beak" d="m84 45 16 5-16 3z"/>
-              <circle class="lloamc-raven-eye" cx="80" cy="44" r="1.5"/>
-            </g>
-          </svg>
-        </span>
-        <span class="lloamc-fly-home-label">FLY HOME</span>
-      </button>
-    </aside>
     <div class="module-loader" id="module-loader" role="status" aria-live="polite">LOADING THE NEXT LIFE LESSON...</div>
     <iframe class="module-frame" id="module-frame" title="Author site section" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; web-share" allowfullscreen></iframe>
   </section>
@@ -211,7 +166,6 @@
       const moduleShell = document.getElementById('module-shell');
       const moduleFrame = document.getElementById('module-frame');
       const moduleLoader = document.getElementById('module-loader');
-      const moduleHome = document.getElementById('module-home');
       const ArcadeAudioContext = window.AudioContext || window.webkitAudioContext;
       const dashboardTitle = document.title;
       const dashboard = new URL('index.html', location.href);
@@ -539,6 +493,7 @@
         if (root.nodeType === Node.ELEMENT_NODE && root.matches('a[href]')) candidates.push(root);
         if (root.querySelectorAll) candidates.push(...root.querySelectorAll('a[href]'));
         candidates.forEach(link => {
+          if (link.classList.contains('lloamc-raven-home')) return;
           let destination;
           try {
             destination = new URL(link.href, moduleFrame.contentWindow.location.href);
@@ -587,7 +542,8 @@
         homeLinkObserver.observe(moduleDocument.documentElement, { childList: true, subtree: true });
         moduleDocument.addEventListener('click', event => {
           const link = event.target.closest('a[href]');
-          if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          if (!link || event.defaultPrevented || link.classList.contains('lloamc-raven-home')
+            || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
           const destination = new URL(link.href, moduleURL);
           if (destination.protocol === 'mailto:') {
             event.preventDefault();
@@ -638,7 +594,6 @@
       moduleFrame.addEventListener('load', wireModuleDocument);
       toggle.addEventListener('click', () => music.paused ? playMusic() : pauseMusic());
       startButton.addEventListener('click', enterSite);
-      moduleHome.addEventListener('click', returnHome);
 
       document.querySelectorAll('.feature, .tile, .lens-shortcut').forEach(link => {
         link.addEventListener('click', event => {

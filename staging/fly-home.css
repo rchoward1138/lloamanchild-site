@@ -1,326 +1,129 @@
-:root {
-  --lloamc-fly-dock-width: 124px;
-  --lloamc-fly-dock-height: 78px;
+/*
+ * Fly Home — source-faithful cover-art control.
+ * The component overlays the real raven/moon already baked into PaperbackCoverFinal.png.
+ * It never reserves layout space and never adds a navigation rail.
+ */
+html.lloamc-raven-home-active,
+html.lloamc-raven-home-active body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.lloamc-fly-home-dock {
+html.lloamc-raven-home-active::-webkit-scrollbar,
+html.lloamc-raven-home-active body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.lloamc-raven-home {
   position: fixed;
-  inset: 0 0 0 auto;
-  z-index: 2147483646;
-  width: var(--lloamc-fly-dock-width);
-  display: grid;
-  place-items: center;
-  padding: 18px 9px;
-  overflow: hidden;
-  isolation: isolate;
-  pointer-events: none;
-  border-left: 1px solid rgba(0, 255, 255, .3);
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255, 216, 120, .16) 0 16%, transparent 47%),
-    linear-gradient(180deg, rgba(3, 8, 22, .97), rgba(27, 4, 45, .98) 52%, rgba(3, 8, 20, .98));
-  box-shadow: -14px 0 30px rgba(0, 0, 0, .34), inset 1px 0 rgba(255, 255, 255, .06);
-}
-
-.lloamc-fly-home-dock::before,
-.lloamc-fly-home-dock::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.lloamc-fly-home-dock::before {
-  opacity: .5;
-  background-image:
-    linear-gradient(rgba(0, 255, 255, .055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 255, .055) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.lloamc-fly-home-dock::after {
-  background:
-    radial-gradient(circle at 18% 18%, rgba(255,255,255,.7) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 76% 28%, rgba(0,255,255,.65) 0 1px, transparent 1.7px),
-    radial-gradient(circle at 30% 73%, rgba(255,0,255,.55) 0 1px, transparent 1.7px),
-    radial-gradient(circle at 85% 82%, rgba(255,255,255,.55) 0 1px, transparent 1.5px);
-}
-
-.module-shell > .lloamc-fly-home-dock {
-  position: absolute;
-  z-index: 5;
-}
-
-.lloamc-fly-home {
-  appearance: none;
-  position: relative;
-  inset: auto;
-  top: auto;
-  right: auto;
-  bottom: auto;
-  left: auto;
-  z-index: auto;
-  pointer-events: auto;
-  width: 106px;
-  min-width: 106px;
-  height: 132px;
-  min-height: 132px;
-  display: grid;
-  grid-template-rows: 96px auto;
-  align-items: center;
-  justify-items: center;
-  gap: 0;
+  z-index: 2147482500;
+  display: block;
+  width: var(--lloamc-home-width, 150px);
+  height: var(--lloamc-home-height, 160px);
+  left: var(--lloamc-home-left, auto);
+  top: var(--lloamc-home-top, auto);
   margin: 0;
-  padding: 4px 4px 10px;
-  border: 2px solid #24f9ff;
-  border-radius: 52px 52px 22px 22px;
-  background: linear-gradient(155deg, rgba(38, 9, 66, .98), rgba(5, 8, 21, .99) 64%, rgba(17, 2, 35, .99));
-  color: #00ffff;
+  padding: 0;
+  border: 0;
+  border-radius: 48%;
+  background: transparent;
+  color: #bffcff;
   text-decoration: none;
   cursor: pointer;
-  box-shadow:
-    0 7px 0 #02020a,
-    0 13px 24px rgba(0, 0, 0, .58),
-    0 0 22px rgba(0, 255, 255, .5),
-    inset 0 1px rgba(255, 255, 255, .18),
-    inset 0 0 20px rgba(255, 0, 255, .13);
-  transform: translateY(-3px);
-  transform-style: preserve-3d;
-  transition: transform .17s ease, border-color .17s ease, box-shadow .17s ease, filter .17s ease;
+  overflow: visible;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  pointer-events: none;
 }
 
-.lloamc-fly-home-art {
-  position: relative;
-  z-index: 1;
-  width: 98px;
-  height: 94px;
-  display: block;
-  filter: drop-shadow(0 5px 7px rgba(0,0,0,.55));
+.lloamc-raven-home[hidden] {
+  display: none !important;
 }
 
-.lloamc-fly-home-art svg {
+.lloamc-raven-home-source {
+  position: absolute;
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.lloamc-raven-home.is-detached .lloamc-raven-home-source {
   display: block;
+  -webkit-mask-image: radial-gradient(ellipse 72% 68% at 53% 55%, #000 54%, rgba(0,0,0,.96) 72%, transparent 100%);
+  mask-image: radial-gradient(ellipse 72% 68% at 53% 55%, #000 54%, rgba(0,0,0,.96) 72%, transparent 100%);
+}
+
+.lloamc-raven-home-label {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   overflow: visible;
+  pointer-events: none;
 }
 
-.lloamc-moon-halo {
-  fill: rgba(0, 255, 255, .11);
-  stroke: rgba(0, 255, 255, .75);
-  stroke-width: 2;
+.lloamc-raven-home-hit {
+  fill: rgba(0, 0, 0, .001);
+  stroke: none;
+  pointer-events: all;
+  cursor: pointer;
 }
 
-.lloamc-moon {
-  stroke: #fff3b0;
-  stroke-width: 1.5;
+.lloamc-raven-home-hit-label {
+  fill: none;
+  stroke: rgba(0, 0, 0, .001);
+  stroke-width: 24px;
+  pointer-events: stroke;
 }
 
-.lloamc-moon-craters {
-  fill: rgba(104, 42, 74, .21);
+.lloamc-raven-home-label path {
+  fill: none;
 }
 
-.lloamc-raven {
-  transform-origin: 60px 53px;
-  animation: lloamc-raven-bob 8s ease-in-out infinite;
+.lloamc-raven-home-label text {
+  fill: #bffcff;
+  stroke: rgba(16, 0, 38, .98);
+  stroke-width: 2.4px;
+  paint-order: stroke fill;
+  font-family: "Press Start 2P", monospace;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 1.15px;
+  text-transform: uppercase;
+  text-shadow: 0 0 3px #00ffff, 0 0 8px rgba(0,255,255,.72);
+  transition: fill .16s ease, text-shadow .16s ease;
 }
 
-.lloamc-wing,
-.lloamc-raven-tail,
-.lloamc-raven-body,
-.lloamc-raven-head,
-.lloamc-raven-beak {
-  fill: url(#lloamc-raven-feather);
-  stroke: rgba(87, 247, 255, .32);
-  stroke-width: .8;
-  stroke-linejoin: round;
+.lloamc-raven-home:hover .lloamc-raven-home-label text,
+.lloamc-raven-home:focus-visible .lloamc-raven-home-label text {
+  fill: #ffffff;
+  text-shadow: 0 0 4px #00ffff, 0 0 12px #00ffff, 0 0 18px rgba(255,0,255,.65);
 }
 
-.lloamc-wing {
-  transform-box: fill-box;
-  animation-duration: 8s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+.lloamc-raven-home:focus-visible {
+  outline: 3px solid #ffff7a;
+  outline-offset: 3px;
 }
 
-.lloamc-wing-left {
-  transform-origin: 92% 72%;
-  animation-name: lloamc-left-wing-idle;
-}
-
-.lloamc-wing-right {
-  transform-origin: 8% 72%;
-  animation-name: lloamc-right-wing-idle;
-}
-
-.lloamc-raven-eye {
-  fill: #7dffff;
-  filter: drop-shadow(0 0 2px #00ffff);
-}
-
-.lloamc-fly-home-label {
-  position: relative;
-  z-index: 2;
-  width: 96px;
-  margin-top: -8px;
-  padding: 9px 5px 8px;
-  border: 1px solid #ff5eea;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #40106a, #130320);
-  color: #eaffff;
-  font-family: "Press Start 2P", Orbitron, monospace;
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: .03em;
-  text-align: center;
-  text-shadow: 0 0 8px #00ffff;
-  box-shadow: 0 3px 0 #05000c, 0 0 12px rgba(255, 0, 255, .55), inset 0 1px rgba(255,255,255,.18);
-}
-
-.lloamc-fly-home:hover,
-.lloamc-fly-home:focus-visible {
-  color: #fff;
-  border-color: #ff66ed;
-  filter: saturate(1.14) brightness(1.06);
-  transform: translateY(-6px) rotateY(-4deg);
-  box-shadow:
-    0 10px 0 #02020a,
-    0 16px 28px rgba(0, 0, 0, .62),
-    0 0 28px rgba(255, 0, 255, .72),
-    inset 0 1px rgba(255, 255, 255, .22),
-    inset 0 0 24px rgba(0, 255, 255, .16);
-}
-
-.lloamc-fly-home:focus-visible {
-  outline: 3px solid #fff36b;
-  outline-offset: 5px;
-}
-
-.lloamc-fly-home:active {
-  transform: translateY(3px) scale(.985);
-  box-shadow:
-    0 2px 0 #02020a,
-    0 6px 12px rgba(0, 0, 0, .54),
-    0 0 22px rgba(0, 255, 255, .6),
-    inset 0 2px 12px rgba(0, 0, 0, .42);
-}
-
-.lloamc-fly-home:hover .lloamc-wing-left,
-.lloamc-fly-home:focus-visible .lloamc-wing-left {
-  animation: lloamc-left-wing-hover .62s ease-in-out 3;
-}
-
-.lloamc-fly-home:hover .lloamc-wing-right,
-.lloamc-fly-home:focus-visible .lloamc-wing-right {
-  animation: lloamc-right-wing-hover .62s ease-in-out 3;
-}
-
-@keyframes lloamc-raven-bob {
-  0%, 69%, 100% { transform: translateY(0) rotate(-1deg); }
-  74%, 86% { transform: translateY(-2px) rotate(1deg); }
-  80%, 92% { transform: translateY(1px) rotate(-1deg); }
-}
-
-@keyframes lloamc-left-wing-idle {
-  0%, 69%, 100% { transform: rotate(0deg); }
-  74% { transform: rotate(-30deg); }
-  80% { transform: rotate(12deg); }
-  86% { transform: rotate(-24deg); }
-  92% { transform: rotate(0deg); }
-}
-
-@keyframes lloamc-right-wing-idle {
-  0%, 69%, 100% { transform: rotate(0deg); }
-  74% { transform: rotate(30deg); }
-  80% { transform: rotate(-12deg); }
-  86% { transform: rotate(24deg); }
-  92% { transform: rotate(0deg); }
-}
-
-@keyframes lloamc-left-wing-hover {
-  0%, 100% { transform: rotate(0deg); }
-  45% { transform: rotate(-34deg); }
-  72% { transform: rotate(13deg); }
-}
-
-@keyframes lloamc-right-wing-hover {
-  0%, 100% { transform: rotate(0deg); }
-  45% { transform: rotate(34deg); }
-  72% { transform: rotate(-13deg); }
-}
-
-.module-shell .module-frame,
-.module-shell .module-loader {
-  inset: 0 var(--lloamc-fly-dock-width) 0 0;
-  width: calc(100% - var(--lloamc-fly-dock-width));
-  height: 100%;
-}
-
-html.lloamc-fly-home-active body {
-  padding-right: var(--lloamc-fly-dock-width) !important;
-}
-
-@media (max-width: 1040px) {
-  .lloamc-fly-home-dock {
-    inset: auto 0 0 0;
-    width: 100%;
-    height: calc(var(--lloamc-fly-dock-height) + env(safe-area-inset-bottom, 0px));
-    padding: 6px max(12px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
-    place-items: center end;
-    border-left: 0;
-    border-top: 1px solid rgba(0, 255, 255, .38);
-    box-shadow: 0 -12px 28px rgba(0, 0, 0, .4), inset 0 1px rgba(255, 255, 255, .06);
-    background:
-      radial-gradient(circle at 86% 50%, rgba(255, 216, 120, .14) 0 9%, transparent 30%),
-      linear-gradient(90deg, rgba(3, 8, 22, .98), rgba(27, 4, 45, .98) 68%, rgba(3, 8, 20, .98));
-  }
-
-  .lloamc-fly-home-dock::before {
-    background-size: 28px 20px;
-  }
-
-  .lloamc-fly-home {
-    width: 154px;
-    min-width: 154px;
-    height: 61px;
-    min-height: 61px;
-    grid-template: 1fr / 61px 1fr;
-    padding: 2px 6px 6px 3px;
-    border-radius: 34px 18px 18px 34px;
-  }
-
-  .lloamc-fly-home-art {
-    width: 61px;
-    height: 58px;
-  }
-
-  .lloamc-fly-home-label {
-    width: 88px;
-    margin: 0 0 0 -2px;
-    padding: 9px 4px 8px;
-    font-size: 8px;
-  }
-
-  .module-shell .module-frame,
-  .module-shell .module-loader {
-    inset: 0 0 calc(var(--lloamc-fly-dock-height) + env(safe-area-inset-bottom, 0px)) 0;
-    width: 100%;
-    height: calc(100% - var(--lloamc-fly-dock-height) - env(safe-area-inset-bottom, 0px));
-  }
-
-  html.lloamc-fly-home-active body {
-    padding-right: 0 !important;
-    padding-bottom: calc(var(--lloamc-fly-dock-height) + env(safe-area-inset-bottom, 0px)) !important;
-  }
+.lloamc-raven-home:active {
+  transform: scale(.985);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lloamc-fly-home,
-  .lloamc-raven,
-  .lloamc-wing {
-    animation: none !important;
+  .lloamc-raven-home,
+  .lloamc-raven-home * {
     transition: none !important;
+    animation: none !important;
+  }
+
+  .lloamc-raven-home:active {
+    transform: none;
   }
 }
