@@ -36,10 +36,6 @@
     .module-home{position:absolute;top:66px;left:50%;z-index:4;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:.72rem 1rem;border:2px solid var(--cyan);border-radius:999px;background:linear-gradient(135deg,#080d18f2,#29104df2);color:var(--cyan);font-family:'Press Start 2P',monospace;font-size:clamp(.48rem,1.15vw,.66rem);line-height:1.35;letter-spacing:.04em;cursor:pointer;box-shadow:0 0 16px #00ffff77,inset 0 0 14px #ff00ff22;backdrop-filter:blur(8px);transform:translateX(-50%);transition:transform .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease}
     .module-home:hover,.module-home:focus-visible{color:white;border-color:var(--pink);box-shadow:0 0 20px #ff00ff88,inset 0 0 16px #00ffff28;outline:none;transform:translate(-50%,-1px)}
     .module-home:active{transform:translate(-50%,1px)}
-    .module-home.is-border-aligned,
-    .module-home.is-border-aligned:hover,
-    .module-home.is-border-aligned:focus-visible,
-    .module-home.is-border-aligned:active{transform:translate(-50%,-50%)}
     .module-frame{position:absolute;inset:0;z-index:2;width:100%;height:100%;border:0;background:#02050d;opacity:0;transition:opacity .2s ease}
     .module-shell.is-loaded .module-frame{opacity:1}
     .module-loader{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:2rem;background:radial-gradient(circle at center,#24013c,#02050d 68%);color:var(--cyan);font-family:'Press Start 2P',monospace;font-size:clamp(.55rem,1.4vw,.8rem);line-height:1.8;letter-spacing:.1em;text-align:center;text-shadow:0 0 12px var(--cyan)}
@@ -203,8 +199,9 @@
         if (!anchor) return;
         const anchorTop = anchor.getBoundingClientRect().top;
         if (!Number.isFinite(anchorTop) || anchorTop < 0) return;
-        moduleHome.style.top = `${anchorTop}px`;
-        moduleHome.style.transform = 'translate(-50%, -50%)';
+        const buttonHeight = moduleHome.getBoundingClientRect().height;
+        const buttonTop = Math.max(0, anchorTop - (buttonHeight / 2));
+        moduleHome.style.top = `${buttonTop}px`;
         moduleHome.classList.add('is-border-aligned');
       };
       const targetVolume = 0.18;
