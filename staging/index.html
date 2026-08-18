@@ -190,6 +190,7 @@
       });
       const resetModuleHomePosition = () => {
         moduleHome.style.removeProperty('top');
+        moduleHome.style.removeProperty('transform');
         moduleHome.classList.remove('is-border-aligned');
       };
       const positionModuleHome = (moduleURL, moduleDocument) => {
@@ -203,6 +204,7 @@
         const anchorTop = anchor.getBoundingClientRect().top;
         if (!Number.isFinite(anchorTop) || anchorTop < 0) return;
         moduleHome.style.top = `${anchorTop}px`;
+        moduleHome.style.transform = 'translate(-50%, -50%)';
         moduleHome.classList.add('is-border-aligned');
       };
       const targetVolume = 0.18;
