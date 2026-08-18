@@ -2,6 +2,19 @@
   const dashboard = new URL('index.html', location.href);
   const dashboardDirectory = dashboard.pathname.replace(/index\.html$/, '');
   const query = new URLSearchParams(location.search);
+  const homeAnchorSelectors = Object.freeze({
+    'podcasts.html': '.hero',
+    'lens.html': '.hero',
+    'cryptogram.html': '.main-content',
+    'kittykids.html': '.main-content',
+    'tictactoe.html': '.arena-panel',
+    'mimaw.html': '.main-content',
+    'man-childness.html': '.main-content',
+    'bee-leaf.html': '.panel',
+    'more.html': '.chapter-card',
+    'about.html': '.main-content'
+  });
+  const pageName = location.pathname.split('/').pop();
   const sameSiteReferrer = (() => {
     if (!document.referrer) return false;
     try {
@@ -99,6 +112,25 @@
     fixedHome.textContent = '◀ BACK TO HOME';
     fixedHome.setAttribute('aria-label', 'Back to Home');
     document.body.appendChild(fixedHome);
+
+    const positionFixedHome = () => {
+      fixedHome.style.removeProperty('top');
+      fixedHome.style.removeProperty('transform');
+      if (window.matchMedia('(max-width: 700px)').matches) return;
+      const anchorSelector = homeAnchorSelectors[pageName];
+      if (!anchorSelector) return;
+      const anchor = document.querySelector(anchorSelector);
+      if (!anchor) return;
+      const anchorTop = anchor.getBoundingClientRect().top;
+      if (!Number.isFinite(anchorTop) || anchorTop < 0) return;
+      fixedHome.style.top = `${anchorTop}px`;
+      fixedHome.style.transform = 'translate(-50%, -50%)';
+    };
+
+    window.requestAnimationFrame(() => window.requestAnimationFrame(positionFixedHome));
+    window.addEventListener('load', positionFixedHome);
+    window.addEventListener('resize', positionFixedHome);
+    if (document.fonts?.ready) document.fonts.ready.then(positionFixedHome);
   }
 
   if (!cameFromDashboard && !embeddedInDashboard) return;
