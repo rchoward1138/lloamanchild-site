@@ -61,7 +61,7 @@
   if (!embeddedInDashboard) {
     const flyHomeStyles = document.createElement('link');
     flyHomeStyles.rel = 'stylesheet';
-    flyHomeStyles.href = new URL('fly-home.css?v=20260817-1', pageScript).href;
+    flyHomeStyles.href = new URL('fly-home.css?v=20260817-2', pageScript).href;
     document.head.appendChild(flyHomeStyles);
     document.documentElement.classList.add('lloamc-fly-home-active');
 
