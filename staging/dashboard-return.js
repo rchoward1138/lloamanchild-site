@@ -123,8 +123,9 @@
       if (!anchor) return;
       const anchorTop = anchor.getBoundingClientRect().top;
       if (!Number.isFinite(anchorTop) || anchorTop < 0) return;
-      fixedHome.style.top = `${anchorTop}px`;
-      fixedHome.style.transform = 'translate(-50%, -50%)';
+      const buttonHeight = fixedHome.getBoundingClientRect().height;
+      const buttonTop = Math.max(0, anchorTop - (buttonHeight / 2));
+      fixedHome.style.top = `${buttonTop}px`;
     };
 
     window.requestAnimationFrame(() => window.requestAnimationFrame(positionFixedHome));
