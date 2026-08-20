@@ -493,7 +493,7 @@
         if (root.nodeType === Node.ELEMENT_NODE && root.matches('a[href]')) candidates.push(root);
         if (root.querySelectorAll) candidates.push(...root.querySelectorAll('a[href]'));
         candidates.forEach(link => {
-          if (link.classList.contains('lloamc-raven-home')) return;
+          if (link.matches('[data-lloamc-dashboard-home]')) return;
           let destination;
           try {
             destination = new URL(link.href, moduleFrame.contentWindow.location.href);
@@ -542,7 +542,7 @@
         homeLinkObserver.observe(moduleDocument.documentElement, { childList: true, subtree: true });
         moduleDocument.addEventListener('click', event => {
           const link = event.target.closest('a[href]');
-          if (!link || event.defaultPrevented || link.classList.contains('lloamc-raven-home')
+          if (!link || event.defaultPrevented || link.matches('[data-lloamc-dashboard-home]')
             || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
           const destination = new URL(link.href, moduleURL);
           if (destination.protocol === 'mailto:') {
