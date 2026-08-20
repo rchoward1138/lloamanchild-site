@@ -8,6 +8,10 @@ html.lloamc-home-command-active {
   scroll-padding-top: calc(var(--lloamc-command-height) + 12px);
 }
 
+html.lloamc-home-command-active body {
+  margin: 0 !important;
+}
+
 html.lloamc-home-command-has-stage body {
   padding-top: 0 !important;
 }
@@ -21,6 +25,7 @@ html.lloamc-home-command-has-stage #lloamc-staging-banner {
   bottom: auto !important;
   left: auto !important;
   width: 100% !important;
+  box-sizing: border-box !important;
   margin: 0 !important;
   transform: none !important;
 }
