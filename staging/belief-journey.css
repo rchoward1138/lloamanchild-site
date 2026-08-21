@@ -1,0 +1,663 @@
+/*
+ * The Belief Collector: The Unseen Thread
+ * Stage build 2026.08.21 — responsive gameplay and finale layer.
+ */
+
+.game-shell.playing {
+    cursor: crosshair;
+}
+
+.hud {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+}
+
+.hud-chip.breeze .hud-value {
+    color: #ffd96a;
+}
+
+.hud-chip.sunshine .hud-value {
+    color: #b7fff2;
+}
+
+.mission-panel {
+    position: absolute;
+    top: 88px;
+    left: 50%;
+    z-index: 6;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px 12px;
+    width: min(620px, calc(100% - 32px));
+    min-height: 43px;
+    padding: 8px 13px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 15px;
+    color: white;
+    background: rgba(24, 37, 68, 0.78);
+    box-shadow: 0 8px 28px rgba(12, 24, 55, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    font-size: 0.74rem;
+    line-height: 1.2;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.mission-panel[hidden] { display: none; }
+.faith-button[hidden],
+.pause-toggle[hidden] { display: none; }
+
+.mission-season {
+    padding: 5px 8px;
+    border-radius: 999px;
+    color: #27364d;
+    background: #ffe17b;
+    font-size: 0.64rem;
+    font-weight: 950;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.mission-panel strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mission-panel > span:last-child {
+    color: rgba(255, 255, 255, 0.76);
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.faith-button {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 14;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 138px;
+    min-height: 50px;
+    padding: 8px 14px 8px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.86);
+    border-radius: 999px;
+    color: white;
+    background: linear-gradient(145deg, rgba(75, 57, 141, 0.96), rgba(39, 61, 113, 0.96));
+    box-shadow: 0 9px 0 rgba(41, 38, 91, 0.9), 0 18px 34px rgba(21, 25, 65, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.faith-button:hover {
+    filter: saturate(1.18) brightness(1.05);
+    transform: translateY(-2px);
+}
+
+.faith-button:active,
+.faith-button.pulsing {
+    box-shadow: 0 3px 0 rgba(41, 38, 91, 0.9), 0 8px 20px rgba(21, 25, 65, 0.26), 0 0 35px rgba(183, 255, 242, 0.8);
+    transform: translateY(6px);
+}
+
+.faith-button:disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.72) brightness(0.8);
+    opacity: 0.74;
+}
+
+.faith-symbol {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: #55408d;
+    background: radial-gradient(circle, #ffffff 0 22%, #d9fff4 23% 46%, #8ee7dc 47% 100%);
+    box-shadow: 0 0 18px rgba(194, 255, 239, 0.78);
+    font-size: 1.15rem;
+}
+
+.faith-copy {
+    display: grid;
+    gap: 1px;
+    text-align: left;
+}
+
+.faith-copy strong {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.faith-copy small {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.66rem;
+    font-weight: 800;
+}
+
+.game-shell:not(.playing) .faith-button,
+.game-shell:not(.playing) .mission-panel,
+.game-shell:not(.playing) .pause-toggle {
+    display: none;
+}
+
+.game-shell.finale:not(.finale-flight) .faith-button,
+.game-shell.finale:not(.finale-flight) .mission-panel {
+    display: none;
+}
+
+body.game-expanded .lloamc-home-command {
+    display: none !important;
+}
+
+.pause-toggle {
+    position: absolute;
+    right: 14px;
+    bottom: 68px;
+    z-index: 14;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 50%;
+    color: white;
+    background: rgba(23, 35, 60, 0.9);
+    box-shadow: 0 8px 24px rgba(16, 31, 65, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    font-weight: 950;
+    cursor: pointer;
+}
+
+.season-banner {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    z-index: 18;
+    display: grid;
+    justify-items: center;
+    width: min(570px, calc(100% - 32px));
+    padding: clamp(20px, 4vw, 34px);
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    border-radius: 24px;
+    color: white;
+    background: linear-gradient(145deg, rgba(28, 40, 77, 0.94), rgba(74, 54, 128, 0.91));
+    box-shadow: 0 30px 90px rgba(15, 25, 59, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
+
+.season-banner[hidden] { display: none; }
+
+.season-banner small {
+    color: #ffe17b;
+    font-size: 0.68rem;
+    font-weight: 950;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.season-banner strong {
+    margin-top: 7px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.55rem, 4.8vw, 2.6rem);
+    line-height: 1.05;
+}
+
+.season-banner span {
+    max-width: 430px;
+    margin-top: 8px;
+    color: rgba(255, 255, 255, 0.82);
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.story-caption {
+    position: absolute;
+    left: 50%;
+    bottom: 80px;
+    z-index: 12;
+    width: min(640px, calc(100% - 180px));
+    padding: 10px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.66);
+    border-radius: 16px;
+    color: white;
+    background: rgba(21, 32, 63, 0.84);
+    box-shadow: 0 12px 34px rgba(16, 23, 55, 0.28);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(0.76rem, 1.9vw, 0.96rem);
+    line-height: 1.35;
+    text-align: center;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.story-caption[hidden] { display: none; }
+
+.pause-curtain {
+    position: absolute;
+    inset: 0;
+    z-index: 17;
+    display: grid;
+    place-content: center;
+    gap: 7px;
+    padding: 24px;
+    color: white;
+    background: rgba(20, 30, 61, 0.82);
+    text-align: center;
+}
+
+.pause-curtain[hidden] { display: none; }
+.pause-curtain strong { font: 700 clamp(1.6rem, 5vw, 2.8rem)/1 Georgia, serif; }
+.pause-curtain span { color: rgba(255, 255, 255, 0.78); }
+.pause-curtain .primary-button {
+    min-width: 180px;
+    margin-top: 12px;
+}
+
+canvas:focus-visible {
+    outline: 4px solid rgba(255, 238, 137, 0.92);
+    outline-offset: -7px;
+}
+
+.journey-label {
+    margin: 0 0 6px;
+    color: #6c5194;
+    font-size: 0.7rem;
+    font-weight: 950;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.assist-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    max-width: 540px;
+    margin: 13px auto 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(80, 61, 129, 0.14);
+    border-radius: 14px;
+    color: #5f6b80;
+    background: rgba(255, 255, 255, 0.68);
+    font-size: 0.76rem;
+    line-height: 1.35;
+    text-align: left;
+    cursor: pointer;
+}
+
+.assist-toggle input {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: #5a975e;
+}
+
+.secondary-button {
+    min-height: 44px;
+    margin-top: 12px;
+    padding: 11px 18px;
+    border: 1px solid rgba(86, 61, 130, 0.34);
+    border-radius: 999px;
+    color: #563d82;
+    background: rgba(255, 255, 255, 0.72);
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.credits-overlay {
+    z-index: 20;
+    padding: 10px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(20, 28, 58, 0.36), rgba(25, 20, 57, 0.72));
+}
+
+.credits-card {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    width: min(790px, 100%);
+    height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: 24px;
+    color: white;
+    background: linear-gradient(160deg, rgba(20, 30, 65, 0.93), rgba(65, 42, 105, 0.9));
+    box-shadow: 0 26px 80px rgba(12, 20, 50, 0.54), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.credits-header {
+    position: relative;
+    z-index: 2;
+    padding: 14px 20px 9px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    text-align: center;
+    background: rgba(16, 24, 53, 0.7);
+}
+
+.credits-header .journey-label { color: #ffe17b; }
+.credits-header h2 { color: white; font-size: clamp(1.35rem, 4vw, 2.2rem); }
+.credits-header .final-score { margin: 8px auto 0; color: #f4f1ff; background: rgba(255, 255, 255, 0.12); }
+
+.credits-viewport {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: rgba(255, 225, 123, 0.72) rgba(255, 255, 255, 0.08);
+    scrollbar-width: thin;
+}
+
+.credits-track {
+    display: grid;
+    gap: 38px;
+    padding: 46px clamp(18px, 5vw, 52px) 80px;
+}
+
+.credits-beat {
+    max-width: 620px;
+    margin: 0 auto;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.credits-big {
+    margin: 0 0 12px;
+    color: white;
+    font-size: clamp(1.15rem, 3.8vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.32;
+}
+
+.cast-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.cast-grid article {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    min-height: 138px;
+    padding: 14px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.07);
+    text-align: center;
+}
+
+.cast-grid article > span { font-size: 2.35rem; }
+.cast-grid article strong { margin-top: 7px; color: #ffe17b; }
+.cast-grid article small { margin-top: 4px; color: rgba(255, 255, 255, 0.68); line-height: 1.3; }
+
+.credits-verse {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 18px 20px;
+    border: 1px solid rgba(255, 225, 123, 0.26);
+    border-radius: 18px;
+    color: #fff9d7;
+    background: rgba(255, 213, 93, 0.07);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(0.95rem, 2.7vw, 1.2rem);
+    line-height: 1.5;
+    text-align: center;
+}
+
+.credits-verse p { margin: 0; }
+.credits-verse cite { display: block; margin-top: 8px; color: #ffe17b; font-size: 0.78rem; font-style: normal; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.credit-list {
+    display: grid;
+    gap: 9px;
+    max-width: 580px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.credit-list h3 {
+    margin: 0;
+    color: #ffe17b;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.creator-name {
+    margin: 0 0 12px !important;
+    color: white !important;
+    font: 700 clamp(1.7rem, 5vw, 2.6rem)/1 Georgia, "Times New Roman", serif;
+}
+
+.credit-list p {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+}
+
+.credit-list strong { color: #d9fff4; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.credit-list span { color: rgba(255, 255, 255, 0.78); }
+.final-beat { padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.14); }
+
+.credits-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(14, 21, 48, 0.72);
+}
+
+.credits-controls .primary-button,
+.credits-controls .secondary-button {
+    min-width: 0;
+    min-height: 44px;
+    margin: 0;
+    padding: 9px 18px;
+    box-shadow: none;
+}
+
+.credits-card > .footer-row {
+    margin: 0;
+    padding: 7px 12px 10px;
+    background: rgba(14, 21, 48, 0.72);
+}
+
+.credits-card > .footer-row a { color: #d9fff4; }
+
+.game-shell:fullscreen .faith-button,
+.game-shell:-webkit-full-screen .faith-button,
+.game-shell.pseudo-fullscreen .faith-button {
+    left: max(14px, env(safe-area-inset-left));
+    bottom: max(14px, env(safe-area-inset-bottom));
+}
+
+.game-shell:fullscreen .pause-toggle,
+.game-shell:-webkit-full-screen .pause-toggle,
+.game-shell.pseudo-fullscreen .pause-toggle {
+    right: max(14px, env(safe-area-inset-right));
+    bottom: calc(max(14px, env(safe-area-inset-bottom)) + 54px);
+}
+
+@media (max-width: 640px) {
+    .hud {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) 44px;
+    }
+
+    .mission-panel {
+        top: 116px;
+        grid-template-columns: auto 1fr;
+        gap: 5px 8px;
+        width: calc(100% - 18px);
+        padding: 7px 9px;
+        font-size: 0.68rem;
+    }
+
+    .mission-panel > span:last-child {
+        grid-column: 1 / -1;
+        justify-self: center;
+        font-size: 0.64rem;
+    }
+
+    .faith-button {
+        left: 10px;
+        bottom: 10px;
+        min-width: 116px;
+        min-height: 46px;
+        padding: 7px 11px 7px 7px;
+        box-shadow: 0 7px 0 rgba(41, 38, 91, 0.9), 0 14px 26px rgba(21, 25, 65, 0.28);
+    }
+
+    .pause-toggle { right: 10px; bottom: 64px; }
+
+    .faith-symbol { width: 31px; height: 31px; }
+    .faith-copy strong { font-size: 0.7rem; }
+    .faith-copy small { font-size: 0.6rem; }
+
+    .story-caption {
+        bottom: 70px;
+        width: calc(100% - 150px);
+        padding: 8px 10px;
+    }
+
+    .assist-toggle { padding: 8px 9px; font-size: 0.69rem; }
+
+    .credits-overlay { padding: 5px; }
+    .credits-card { border-radius: 18px; }
+    .credits-header { padding: 10px 12px 7px; }
+    .credits-track { gap: 28px; padding: 32px 12px 58px; }
+    .cast-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .cast-grid article { min-height: 115px; padding: 10px 7px; }
+    .cast-grid article > span { font-size: 2rem; }
+    .credits-controls { padding: 7px 8px; }
+    .credits-controls .primary-button,
+    .credits-controls .secondary-button { padding: 8px 12px; font-size: 0.78rem; }
+
+    .game-shell:fullscreen .hud,
+    .game-shell:-webkit-full-screen .hud,
+    .game-shell.pseudo-fullscreen .hud {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) 40px;
+        grid-template-areas: "belief shields breeze sunshine sound";
+        gap: 5px;
+    }
+
+    .game-shell:fullscreen .hud-chip,
+    .game-shell:-webkit-full-screen .hud-chip,
+    .game-shell.pseudo-fullscreen .hud-chip {
+        gap: 0;
+        padding: 4px 6px;
+        border-radius: 10px;
+    }
+
+    .game-shell:fullscreen .hud-label,
+    .game-shell:-webkit-full-screen .hud-label,
+    .game-shell.pseudo-fullscreen .hud-label { font-size: 0.48rem; }
+
+    .game-shell:fullscreen .hud-value,
+    .game-shell:-webkit-full-screen .hud-value,
+    .game-shell.pseudo-fullscreen .hud-value { font-size: 0.72rem; }
+
+    .game-shell:fullscreen .sound-toggle,
+    .game-shell:-webkit-full-screen .sound-toggle,
+    .game-shell.pseudo-fullscreen .sound-toggle { width: 40px; min-width: 40px; }
+
+    .game-shell:fullscreen .sun-meter,
+    .game-shell:-webkit-full-screen .sun-meter,
+    .game-shell.pseudo-fullscreen .sun-meter { display: none; }
+
+    .game-shell:fullscreen .mission-panel,
+    .game-shell:-webkit-full-screen .mission-panel,
+    .game-shell.pseudo-fullscreen .mission-panel {
+        top: calc(max(14px, env(safe-area-inset-top)) + 47px);
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 5px 7px;
+        min-height: 36px;
+        padding: 5px 8px;
+        font-size: 0.62rem;
+    }
+
+    .game-shell:fullscreen .mission-panel > span:last-child,
+    .game-shell:-webkit-full-screen .mission-panel > span:last-child,
+    .game-shell.pseudo-fullscreen .mission-panel > span:last-child {
+        grid-column: auto;
+        justify-self: end;
+        font-size: 0.56rem;
+    }
+}
+
+@media (max-width: 430px) {
+    .mission-panel strong { font-size: 0.65rem; }
+    .mission-season { font-size: 0.56rem; }
+    .story-caption {
+        bottom: 118px;
+        display: block;
+        width: calc(100% - 22px);
+        max-height: 4.6em;
+        padding: 7px 9px;
+        overflow: hidden;
+        font-size: 0.67rem;
+        line-height: 1.28;
+    }
+    .credits-header .final-score { font-size: 0.76rem; }
+    .credits-card > .footer-row { gap: 8px 14px; }
+}
+
+@media (max-height: 620px) and (orientation: landscape) {
+    .game-shell.playing { min-height: 300px; }
+
+    .hud {
+        inset: 7px 8px auto;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) 40px;
+        grid-template-areas: "belief shields breeze sunshine sound";
+        gap: 5px;
+    }
+
+    .hud-chip {
+        gap: 0;
+        padding: 4px 6px;
+        border-radius: 10px;
+    }
+
+    .hud-label { font-size: 0.48rem; }
+    .hud-value { font-size: 0.72rem; }
+    .sound-toggle { width: 40px; min-width: 40px; }
+    .sun-meter { display: none; }
+
+    .mission-panel {
+        top: 54px;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 5px 7px;
+        width: calc(100% - 16px);
+        min-height: 36px;
+        padding: 5px 8px;
+        font-size: 0.62rem;
+    }
+
+    .mission-panel > span:last-child {
+        grid-column: auto;
+        justify-self: end;
+        font-size: 0.56rem;
+    }
+
+    .mission-season { padding: 3px 5px; font-size: 0.54rem; }
+    .toast { top: 98px; }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+    .mission-panel { top: 54px; }
+    .story-caption { bottom: 66px; }
+    .credits-header { padding-block: 7px 5px; }
+    .credits-header .journey-label { display: none; }
+    .credits-track { padding-top: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .faith-button,
+    .season-banner,
+    .credits-track { transition: none !important; animation: none !important; }
+}

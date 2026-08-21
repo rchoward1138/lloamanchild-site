@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="The Belief Collector — help Bea gather sweetness, find shelter, and bring sunshine back to the garden.">
     <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="lloamc-build" content="bee-leaf-belief-journey-2026.08.21">
     <title>The Belief Collector - Bee-Leaf Mini Game</title>
     <style>
         :root {
@@ -773,6 +774,7 @@
             *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
         }
     </style>
+    <link rel="stylesheet" href="belief-journey.css?v=20260821-2">
 </head>
 <body class="staging-page">
     <div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
@@ -786,21 +788,46 @@
             <p class="tagline">Gather the sweetness. Find the shelter. Bring back the sun.</p>
         </header>
 
-        <section id="gameContainer" class="game-shell" aria-label="The Belief Collector game">
-            <canvas id="gameCanvas">Move Bea left and right to catch honey, leaves, and flowers while avoiding storms.</canvas>
+        <section id="gameContainer" class="game-shell" aria-label="The Belief Collector: The Unseen Thread game" data-build="bee-leaf-belief-journey-2026.08.21">
+            <canvas id="gameCanvas" tabindex="-1">Guide Bea in every direction, connect the garden through four seasons, and trust the currents you cannot always see.</canvas>
 
             <button id="fullscreenToggle" class="fullscreen-toggle" type="button" aria-label="Enter full screen" aria-pressed="false" title="Enter full screen">
                 <span class="fullscreen-icon" aria-hidden="true">⛶</span>
                 <span class="fullscreen-label">Full Screen</span>
             </button>
+            <button id="pauseToggle" class="pause-toggle" type="button" aria-label="Pause game" aria-pressed="false" title="Pause game">Ⅱ</button>
 
             <div class="hud" id="gameHud" inert>
                 <div class="hud-chip belief"><span class="hud-label">Belief</span><span class="hud-value" id="beliefValue">0</span></div>
-                <div class="hud-chip shields"><span class="hud-label">Leaf Shields</span><span class="hud-value" id="shieldValue">0 / 5</span></div>
-                <div class="hud-chip breeze"><span class="hud-label">Breeze</span><span class="hud-value" id="speedValue">2.7</span></div>
-                <div class="hud-chip sunshine"><span class="hud-label">Sunshine</span><span class="hud-value" id="sunValue">0%</span></div>
+                <div class="hud-chip shields"><span class="hud-label">Hope & Shelter</span><span class="hud-value" id="shieldValue">♥♥♥ · 🍃0</span></div>
+                <div class="hud-chip breeze"><span class="hud-label">Season</span><span class="hud-value" id="speedValue">Spring</span></div>
+                <div class="hud-chip sunshine"><span class="hud-label">Purpose Thread</span><span class="hud-value" id="sunValue">0 / 12</span></div>
                 <button id="soundToggle" class="sound-toggle" type="button" aria-label="Mute game sound" title="Mute game sound">♪</button>
-                <div class="sun-meter" aria-hidden="true"><div id="sunMeterFill" class="sun-meter-fill"></div></div>
+                <div class="sun-meter" role="progressbar" aria-label="Purpose Thread completion" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0"><div id="sunMeterFill" class="sun-meter-fill"></div></div>
+            </div>
+
+            <div id="missionPanel" class="mission-panel" aria-live="polite" hidden>
+                <span id="missionSeason" class="mission-season">Spring</span>
+                <strong id="missionTitle">Awaken the Meadow</strong>
+                <span id="missionProgress">0 of 3 connections</span>
+            </div>
+
+            <button id="faithButton" class="faith-button" type="button" aria-label="Use Faith Pulse. Three charges available." title="Reveal the unseen currents and Purpose Thread">
+                <span class="faith-symbol" aria-hidden="true">✦</span>
+                <span class="faith-copy"><strong>Believe</strong><small id="faithValue">3 pulses</small></span>
+            </button>
+
+            <div id="seasonBanner" class="season-banner" role="status" aria-live="polite" hidden>
+                <small id="seasonKicker">Season I</small>
+                <strong id="seasonName">Spring — Awakening</strong>
+                <span id="seasonLesson">Small beginnings carry living promise.</span>
+            </div>
+
+            <div id="storyCaption" class="story-caption" role="status" aria-live="polite" hidden></div>
+            <div id="pauseCurtain" class="pause-curtain" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" hidden>
+                <strong id="pauseTitle">Flight Paused</strong>
+                <span>Press P, Escape, or controller Start to continue.</span>
+                <button id="resumeFlight" class="primary-button" type="button">Resume Flight</button>
             </div>
 
             <div id="gameToast" class="toast" role="status" aria-live="polite"></div>
@@ -818,41 +845,43 @@
                         <span class="bee-cheek bee-cheek-right"></span>
                         <span class="bee-smile"></span>
                     </div>
-                    <h2>Ready, Bea?</h2>
-                    <p class="overlay-intro">Guide Bea through the garden and fill the sunshine meter. Small acts of belief make a bright difference.</p>
+                    <p class="journey-label">The Belief Collector</p>
+                    <h2>The Unseen Thread</h2>
+                    <p class="overlay-intro">Fly with Bea through four seasons. Follow the currents, carry small gifts where they are needed, and discover how the garden remembers every faithful act.</p>
 
                     <ul class="rules">
                         <li class="rule">
                             <span class="rule-icon honey" aria-hidden="true">
                                 <svg viewBox="0 0 32 32"><path fill="currentColor" d="M9 9h14l2 5v11c0 3-2 5-5 5h-8c-3 0-5-2-5-5V14l2-5Z"/><path fill="#fff4bd" d="M9 13h14v4H9z"/><path fill="#6e4315" d="M11 4h10v6H11z"/></svg>
                             </span>
-                            <span><strong>Catch Honey</strong><span>+10 Belief and a gentler breeze.</span></span>
+                            <span><strong>Fly Freely</strong><span>Move Bea anywhere through a living, changing garden.</span></span>
                         </li>
                         <li class="rule">
                             <span class="rule-icon leaf" aria-hidden="true">
                                 <svg viewBox="0 0 32 32"><path fill="currentColor" d="M27 4C14 5 6 11 6 20c0 5 4 8 9 7 9-2 12-12 12-23Z"/><path fill="none" stroke="#dfffe1" stroke-width="2" d="M7 27c5-8 10-12 18-19"/></svg>
                             </span>
-                            <span><strong>Catch Leaves</strong><span>Gain a shield, up to five.</span></span>
+                            <span><strong>Carry & Connect</strong><span>Gather each season’s gift and deliver it to its purpose.</span></span>
                         </li>
                         <li class="rule">
                             <span class="rule-icon flower" aria-hidden="true">
                                 <svg viewBox="0 0 32 32"><g fill="currentColor"><ellipse cx="16" cy="7" rx="5" ry="7"/><ellipse cx="16" cy="25" rx="5" ry="7"/><ellipse cx="7" cy="16" rx="7" ry="5"/><ellipse cx="25" cy="16" rx="7" ry="5"/></g><circle cx="16" cy="16" r="6" fill="#ffe16a"/></svg>
                             </span>
-                            <span><strong>Catch Flowers</strong><span>+5% sunshine and a livelier breeze.</span></span>
+                            <span><strong>Believe</strong><span>Faith Pulse reveals currents, destinations, and hidden connections.</span></span>
                         </li>
                         <li class="rule">
                             <span class="rule-icon storm" aria-hidden="true">
                                 <svg viewBox="0 0 32 32"><path fill="currentColor" d="M8 23a6 6 0 0 1 1-12 8 8 0 0 1 15 2 5 5 0 0 1-1 10H8Z"/><path fill="#ffe25e" d="m17 19-5 8h4l-1 5 7-9h-4l2-4Z"/></svg>
                             </span>
-                            <span><strong>Avoid Storms</strong><span>A shield saves you, but sunshine drops 5%.</span></span>
+                            <span><strong>Weather the Seasons</strong><span>Read the sky, gather leaf shelter, and keep hope alive.</span></span>
                         </li>
                     </ul>
 
-                    <p class="control-hint">Move your mouse or finger • Keyboard: ← → or A D</p>
-                    <button class="primary-button" type="button" data-start-game>Start Flying</button>
+                    <label class="assist-toggle"><input id="guidingGlowToggle" type="checkbox"> <span><strong>Guiding Glow</strong> — keep currents and destinations softly visible</span></label>
+                    <p class="control-hint">Mouse or finger: guide Bea anywhere • Keyboard: arrows/WASD + Space • Controller: left stick + A</p>
+                    <button class="primary-button" type="button" data-start-game>Begin the Journey</button>
 
                     <nav class="footer-row" aria-label="Ready screen game links">
-                        <a href="bee-leaf.html">Back to Bee-Leaf</a>
+                        <a href="bee-leaf.html?v=20260821-2">Back to Bee-Leaf</a>
                         <a href="index.html">Back to Home</a>
                     </nav>
                 </div>
@@ -870,36 +899,74 @@
                         <span class="bee-cheek bee-cheek-right"></span>
                         <span class="bee-smile"></span>
                     </div>
-                    <h2>Stormy Skies</h2>
-                    <p class="overlay-intro">Every brave flight has a cloudy moment. Faith means trying again.</p>
+                    <h2>Rest Beneath Leif</h2>
+                    <p class="overlay-intro">The storm was strong, but nothing you helped has been lost. Catch your breath and continue from this season.</p>
                     <p id="finalScore" class="final-score">Belief Collected: 0</p>
-                    <button class="primary-button" type="button" data-start-game>Believe Again</button>
+                    <button class="primary-button" type="button" data-retry-season>Rise and Believe Again</button>
+                    <button class="secondary-button" type="button" data-start-game>Restart the Four Seasons</button>
                     <nav class="footer-row" aria-label="Game over screen links">
-                        <a href="bee-leaf.html">Back to Bee-Leaf</a>
+                        <a href="bee-leaf.html?v=20260821-2">Back to Bee-Leaf</a>
                         <a href="index.html">Back to Home</a>
                     </nav>
                 </div>
             </div>
 
-            <div id="winScreen" class="overlay" hidden>
-                <div class="overlay-card">
-                    <div class="overlay-mark" aria-hidden="true">
-                        <span class="bee-halo"></span>
-                        <span class="bee-antenna bee-antenna-left"></span>
-                        <span class="bee-antenna bee-antenna-right"></span>
-                        <span class="bee-eye bee-eye-left"></span>
-                        <span class="bee-eye bee-eye-right"></span>
-                        <span class="bee-cheek bee-cheek-left"></span>
-                        <span class="bee-cheek bee-cheek-right"></span>
-                        <span class="bee-smile"></span>
+            <div id="winScreen" class="overlay credits-overlay" hidden>
+                <div class="credits-card">
+                    <header class="credits-header">
+                        <p class="journey-label">The Garden Remembers</p>
+                        <h2>You Were Never Flying Alone</h2>
+                        <p id="winScore" class="final-score">Belief Collected: 0</p>
+                    </header>
+                    <div id="creditsViewport" class="credits-viewport" tabindex="0" aria-label="End credits. Scroll to read all credits.">
+                        <div id="creditsTrack" class="credits-track">
+                            <section class="credits-beat opening-beat">
+                                <p class="credits-big">Every flower you awakened.<br>Every gift you carried.<br>Every storm you faced.</p>
+                                <p>The garden remembered.</p>
+                            </section>
+                            <section class="cast-grid" aria-label="Cast and characters">
+                                <article><span aria-hidden="true">🐝</span><strong>Bea</strong><small>Herself</small></article>
+                                <article><span aria-hidden="true">🍂</span><strong>Leif</strong><small>The Leaf Who Knew What Falling Meant</small></article>
+                                <article><span aria-hidden="true">🦉</span><strong>Solomon Owl</strong><small>The Watcher in the Branches</small></article>
+                                <article><span aria-hidden="true">🐜</span><strong>Samson Ant</strong><small>The Steady Worker</small></article>
+                                <article><span aria-hidden="true">🦋</span><strong>Esther Butterfly</strong><small>The Bearer of Beauty</small></article>
+                                <article><span aria-hidden="true">🐛</span><strong>Jonah</strong><small>The Promise Still Becoming</small></article>
+                            </section>
+                            <blockquote class="credits-verse"><p>“Now faith is the substance of things hoped for, the evidence of things not seen.”</p><cite>Hebrews 11:1 · KJV</cite></blockquote>
+                            <section class="credit-list">
+                                <h3>Created by</h3><p class="creator-name">Chris Howard</p>
+                                <p><strong>Based on “Bee-Leaf”</strong><span>by R.C. Howard</span></p>
+                                <p><strong>Game Designer</strong><span>Chris Howard</span></p>
+                                <p><strong>Director</strong><span>Chris Howard</span></p>
+                                <p><strong>Creative Director</strong><span>Chris Howard</span></p>
+                                <p><strong>Narrative Designer</strong><span>Chris Howard</span></p>
+                                <p><strong>Concept Artist</strong><span>Chris Howard</span></p>
+                                <p><strong>Programmer</strong><span>Chris Howard</span></p>
+                                <p><strong>Executive Producer</strong><span>Chris Howard</span></p>
+                                <p><strong>Keeper of the Unseen Thread</strong><span>Chris Howard</span></p>
+                                <p><strong>Director of Tiny Wings</strong><span>Chris Howard</span></p>
+                                <p><strong>Chief Pollination Officer</strong><span>Chris Howard</span></p>
+                                <p><strong>Key Grip</strong><span>Chris Howard</span></p>
+                                <p><strong>Z Fold Torture Testing</strong><span>Chris Howard</span></p>
+                                <p><strong>Digital Development Partner</strong><span>ChatGPT</span></p>
+                            </section>
+                            <blockquote class="credits-verse"><p>“And let us not be weary in well doing: for in due season we shall reap, if we faint not.”</p><cite>Galatians 6:9 · KJV</cite></blockquote>
+                            <section class="credits-beat">
+                                <p class="credits-big">Special thanks to Ivy, Dad, the nine Kitty Kids, and every small act whose impact is still unfolding.</p>
+                                <p>“She didn’t need to see her impact immediately to trust it existed.”</p>
+                            </section>
+                            <section class="credits-beat final-beat">
+                                <p class="credits-big">BELIEF BINDS US.<br>LOVE SUSTAINS US.</p>
+                                <p><strong>Mark 9:23 · KJV</strong><br>“If thou canst believe, all things are possible to him that believeth.”</p>
+                            </section>
+                        </div>
                     </div>
-                    <h2>You Brought Back the Sun!</h2>
-                    <p class="overlay-intro">You believed, kept flying, and helped the whole garden shine.</p>
-                    <p id="winScore" class="final-score">Belief Collected: 0</p>
-                    <p class="verse"><strong>Mark 9:23 (KJV)</strong> — “If thou canst believe, all things are possible to him that believeth.”</p>
-                    <button class="primary-button" type="button" data-start-game>Fly Again</button>
-                    <nav class="footer-row" aria-label="Win screen links">
-                        <a href="bee-leaf.html">Back to Bee-Leaf</a>
+                    <div class="credits-controls">
+                        <button id="creditsToggle" class="secondary-button" type="button">Pause Credits</button>
+                        <button class="primary-button" type="button" data-start-game>Fly Again</button>
+                    </div>
+                    <nav class="footer-row" aria-label="End credits links">
+                        <a href="bee-leaf.html?v=20260821-2">Back to Bee-Leaf</a>
                         <a href="index.html">Back to Home</a>
                     </nav>
                 </div>
@@ -907,1227 +974,11 @@
         </section>
     </main>
 
-    <audio id="bgMusic" preload="auto" loop>
+    <audio id="bgMusic" preload="metadata" loop>
         <source src="Bee%20Leaf/soft-background-music-432715.mp3" type="audio/mpeg">
     </audio>
 
-    <script>
-        (() => {
-            "use strict";
-
-            const gameContainer = document.getElementById("gameContainer");
-            const canvas = document.getElementById("gameCanvas");
-            const ctx = canvas.getContext("2d");
-            const gameHud = document.getElementById("gameHud");
-            const beliefValue = document.getElementById("beliefValue");
-            const shieldValue = document.getElementById("shieldValue");
-            const speedValue = document.getElementById("speedValue");
-            const sunValue = document.getElementById("sunValue");
-            const sunMeterFill = document.getElementById("sunMeterFill");
-            const startScreen = document.getElementById("startScreen");
-            const gameOverScreen = document.getElementById("gameOverScreen");
-            const winScreen = document.getElementById("winScreen");
-            const finalScoreDisplay = document.getElementById("finalScore");
-            const winScoreDisplay = document.getElementById("winScore");
-            const statusAnnouncer = document.getElementById("statusAnnouncer");
-            const gameToast = document.getElementById("gameToast");
-            const soundToggle = document.getElementById("soundToggle");
-            const fullscreenToggle = document.getElementById("fullscreenToggle");
-            const bgMusic = document.getElementById("bgMusic");
-            const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-            const backgroundImage = new Image();
-            backgroundImage.src = "assets/belief-collector-meadow.webp";
-
-            const maxShields = 5;
-            const sunStepUp = 0.05;
-            const sunStepDown = 0.05;
-            const minSpeed = 2.1;
-            const maxSpeed = 5.8;
-            const honeySlow = 0.35;
-            const leafSpeedUp = 0.24;
-            const flowerSpeedUp = 0.14;
-
-            let viewWidth = 0;
-            let viewHeight = 0;
-            let isPlaying = false;
-            let score = 0;
-            let gameSpeed = 2.7;
-            let shieldCount = 0;
-            let sunLevel = 0;
-            let hopeStreak = 0;
-            let frames = 0;
-            let spawnTimer = 0;
-            let difficultyTimer = 0;
-            let spawnCount = 0;
-            let lastSpawnType = "";
-            let stormSpawnStreak = 0;
-            let lastTime = 0;
-            let animationId = 0;
-            let screenFlash = 0;
-            let audioEnabled = true;
-            let audioCtx = null;
-            let toastTimer = 0;
-            let pseudoFullscreen = false;
-            let fullscreenScrollY = 0;
-            let viewportSyncFrame = 0;
-            let viewportSettleTimer = 0;
-            let lockedLayoutWidth = 0;
-            let lockedOrientation = "";
-            const items = [];
-            const particles = [];
-            const floaters = [];
-            const keys = { left: false, right: false };
-
-            const bee = {
-                x: 0,
-                y: 0,
-                size: 54,
-                tilt: 0,
-                targetTilt: 0
-            };
-
-            function clamp(value, min, max) {
-                return Math.max(min, Math.min(max, value));
-            }
-
-            function lerp(a, b, t) {
-                return a + (b - a) * t;
-            }
-
-            function roundedRectPath(context, x, y, width, height, radius) {
-                const r = Math.min(radius, width / 2, height / 2);
-                context.beginPath();
-                context.moveTo(x + r, y);
-                context.arcTo(x + width, y, x + width, y + height, r);
-                context.arcTo(x + width, y + height, x, y + height, r);
-                context.arcTo(x, y + height, x, y, r);
-                context.arcTo(x, y, x + width, y, r);
-                context.closePath();
-            }
-
-            function resizeCanvas() {
-                const rect = gameContainer.getBoundingClientRect();
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                const nextWidth = Math.max(1, rect.width);
-                const nextHeight = Math.max(1, rect.height);
-                const widthScale = viewWidth > 1 ? nextWidth / viewWidth : 1;
-                const heightScale = viewHeight > 1 ? nextHeight / viewHeight : 1;
-                const widthChanged = viewWidth <= 1 || Math.abs(nextWidth - viewWidth) >= 0.5;
-                const heightChanged = viewHeight <= 1 || Math.abs(nextHeight - viewHeight) >= 0.5;
-                const bitmapWidth = Math.round(nextWidth * dpr);
-                const bitmapHeight = Math.round(nextHeight * dpr);
-                const cssWidth = `${nextWidth}px`;
-                const cssHeight = `${nextHeight}px`;
-
-                // Samsung's open Fold can report harmless visual-viewport changes several
-                // times per second in portrait. Do not repaint an unchanged canvas: those
-                // redundant clears are visible as a pulse beneath the ready screen.
-                if (!widthChanged && !heightChanged
-                    && canvas.width === bitmapWidth
-                    && canvas.height === bitmapHeight
-                    && canvas.style.width === cssWidth
-                    && canvas.style.height === cssHeight) {
-                    return false;
-                }
-
-                if (viewWidth > 1 && widthChanged) {
-                    bee.x *= widthScale;
-                    items.forEach(item => {
-                        item.x *= widthScale;
-                        item.anchorX *= widthScale;
-                    });
-                    particles.forEach(particle => { particle.x *= widthScale; });
-                    floaters.forEach(floater => { floater.x *= widthScale; });
-                }
-
-                if (viewHeight > 1 && heightChanged) {
-                    items.forEach(item => {
-                        if (item.y > 0) item.y *= heightScale;
-                    });
-                    particles.forEach(particle => { particle.y *= heightScale; });
-                    floaters.forEach(floater => { floater.y *= heightScale; });
-                }
-
-                viewWidth = nextWidth;
-                viewHeight = nextHeight;
-
-                // Assigning canvas.width or canvas.height clears the current frame. Android
-                // browsers can emit many viewport events while their toolbars settle, so only
-                // reset the bitmap when its pixel dimensions genuinely changed.
-                if (canvas.width !== bitmapWidth) canvas.width = bitmapWidth;
-                if (canvas.height !== bitmapHeight) canvas.height = bitmapHeight;
-                if (canvas.style.width !== cssWidth) canvas.style.width = cssWidth;
-                if (canvas.style.height !== cssHeight) canvas.style.height = cssHeight;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-                bee.x = clamp(bee.x || viewWidth / 2, 34, viewWidth - 34);
-                bee.y = viewHeight - Math.max(65, viewHeight * 0.105);
-                if (!isPlaying) drawScene(0);
-                return true;
-            }
-
-            function usableViewportHeight() {
-                return Math.max(1, Math.round(window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight));
-            }
-
-            function gameTopInset(viewportHeight = usableViewportHeight()) {
-                let inset = 10;
-                document.querySelectorAll("#lloamc-staging-banner, .lloamc-fixed-home").forEach(element => {
-                    const style = getComputedStyle(element);
-                    if (style.display === "none" || style.visibility === "hidden" || style.position !== "fixed") return;
-                    const rect = element.getBoundingClientRect();
-                    if (rect.bottom > 0 && rect.top < viewportHeight) inset = Math.max(inset, rect.bottom + 8);
-                });
-                return clamp(Math.ceil(inset), 8, Math.max(8, viewportHeight - 360));
-            }
-
-            function currentOrientation() {
-                return matchMedia("(orientation: portrait)").matches ? "portrait" : "landscape";
-            }
-
-            function syncGameViewport({ reveal = false, forceLayout = false } = {}) {
-                cancelAnimationFrame(viewportSyncFrame);
-                viewportSyncFrame = requestAnimationFrame(() => {
-                    viewportSyncFrame = 0;
-                    const nativeFullscreen = nativeFullscreenElement() === gameContainer;
-
-                    if (!isPlaying || nativeFullscreen || pseudoFullscreen) {
-                        if (!isPlaying && gameContainer.style.getPropertyValue("--playfield-height")) {
-                            gameContainer.style.removeProperty("--playfield-height");
-                        }
-                        resizeCanvas();
-                        return;
-                    }
-
-                    const layoutWidth = Math.round(document.documentElement.clientWidth || window.innerWidth || 1);
-                    const orientation = currentOrientation();
-                    const layoutChanged = forceLayout
-                        || !lockedLayoutWidth
-                        || orientation !== lockedOrientation
-                        || Math.abs(layoutWidth - lockedLayoutWidth) >= 48;
-                    if (!layoutChanged && !reveal) {
-                        resizeCanvas();
-                        return;
-                    }
-
-                    const viewportHeight = usableViewportHeight();
-                    const topInset = gameTopInset(viewportHeight);
-                    const bottomInset = 12;
-                    if (layoutChanged) {
-                        const nextHeight = clamp(Math.floor(viewportHeight - topInset - bottomInset), 360, 660);
-                        gameContainer.style.setProperty("--playfield-height", `${nextHeight}px`);
-                        lockedLayoutWidth = layoutWidth;
-                        lockedOrientation = orientation;
-                    }
-
-                    requestAnimationFrame(() => {
-                        resizeCanvas();
-                        if (!reveal) return;
-
-                        const rect = gameContainer.getBoundingClientRect();
-                        const desiredTop = gameTopInset();
-                        const visibleBottom = usableViewportHeight() - bottomInset;
-                        if (rect.top >= desiredTop - 4 && rect.bottom <= visibleBottom + 4) return;
-
-                        const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-                        const targetScroll = clamp(window.scrollY + rect.top - desiredTop, 0, maxScroll);
-                        window.scrollTo({
-                            top: targetScroll,
-                            behavior: "auto"
-                        });
-                    });
-                });
-            }
-
-            function scheduleViewportSync({ reveal = false, forceLayout = false, delay = 150 } = {}) {
-                window.clearTimeout(viewportSettleTimer);
-                viewportSettleTimer = window.setTimeout(() => syncGameViewport({ reveal, forceLayout }), delay);
-            }
-
-            function ensureAudioContext() {
-                if (!audioEnabled) return null;
-                if (audioCtx) return audioCtx;
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContextClass) return null;
-                audioCtx = new AudioContextClass();
-                return audioCtx;
-            }
-
-            function playTone({ type = "sine", frequency = 440, duration = 0.12, gain = 0.08, delay = 0 } = {}) {
-                const context = ensureAudioContext();
-                if (!context) return;
-                const now = context.currentTime + delay;
-                const oscillator = context.createOscillator();
-                const volume = context.createGain();
-                oscillator.type = type;
-                oscillator.frequency.setValueAtTime(frequency, now);
-                volume.gain.setValueAtTime(0.0001, now);
-                volume.gain.exponentialRampToValueAtTime(gain, now + 0.01);
-                volume.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-                oscillator.connect(volume);
-                volume.connect(context.destination);
-                oscillator.start(now);
-                oscillator.stop(now + duration + 0.03);
-            }
-
-            function playNoise({ duration = 0.24, gain = 0.06, frequency = 700, filterType = "bandpass" } = {}) {
-                const context = ensureAudioContext();
-                if (!context) return;
-                const now = context.currentTime;
-                const bufferSize = Math.max(1, Math.floor(context.sampleRate * duration));
-                const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let index = 0; index < bufferSize; index++) data[index] = Math.random() * 2 - 1;
-                const source = context.createBufferSource();
-                const filter = context.createBiquadFilter();
-                const volume = context.createGain();
-                source.buffer = buffer;
-                filter.type = filterType;
-                filter.frequency.setValueAtTime(frequency, now);
-                volume.gain.setValueAtTime(0.0001, now);
-                volume.gain.exponentialRampToValueAtTime(gain, now + 0.01);
-                volume.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-                source.connect(filter);
-                filter.connect(volume);
-                volume.connect(context.destination);
-                source.start(now);
-            }
-
-            function sfxFlower() {
-                playTone({ frequency: 659.25, gain: 0.065, duration: 0.13 });
-                playTone({ frequency: 880, gain: 0.05, duration: 0.12, delay: 0.06 });
-            }
-
-            function sfxHoney() {
-                playTone({ type: "triangle", frequency: 155, gain: 0.055, duration: 0.1 });
-                playTone({ type: "sine", frequency: 235, gain: 0.04, duration: 0.12, delay: 0.04 });
-            }
-
-            function sfxLeaf() {
-                playNoise({ duration: 0.2, gain: 0.045, frequency: 1100, filterType: "highpass" });
-                playTone({ frequency: 523.25, gain: 0.04, duration: 0.1 });
-            }
-
-            function sfxThunder() {
-                playNoise({ duration: 0.42, gain: 0.075, frequency: 240, filterType: "lowpass" });
-                playTone({ frequency: 52, gain: 0.07, duration: 0.3 });
-            }
-
-            function setSoundState() {
-                bgMusic.muted = !audioEnabled;
-                soundToggle.textContent = audioEnabled ? "♪" : "×";
-                soundToggle.setAttribute("aria-label", audioEnabled ? "Mute game sound" : "Turn on game sound");
-                soundToggle.title = audioEnabled ? "Mute game sound" : "Turn on game sound";
-            }
-
-            function updateHud(announcement = "") {
-                const sunPercent = Math.round(sunLevel * 100);
-                beliefValue.textContent = String(score);
-                shieldValue.textContent = `${shieldCount} / ${maxShields}`;
-                speedValue.textContent = gameSpeed.toFixed(1);
-                sunValue.textContent = `${sunPercent}%`;
-                sunMeterFill.style.width = `${sunPercent}%`;
-                if (announcement) statusAnnouncer.textContent = announcement;
-            }
-
-            function showToast(message) {
-                window.clearTimeout(toastTimer);
-                gameToast.textContent = message;
-                gameToast.classList.add("show");
-                toastTimer = window.setTimeout(() => gameToast.classList.remove("show"), 1250);
-            }
-
-            function drawImageCover(image, focusX) {
-                if (!image.complete || !image.naturalWidth) {
-                    const fallback = ctx.createLinearGradient(0, 0, 0, viewHeight);
-                    fallback.addColorStop(0, "#6e91ba");
-                    fallback.addColorStop(0.55, "#b9c9b3");
-                    fallback.addColorStop(1, "#6a9b55");
-                    ctx.fillStyle = fallback;
-                    ctx.fillRect(0, 0, viewWidth, viewHeight);
-                    return;
-                }
-                const scale = Math.max(viewWidth / image.naturalWidth, viewHeight / image.naturalHeight) * 1.09;
-                const width = image.naturalWidth * scale;
-                const height = image.naturalHeight * scale;
-                const overflowX = Math.max(0, width - viewWidth);
-                const overflowY = Math.max(0, height - viewHeight);
-                const x = -overflowX * clamp(focusX, 0.08, 0.92);
-                const y = -overflowY * 0.62;
-                ctx.drawImage(image, x, y, width, height);
-            }
-
-            function drawAmbientCloud(x, y, scale, alpha) {
-                ctx.save();
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = "rgba(246, 248, 255, 0.92)";
-                ctx.beginPath();
-                ctx.arc(x, y, 18 * scale, 0, Math.PI * 2);
-                ctx.arc(x + 22 * scale, y - 8 * scale, 24 * scale, 0, Math.PI * 2);
-                ctx.arc(x + 48 * scale, y, 19 * scale, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-
-            function drawForeground(time, parallaxX) {
-                const baseY = viewHeight + 7;
-                const step = Math.max(55, viewWidth / 13);
-                ctx.save();
-                for (let index = -2; index < Math.ceil(viewWidth / step) + 3; index++) {
-                    const x = index * step - ((parallaxX * 0.18) % step);
-                    const sway = reducedMotion ? 0 : Math.sin(time * 0.0018 + index) * 0.07;
-                    ctx.save();
-                    ctx.translate(x, baseY);
-                    ctx.rotate(sway);
-                    ctx.strokeStyle = "rgba(37, 99, 61, 0.74)";
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(0, 0);
-                    ctx.quadraticCurveTo(3, -25, -3, -54 - (index % 3) * 7);
-                    ctx.stroke();
-                    ctx.fillStyle = index % 3 === 0 ? "rgba(255, 216, 86, 0.9)" : "rgba(239, 138, 197, 0.84)";
-                    for (let petal = 0; petal < 6; petal++) {
-                        ctx.save();
-                        ctx.translate(-3, -55 - (index % 3) * 7);
-                        ctx.rotate((Math.PI * 2 * petal) / 6);
-                        ctx.beginPath();
-                        ctx.ellipse(0, -7, 4, 8, 0, 0, Math.PI * 2);
-                        ctx.fill();
-                        ctx.restore();
-                    }
-                    ctx.fillStyle = "#7d5020";
-                    ctx.beginPath();
-                    ctx.arc(-3, -55 - (index % 3) * 7, 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-                const foregroundGradient = ctx.createLinearGradient(0, viewHeight - 70, 0, viewHeight);
-                foregroundGradient.addColorStop(0, "rgba(30, 86, 48, 0)");
-                foregroundGradient.addColorStop(1, "rgba(22, 74, 43, 0.42)");
-                ctx.fillStyle = foregroundGradient;
-                ctx.fillRect(0, viewHeight - 78, viewWidth, 78);
-                ctx.restore();
-            }
-
-            function drawSunlight() {
-                if (sunLevel <= 0.005) return;
-                ctx.save();
-                const glow = ctx.createRadialGradient(viewWidth * 0.91, viewHeight * 0.04, 10, viewWidth * 0.84, viewHeight * 0.12, viewWidth * 0.72);
-                glow.addColorStop(0, `rgba(255, 248, 182, ${0.42 * sunLevel})`);
-                glow.addColorStop(0.45, `rgba(255, 224, 104, ${0.17 * sunLevel})`);
-                glow.addColorStop(1, "rgba(255, 220, 95, 0)");
-                ctx.fillStyle = glow;
-                ctx.fillRect(0, 0, viewWidth, viewHeight);
-                ctx.restore();
-            }
-
-            function drawBackground(time) {
-                const beeFocus = viewWidth ? bee.x / viewWidth : 0.5;
-                const ambientDrift = reducedMotion ? 0 : Math.sin(time * 0.00008) * 0.025;
-                drawImageCover(backgroundImage, 0.5 + (beeFocus - 0.5) * 0.2 + ambientDrift);
-
-                const veilAlpha = 0.5 * (1 - sunLevel);
-                const veil = ctx.createLinearGradient(0, 0, 0, viewHeight);
-                veil.addColorStop(0, `rgba(23, 39, 89, ${veilAlpha})`);
-                veil.addColorStop(1, `rgba(42, 57, 76, ${veilAlpha * 0.55})`);
-                ctx.fillStyle = veil;
-                ctx.fillRect(0, 0, viewWidth, viewHeight);
-
-                const cloudShift = reducedMotion ? 0 : (time * 0.006) % (viewWidth + 300);
-                drawAmbientCloud(viewWidth - cloudShift, viewHeight * 0.24, 0.85, 0.22 * (1 - sunLevel * 0.55));
-                drawAmbientCloud(viewWidth * 0.35 - cloudShift * 0.42, viewHeight * 0.17, 0.58, 0.16 * (1 - sunLevel * 0.45));
-                drawSunlight();
-
-                for (let index = 0; index < 18; index++) {
-                    const x = (index * 137 + time * (reducedMotion ? 0 : 0.008)) % (viewWidth + 40) - 20;
-                    const y = 120 + ((index * 71) % Math.max(160, viewHeight - 230));
-                    const twinkle = 0.25 + Math.sin(time * 0.003 + index) * 0.14;
-                    ctx.fillStyle = `rgba(255, 239, 152, ${twinkle * (0.45 + sunLevel * 0.55)})`;
-                    ctx.beginPath();
-                    ctx.arc(x, y, index % 4 === 0 ? 2.2 : 1.2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-
-                drawForeground(time, bee.x - viewWidth / 2);
-
-                if (gameSpeed >= maxSpeed - 0.02) {
-                    const warning = ctx.createRadialGradient(viewWidth / 2, viewHeight / 2, viewWidth * 0.25, viewWidth / 2, viewHeight / 2, viewWidth * 0.75);
-                    warning.addColorStop(0, "rgba(255, 115, 91, 0)");
-                    warning.addColorStop(1, "rgba(173, 45, 77, 0.24)");
-                    ctx.fillStyle = warning;
-                    ctx.fillRect(0, 0, viewWidth, viewHeight);
-                }
-            }
-
-            function drawBee(time) {
-                const bob = reducedMotion ? 0 : Math.sin(time * 0.008) * 3;
-                const wing = reducedMotion ? 0.72 : 0.58 + Math.sin(time * 0.035) * 0.18;
-                bee.tilt = lerp(bee.tilt, bee.targetTilt, 0.13);
-                ctx.save();
-                ctx.translate(bee.x, bee.y + bob);
-                ctx.rotate(bee.tilt);
-                ctx.shadowColor = "rgba(20, 35, 61, 0.28)";
-                ctx.shadowBlur = 14;
-                ctx.shadowOffsetY = 9;
-
-                ctx.save();
-                ctx.globalAlpha = 0.52;
-                ctx.strokeStyle = "#ffe995";
-                ctx.lineWidth = 2.2;
-                ctx.shadowColor = "rgba(255, 226, 105, 0.44)";
-                ctx.shadowBlur = 7;
-                ctx.shadowOffsetY = 0;
-                ctx.beginPath();
-                ctx.ellipse(0, -45, 17, 4.5, 0, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.restore();
-
-                if (shieldCount > 0) {
-                    const pulse = reducedMotion ? 0 : Math.sin(time * 0.006) * 3;
-                    const shieldGlow = ctx.createRadialGradient(0, 0, 25, 0, 0, 43 + pulse);
-                    shieldGlow.addColorStop(0.5, "rgba(117, 222, 139, 0.08)");
-                    shieldGlow.addColorStop(0.82, "rgba(117, 222, 139, 0.32)");
-                    shieldGlow.addColorStop(1, "rgba(181, 255, 195, 0)");
-                    ctx.fillStyle = shieldGlow;
-                    ctx.beginPath();
-                    ctx.arc(0, 0, 47 + pulse, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.strokeStyle = "rgba(195, 255, 202, 0.76)";
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                }
-
-                ctx.shadowColor = "transparent";
-                ctx.save();
-                ctx.globalAlpha = 0.76;
-                ctx.fillStyle = "#e9fbff";
-                ctx.strokeStyle = "rgba(71, 112, 141, 0.6)";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.ellipse(-17, -17, 13, 22 * wing, -0.65, 0, Math.PI * 2);
-                ctx.ellipse(17, -17, 13, 22 * wing, 0.65, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-                ctx.restore();
-
-                const bodyGradient = ctx.createLinearGradient(-28, 0, 28, 0);
-                bodyGradient.addColorStop(0, "#e69b22");
-                bodyGradient.addColorStop(0.32, "#ffd952");
-                bodyGradient.addColorStop(0.7, "#ffc431");
-                bodyGradient.addColorStop(1, "#b96b18");
-                ctx.fillStyle = bodyGradient;
-                ctx.beginPath();
-                ctx.ellipse(0, 5, 29, 22, 0, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = "rgba(92, 49, 20, 0.65)";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                ctx.save();
-                ctx.beginPath();
-                ctx.ellipse(0, 5, 28, 21, 0, 0, Math.PI * 2);
-                ctx.clip();
-                ctx.fillStyle = "#4a3526";
-                ctx.fillRect(-11, -18, 7, 48);
-                ctx.fillRect(7, -18, 7, 48);
-                ctx.restore();
-
-                ctx.fillStyle = "#f7c73e";
-                ctx.beginPath();
-                ctx.arc(0, -7, 20, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = "rgba(92, 49, 20, 0.55)";
-                ctx.stroke();
-
-                ctx.fillStyle = "#273047";
-                ctx.beginPath();
-                ctx.arc(-7, -9, 2.4, 0, Math.PI * 2);
-                ctx.arc(7, -9, 2.4, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = "rgba(224, 104, 105, 0.42)";
-                ctx.beginPath();
-                ctx.ellipse(-12, -2, 4.2, 2.6, -0.12, 0, Math.PI * 2);
-                ctx.ellipse(12, -2, 4.2, 2.6, 0.12, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = "#6a3f24";
-                ctx.lineWidth = 1.8;
-                ctx.beginPath();
-                ctx.arc(0, -3, 6, 0.15, Math.PI - 0.15);
-                ctx.stroke();
-
-                ctx.strokeStyle = "#5b3a28";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(-8, -23);
-                ctx.quadraticCurveTo(-12, -35, -19, -35);
-                ctx.moveTo(8, -23);
-                ctx.quadraticCurveTo(12, -35, 19, -35);
-                ctx.stroke();
-                ctx.fillStyle = "#5b3a28";
-                ctx.beginPath();
-                ctx.arc(-19, -35, 2.5, 0, Math.PI * 2);
-                ctx.arc(19, -35, 2.5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-
-            function drawFlower(item) {
-                const pulse = reducedMotion ? 1 : 1 + Math.sin(item.age * 0.09) * 0.08;
-                ctx.save();
-                ctx.translate(item.x, item.y);
-                ctx.rotate(item.rotation);
-                ctx.scale(pulse, pulse);
-                ctx.shadowColor = "rgba(255, 191, 88, 0.68)";
-                ctx.shadowBlur = 16;
-                const petalColors = ["#f08bc5", "#e97bbd", "#ffafd7"];
-                for (let index = 0; index < 8; index++) {
-                    ctx.save();
-                    ctx.rotate((Math.PI * 2 * index) / 8);
-                    ctx.fillStyle = petalColors[index % petalColors.length];
-                    ctx.beginPath();
-                    ctx.ellipse(0, -14, 6, 12, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-                ctx.fillStyle = "#ffd95a";
-                ctx.beginPath();
-                ctx.arc(0, 0, 8, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = "rgba(126, 75, 25, 0.5)";
-                ctx.beginPath();
-                ctx.arc(-2, -2, 2, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-            }
-
-            function drawLeaf(item) {
-                ctx.save();
-                ctx.translate(item.x, item.y);
-                ctx.rotate(item.rotation + Math.sin(item.age * 0.04) * 0.35);
-                ctx.shadowColor = "rgba(38, 99, 61, 0.42)";
-                ctx.shadowBlur = 11;
-                const gradient = ctx.createLinearGradient(-18, -12, 18, 14);
-                gradient.addColorStop(0, "#9be58a");
-                gradient.addColorStop(0.55, "#58b96c");
-                gradient.addColorStop(1, "#2f7851");
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.moveTo(-21, 10);
-                ctx.bezierCurveTo(-14, -22, 17, -24, 23, -15);
-                ctx.bezierCurveTo(22, 6, 7, 23, -21, 10);
-                ctx.fill();
-                ctx.strokeStyle = "rgba(233, 255, 226, 0.78)";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(-17, 10);
-                ctx.quadraticCurveTo(2, 0, 19, -16);
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            function drawHoney(item) {
-                ctx.save();
-                ctx.translate(item.x, item.y);
-                ctx.rotate(Math.sin(item.age * 0.045) * 0.11);
-                ctx.shadowColor = "rgba(117, 74, 22, 0.42)";
-                ctx.shadowBlur = 12;
-                ctx.fillStyle = "#7d5126";
-                roundedRectPath(ctx, -14, -24, 28, 9, 4);
-                ctx.fill();
-                const jarGradient = ctx.createLinearGradient(-19, -13, 19, 21);
-                jarGradient.addColorStop(0, "#fff0a1");
-                jarGradient.addColorStop(0.22, "#ffc84e");
-                jarGradient.addColorStop(0.8, "#e7901d");
-                jarGradient.addColorStop(1, "#b76319");
-                ctx.fillStyle = jarGradient;
-                roundedRectPath(ctx, -20, -17, 40, 38, 9);
-                ctx.fill();
-                ctx.strokeStyle = "rgba(111, 68, 25, 0.7)";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.fillStyle = "rgba(255, 251, 214, 0.85)";
-                roundedRectPath(ctx, -14, -5, 28, 14, 6);
-                ctx.fill();
-                ctx.fillStyle = "#a9651d";
-                ctx.beginPath();
-                ctx.moveTo(0, 7);
-                ctx.bezierCurveTo(-11, 0, -7, -6, 0, -1);
-                ctx.bezierCurveTo(7, -6, 11, 0, 0, 7);
-                ctx.fill();
-                ctx.restore();
-            }
-
-            function drawLightning(item) {
-                ctx.save();
-                ctx.globalAlpha = 0.68;
-                ctx.strokeStyle = "#ffe889";
-                ctx.lineWidth = 6;
-                ctx.lineJoin = "round";
-                ctx.shadowColor = "rgba(255, 226, 92, 0.44)";
-                ctx.shadowBlur = 6;
-                ctx.beginPath();
-                ctx.moveTo(item.x + 4, item.y + 15);
-                ctx.lineTo(item.x - 4, item.y + 34);
-                ctx.lineTo(item.x + 4, item.y + 34);
-                ctx.lineTo(item.x - 8, item.y + 59);
-                ctx.stroke();
-                ctx.strokeStyle = "rgba(255, 255, 232, 0.82)";
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-                ctx.restore();
-            }
-
-            function drawStorm(item) {
-                ctx.save();
-                ctx.translate(item.x, item.y);
-                ctx.shadowColor = "rgba(20, 26, 54, 0.5)";
-                ctx.shadowBlur = 16;
-                const cloudGradient = ctx.createLinearGradient(0, -25, 0, 21);
-                cloudGradient.addColorStop(0, "#77819f");
-                cloudGradient.addColorStop(1, "#38415f");
-                ctx.fillStyle = cloudGradient;
-                ctx.beginPath();
-                ctx.arc(-19, 2, 18, 0, Math.PI * 2);
-                ctx.arc(-4, -11, 23, 0, Math.PI * 2);
-                ctx.arc(20, 1, 19, 0, Math.PI * 2);
-                ctx.rect(-20, 0, 40, 18);
-                ctx.fill();
-                ctx.strokeStyle = "rgba(226, 235, 255, 0.36)";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                ctx.fillStyle = "rgba(120, 195, 255, 0.78)";
-                for (let index = -1; index <= 1; index++) {
-                    const dropY = 28 + ((item.age * 1.8 + index * 13) % 17);
-                    ctx.beginPath();
-                    ctx.ellipse(index * 14, dropY, 2.8, 6.5, 0.2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                ctx.restore();
-                drawLightning(item);
-            }
-
-            function drawItem(item) {
-                if (item.type === "flower") drawFlower(item);
-                else if (item.type === "leaf") drawLeaf(item);
-                else if (item.type === "storm") drawStorm(item);
-                else drawHoney(item);
-            }
-
-            function burst(x, y, colors, amount = 12) {
-                if (reducedMotion) amount = Math.ceil(amount / 2);
-                for (let index = 0; index < amount; index++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = 1.5 + Math.random() * 3.2;
-                    particles.push({
-                        x,
-                        y,
-                        vx: Math.cos(angle) * speed,
-                        vy: Math.sin(angle) * speed - 1,
-                        gravity: 0.035 + Math.random() * 0.035,
-                        life: 38 + Math.random() * 24,
-                        maxLife: 62,
-                        size: 2 + Math.random() * 3.6,
-                        color: colors[index % colors.length]
-                    });
-                }
-            }
-
-            function addFloater(x, y, text, color) {
-                floaters.push({ x, y, text, color, life: 58, maxLife: 58 });
-            }
-
-            function updateAndDrawEffects(delta) {
-                for (let index = particles.length - 1; index >= 0; index--) {
-                    const particle = particles[index];
-                    particle.x += particle.vx * delta;
-                    particle.y += particle.vy * delta;
-                    particle.vy += particle.gravity * delta;
-                    particle.life -= delta;
-                    if (particle.life <= 0) {
-                        particles.splice(index, 1);
-                        continue;
-                    }
-                    ctx.globalAlpha = clamp(particle.life / particle.maxLife, 0, 1);
-                    ctx.fillStyle = particle.color;
-                    ctx.beginPath();
-                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                ctx.globalAlpha = 1;
-
-                for (let index = floaters.length - 1; index >= 0; index--) {
-                    const floater = floaters[index];
-                    floater.y -= 0.55 * delta;
-                    floater.life -= delta;
-                    if (floater.life <= 0) {
-                        floaters.splice(index, 1);
-                        continue;
-                    }
-                    ctx.globalAlpha = clamp(floater.life / 18, 0, 1);
-                    ctx.font = "900 17px Inter, Segoe UI, sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.fillStyle = floater.color;
-                    ctx.strokeStyle = "rgba(25, 33, 60, 0.58)";
-                    ctx.lineWidth = 4;
-                    ctx.strokeText(floater.text, floater.x, floater.y);
-                    ctx.fillText(floater.text, floater.x, floater.y);
-                }
-                ctx.globalAlpha = 1;
-            }
-
-            function chooseRecoveryDrop() {
-                if (shieldCount === 0 && Math.random() < 0.50) return "leaf";
-                return Math.random() < 0.52 ? "flower" : "honey";
-            }
-
-            function chooseSpawnType() {
-                if (spawnCount === 0) return "flower";
-                if (spawnCount === 1) return "honey";
-                if (spawnCount === 2) return "leaf";
-
-                // Storm Surge tuning: storms now make up roughly one third of
-                // the drop pool, while shieldless players retain a fair chance
-                // to recover with a leaf.
-                const weights = shieldCount === 0
-                    ? { leaf: 0.20, honey: 0.22, flower: 0.26, storm: 0.32 }
-                    : shieldCount >= maxShields
-                        ? { leaf: 0, honey: 0.34, flower: 0.30, storm: 0.36 }
-                        : { leaf: 0.13, honey: 0.25, flower: 0.29, storm: 0.33 };
-
-                const random = Math.random();
-                let cumulative = 0;
-                let type = "storm";
-                for (const candidate of ["leaf", "honey", "flower", "storm"]) {
-                    cumulative += weights[candidate];
-                    if (random < cumulative) {
-                        type = candidate;
-                        break;
-                    }
-                }
-
-                // Allow occasional back-to-back storms for real pressure, but
-                // guarantee a recovery drop after two storms and favor a leaf
-                // when Bea is unshielded.
-                if (type === "storm" && stormSpawnStreak >= 2) {
-                    type = chooseRecoveryDrop();
-                } else if (type === "storm" && lastSpawnType === "storm" && Math.random() < 0.55) {
-                    type = chooseRecoveryDrop();
-                }
-                return type;
-            }
-
-            function spawnItem() {
-                const type = chooseSpawnType();
-                const swayAmplitude = type === "storm"
-                    ? (reducedMotion ? 12 : 28 + Math.random() * 18)
-                    : (reducedMotion ? 2 : 7 + Math.random() * 7);
-                const margin = type === "storm" ? 84 : 38;
-                const speedBonus = type === "storm" ? 0.78 : type === "leaf" ? 0.08 : 0;
-                const anchorX = margin + Math.random() * Math.max(1, viewWidth - margin * 2);
-                items.push({
-                    x: anchorX,
-                    anchorX,
-                    y: -70,
-                    type,
-                    speed: gameSpeed + speedBonus,
-                    radius: type === "storm" ? 31 : type === "flower" ? 23 : 25,
-                    rotation: Math.random() * Math.PI * 2,
-                    spin: (Math.random() - 0.5) * 0.028,
-                    drift: Math.random() * Math.PI * 2,
-                    swayAmplitude,
-                    swayRate: type === "storm" ? 0.025 + Math.random() * 0.012 : 0.032,
-                    age: 0,
-                    flashOffset: Math.random() * 80
-                });
-                lastSpawnType = type;
-                stormSpawnStreak = type === "storm" ? stormSpawnStreak + 1 : 0;
-                spawnCount += 1;
-            }
-
-            function updateBeeFromKeyboard(delta) {
-                const direction = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-                if (!direction) return;
-                bee.x = clamp(bee.x + direction * (7 + gameSpeed * 0.55) * delta, 34, viewWidth - 34);
-                bee.targetTilt = direction * 0.19;
-            }
-
-            function updateBeePosition(clientX) {
-                const rect = canvas.getBoundingClientRect();
-                const nextX = clamp(clientX - rect.left, 34, rect.width - 34);
-                bee.targetTilt = clamp((nextX - bee.x) / 130, -0.21, 0.21);
-                bee.x = nextX;
-            }
-
-            function collectItem(item) {
-                hopeStreak += 1;
-                if (item.type === "honey") {
-                    score += 10;
-                    gameSpeed = clamp(gameSpeed - honeySlow, minSpeed, maxSpeed);
-                    burst(item.x, item.y, ["#ffd761", "#fff0a6", "#e79a27"], 13);
-                    addFloater(item.x, item.y, "+10 Belief", "#fff0a6");
-                    sfxHoney();
-                } else if (item.type === "flower") {
-                    score += 15;
-                    sunLevel = clamp(sunLevel + sunStepUp, 0, 1);
-                    gameSpeed = clamp(gameSpeed + flowerSpeedUp, minSpeed, maxSpeed);
-                    burst(item.x, item.y, ["#f28bc5", "#ffd85a", "#a9ef9c", "#ffffff"], 18);
-                    addFloater(item.x, item.y, "+5% Sunshine", "#fff19a");
-                    sfxFlower();
-                } else if (item.type === "leaf") {
-                    shieldCount = Math.min(maxShields, shieldCount + 1);
-                    gameSpeed = clamp(gameSpeed + leafSpeedUp, minSpeed, maxSpeed);
-                    burst(item.x, item.y, ["#8ee294", "#d6ffd3", "#4da866"], 14);
-                    addFloater(item.x, item.y, "+1 Shield", "#c8ffd0");
-                    sfxLeaf();
-                }
-
-                if (hopeStreak > 0 && hopeStreak % 5 === 0) {
-                    score += 25;
-                    showToast(`Hope Streak ×${hopeStreak}  •  +25 Belief`);
-                    sfxFlower();
-                }
-
-                updateHud();
-                if (sunLevel >= 0.999) winGame();
-            }
-
-            function hitStorm(item) {
-                sfxThunder();
-                screenFlash = 1;
-                hopeStreak = 0;
-                burst(item.x, item.y, ["#d5dcff", "#7e8fb8", "#ffe563"], 20);
-                if (shieldCount > 0) {
-                    shieldCount -= 1;
-                    sunLevel = clamp(sunLevel - sunStepDown, 0, 1);
-                    addFloater(item.x, item.y, "Shield Saved Bea  •  −5%", "#d9e5ff");
-                    showToast("Your leaf shield held strong!");
-                    updateHud("A leaf shield saved Bea. Sunshine fell by five percent.");
-                } else {
-                    gameOver();
-                }
-            }
-
-            function drawScene(time) {
-                ctx.clearRect(0, 0, viewWidth, viewHeight);
-                drawBackground(time);
-                if (!isPlaying) {
-                    bee.x = bee.x || viewWidth / 2;
-                    drawBee(time);
-                }
-            }
-
-            function gameLoop(timestamp) {
-                if (!isPlaying) return;
-                const delta = lastTime ? clamp((timestamp - lastTime) / 16.667, 0.45, 2) : 1;
-                lastTime = timestamp;
-                frames += delta;
-                spawnTimer += delta;
-                difficultyTimer += delta;
-
-                updateBeeFromKeyboard(delta);
-                bee.targetTilt *= 0.91;
-
-                const spawnEvery = clamp(55 - (gameSpeed - 2.7) * 2.2, 46, 56);
-                if (spawnTimer >= spawnEvery) {
-                    spawnTimer = 0;
-                    spawnItem();
-                }
-
-                if (difficultyTimer >= 720) {
-                    difficultyTimer = 0;
-                    gameSpeed = clamp(gameSpeed + 0.25, minSpeed, maxSpeed);
-                    updateHud();
-                }
-
-                ctx.clearRect(0, 0, viewWidth, viewHeight);
-                drawBackground(timestamp);
-
-                for (let index = items.length - 1; index >= 0; index--) {
-                    const item = items[index];
-                    item.age += delta;
-                    item.y += item.speed * delta;
-                    item.x = clamp(
-                        item.anchorX + Math.sin(item.age * item.swayRate + item.drift) * item.swayAmplitude,
-                        item.radius,
-                        viewWidth - item.radius
-                    );
-                    item.rotation += item.spin * delta;
-                    drawItem(item);
-
-                    const distance = Math.hypot(bee.x - item.x, bee.y - item.y);
-                    if (distance < item.radius + 25) {
-                        items.splice(index, 1);
-                        if (item.type === "storm") hitStorm(item);
-                        else collectItem(item);
-                        if (!isPlaying) return;
-                    } else if (item.y > viewHeight + 90) {
-                        items.splice(index, 1);
-                    }
-                }
-
-                updateAndDrawEffects(delta);
-                drawBee(timestamp);
-
-                if (screenFlash > 0.01) {
-                    ctx.fillStyle = `rgba(231, 239, 255, ${screenFlash * 0.58})`;
-                    ctx.fillRect(0, 0, viewWidth, viewHeight);
-                    screenFlash *= reducedMotion ? 0.25 : 0.78;
-                }
-
-                animationId = requestAnimationFrame(gameLoop);
-            }
-
-            function prepareAudio() {
-                try {
-                    const context = ensureAudioContext();
-                    if (context && context.state === "suspended") context.resume().catch(() => {});
-                } catch (_) {}
-                bgMusic.volume = 0.17;
-                if (audioEnabled) {
-                    const playPromise = bgMusic.play();
-                    if (playPromise && typeof playPromise.catch === "function") playPromise.catch(() => {});
-                }
-            }
-
-            function startGame() {
-                cancelAnimationFrame(animationId);
-                isPlaying = true;
-                score = 0;
-                gameSpeed = 2.7;
-                shieldCount = 0;
-                sunLevel = 0;
-                hopeStreak = 0;
-                frames = 0;
-                spawnTimer = 0;
-                difficultyTimer = 0;
-                spawnCount = 0;
-                lastSpawnType = "";
-                stormSpawnStreak = 0;
-                lastTime = 0;
-                screenFlash = 0;
-                items.length = 0;
-                particles.length = 0;
-                floaters.length = 0;
-                bee.x = viewWidth / 2;
-                bee.y = viewHeight - Math.max(65, viewHeight * 0.105);
-                bee.tilt = 0;
-                bee.targetTilt = 0;
-                document.body.classList.add("game-focused");
-                gameContainer.classList.add("playing");
-                gameHud.inert = false;
-                startScreen.hidden = true;
-                gameOverScreen.hidden = true;
-                winScreen.hidden = true;
-                gameToast.classList.remove("show");
-                syncGameViewport({ reveal: true, forceLayout: true });
-                prepareAudio();
-                updateHud("Flight started. Sunshine is at zero percent.");
-                animationId = requestAnimationFrame(gameLoop);
-            }
-
-            function finishGame() {
-                isPlaying = false;
-                cancelAnimationFrame(animationId);
-                gameContainer.classList.remove("playing");
-                gameContainer.style.removeProperty("--playfield-height");
-                lockedLayoutWidth = 0;
-                lockedOrientation = "";
-                gameHud.inert = true;
-                keys.left = false;
-                keys.right = false;
-                window.requestAnimationFrame(resizeCanvas);
-            }
-
-            function gameOver() {
-                finishGame();
-                finalScoreDisplay.textContent = `Belief Collected: ${score}`;
-                gameOverScreen.hidden = false;
-                statusAnnouncer.textContent = `Stormy skies. Final belief score: ${score}.`;
-                gameOverScreen.querySelector("button").focus({ preventScroll: true });
-            }
-
-            function winGame() {
-                finishGame();
-                winScoreDisplay.textContent = `Belief Collected: ${score}`;
-                winScreen.hidden = false;
-                statusAnnouncer.textContent = `You brought back the sun. Final belief score: ${score}.`;
-                sfxFlower();
-                window.setTimeout(() => sfxFlower(), 130);
-                winScreen.querySelector("button").focus({ preventScroll: true });
-            }
-
-            document.querySelectorAll("[data-start-game]").forEach(button => button.addEventListener("click", startGame));
-
-            soundToggle.addEventListener("click", event => {
-                event.stopPropagation();
-                audioEnabled = !audioEnabled;
-                setSoundState();
-                if (audioEnabled && isPlaying) prepareAudio();
-            });
-
-            function nativeFullscreenElement() {
-                return document.fullscreenElement || document.webkitFullscreenElement || null;
-            }
-
-            function updateFullscreenButton() {
-                const expanded = nativeFullscreenElement() === gameContainer || pseudoFullscreen;
-                fullscreenToggle.setAttribute("aria-pressed", String(expanded));
-                fullscreenToggle.setAttribute("aria-label", expanded ? "Exit full screen" : "Enter full screen");
-                fullscreenToggle.title = expanded ? "Exit full screen" : "Enter full screen";
-                fullscreenToggle.querySelector(".fullscreen-icon").textContent = expanded ? "×" : "⛶";
-                fullscreenToggle.querySelector(".fullscreen-label").textContent = expanded ? "Exit Full Screen" : "Full Screen";
-                window.requestAnimationFrame(resizeCanvas);
-            }
-
-            function setPseudoFullscreen(expanded) {
-                if (pseudoFullscreen === expanded) {
-                    updateFullscreenButton();
-                    return;
-                }
-
-                if (expanded) {
-                    fullscreenScrollY = window.scrollY;
-                    document.body.style.setProperty("--game-scroll-lock-top", `${-fullscreenScrollY}px`);
-                }
-
-                pseudoFullscreen = expanded;
-                gameContainer.classList.toggle("pseudo-fullscreen", expanded);
-                document.body.classList.toggle("game-expanded", expanded);
-                if (!expanded) {
-                    document.body.style.removeProperty("--game-scroll-lock-top");
-                    requestAnimationFrame(() => {
-                        window.scrollTo({ top: fullscreenScrollY, behavior: "auto" });
-                        syncGameViewport({ reveal: isPlaying });
-                    });
-                }
-                updateFullscreenButton();
-            }
-
-            function waitForNativeFullscreen(timeout = 700) {
-                if (nativeFullscreenElement() === gameContainer) return Promise.resolve(true);
-
-                return new Promise(resolve => {
-                    let timer = 0;
-                    const finish = value => {
-                        clearTimeout(timer);
-                        document.removeEventListener("fullscreenchange", check);
-                        document.removeEventListener("webkitfullscreenchange", check);
-                        resolve(value);
-                    };
-                    const check = () => {
-                        if (nativeFullscreenElement() === gameContainer) finish(true);
-                    };
-
-                    document.addEventListener("fullscreenchange", check);
-                    document.addEventListener("webkitfullscreenchange", check);
-                    timer = window.setTimeout(() => finish(nativeFullscreenElement() === gameContainer), timeout);
-                });
-            }
-
-            async function tryNativeFullscreen(enter) {
-                try {
-                    const request = enter.call(gameContainer);
-                    if (request && typeof request.then === "function") {
-                        await Promise.race([
-                            request.catch(() => {}),
-                            new Promise(resolve => window.setTimeout(resolve, 250))
-                        ]);
-                    }
-                } catch (_) {
-                    return false;
-                }
-                return waitForNativeFullscreen();
-            }
-
-            async function toggleFullscreen() {
-                const nativeElement = nativeFullscreenElement();
-                if (nativeElement === gameContainer || pseudoFullscreen) {
-                    if (nativeElement === gameContainer) {
-                        const exit = document.exitFullscreen || document.webkitExitFullscreen;
-                        if (exit) {
-                            try {
-                                await exit.call(document);
-                            } catch (_) {}
-                        }
-                    }
-                    if (pseudoFullscreen) setPseudoFullscreen(false);
-                    updateFullscreenButton();
-                    return;
-                }
-
-                const enter = gameContainer.requestFullscreen || gameContainer.webkitRequestFullscreen;
-                if (enter && await tryNativeFullscreen(enter)) {
-                    updateFullscreenButton();
-                    return;
-                }
-
-                // iOS and some Android browsers expose fullscreen methods for elements
-                // but silently refuse them. The fixed-position mode keeps the game usable.
-                setPseudoFullscreen(true);
-            }
-
-            function handleFullscreenChange() {
-                updateFullscreenButton();
-                if (!nativeFullscreenElement() && !pseudoFullscreen && isPlaying) {
-                    syncGameViewport({ reveal: true });
-                }
-            }
-
-            fullscreenToggle.addEventListener("click", event => {
-                event.stopPropagation();
-                toggleFullscreen();
-            });
-
-            document.addEventListener("fullscreenchange", handleFullscreenChange);
-            document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-
-            canvas.addEventListener("pointermove", event => {
-                if (isPlaying) updateBeePosition(event.clientX);
-            });
-
-            canvas.addEventListener("pointerdown", event => {
-                if (!isPlaying) return;
-                updateBeePosition(event.clientX);
-                canvas.setPointerCapture?.(event.pointerId);
-            });
-
-            window.addEventListener("pointermove", event => {
-                if (isPlaying && event.pointerType === "mouse") updateBeePosition(event.clientX);
-            });
-
-            window.addEventListener("keydown", event => {
-                if (event.key === "Escape" && pseudoFullscreen) {
-                    setPseudoFullscreen(false);
-                    event.preventDefault();
-                    return;
-                }
-                if (!isPlaying) return;
-                if (["ArrowLeft", "a", "A"].includes(event.key)) {
-                    keys.left = true;
-                    event.preventDefault();
-                }
-                if (["ArrowRight", "d", "D"].includes(event.key)) {
-                    keys.right = true;
-                    event.preventDefault();
-                }
-            });
-
-            window.addEventListener("keyup", event => {
-                if (["ArrowLeft", "a", "A"].includes(event.key)) keys.left = false;
-                if (["ArrowRight", "d", "D"].includes(event.key)) keys.right = false;
-            });
-
-            const resizeObserver = new ResizeObserver(resizeCanvas);
-            resizeObserver.observe(gameContainer);
-            backgroundImage.addEventListener("load", () => drawScene(performance.now()));
-            window.addEventListener("resize", () => scheduleViewportSync({ delay: 140 }));
-            window.visualViewport?.addEventListener("resize", () => scheduleViewportSync({ delay: 180 }));
-            window.addEventListener("orientationchange", () => {
-                scheduleViewportSync({ reveal: isPlaying, forceLayout: isPlaying, delay: 320 });
-            });
-            setSoundState();
-            resizeCanvas();
-        })();
-    </script>
+    <script src="belief-journey.js?v=20260821-2"></script>
     <script src="dashboard-return.js?v=20260821-1"></script>
 </body>
 </html>
