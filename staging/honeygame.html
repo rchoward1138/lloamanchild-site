@@ -960,6 +960,7 @@
             let difficultyTimer = 0;
             let spawnCount = 0;
             let lastSpawnType = "";
+            let stormSpawnStreak = 0;
             let lastTime = 0;
             let animationId = 0;
             let screenFlash = 0;
@@ -1673,16 +1674,24 @@
                 ctx.globalAlpha = 1;
             }
 
+            function chooseRecoveryDrop() {
+                if (shieldCount === 0 && Math.random() < 0.50) return "leaf";
+                return Math.random() < 0.52 ? "flower" : "honey";
+            }
+
             function chooseSpawnType() {
                 if (spawnCount === 0) return "flower";
                 if (spawnCount === 1) return "honey";
                 if (spawnCount === 2) return "leaf";
 
+                // Storm Surge tuning: storms now make up roughly one third of
+                // the drop pool, while shieldless players retain a fair chance
+                // to recover with a leaf.
                 const weights = shieldCount === 0
-                    ? { leaf: 0.20, honey: 0.26, flower: 0.31, storm: 0.23 }
+                    ? { leaf: 0.20, honey: 0.22, flower: 0.26, storm: 0.32 }
                     : shieldCount >= maxShields
-                        ? { leaf: 0, honey: 0.39, flower: 0.35, storm: 0.26 }
-                        : { leaf: 0.13, honey: 0.32, flower: 0.31, storm: 0.24 };
+                        ? { leaf: 0, honey: 0.34, flower: 0.30, storm: 0.36 }
+                        : { leaf: 0.13, honey: 0.25, flower: 0.29, storm: 0.33 };
 
                 const random = Math.random();
                 let cumulative = 0;
@@ -1695,7 +1704,14 @@
                     }
                 }
 
-                if (type === "storm" && lastSpawnType === "storm") type = Math.random() < 0.56 ? "flower" : "honey";
+                // Allow occasional back-to-back storms for real pressure, but
+                // guarantee a recovery drop after two storms and favor a leaf
+                // when Bea is unshielded.
+                if (type === "storm" && stormSpawnStreak >= 2) {
+                    type = chooseRecoveryDrop();
+                } else if (type === "storm" && lastSpawnType === "storm" && Math.random() < 0.55) {
+                    type = chooseRecoveryDrop();
+                }
                 return type;
             }
 
@@ -1723,6 +1739,7 @@
                     flashOffset: Math.random() * 80
                 });
                 lastSpawnType = type;
+                stormSpawnStreak = type === "storm" ? stormSpawnStreak + 1 : 0;
                 spawnCount += 1;
             }
 
@@ -1884,6 +1901,7 @@
                 difficultyTimer = 0;
                 spawnCount = 0;
                 lastSpawnType = "";
+                stormSpawnStreak = 0;
                 lastTime = 0;
                 screenFlash = 0;
                 items.length = 0;
