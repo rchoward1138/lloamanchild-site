@@ -197,6 +197,10 @@ html.lloamc-home-command-has-stage #lloamc-staging-banner {
   overflow: hidden;
   color: #dffeff;
   font-weight: 400;
+  /* Press Start 2P extends above its nominal line box. Give those pixels
+     breathing room while preserving the single-line ellipsis behavior. */
+  padding-block: 3px;
+  margin-block: -3px;
   text-overflow: ellipsis;
 }
 
