@@ -62,7 +62,7 @@
     });
     legacyLinkObserver.observe(document.documentElement, { childList: true, subtree: true });
 
-    const asset = name => new URL(`${name}?v=20260820-2`, pageScript).href;
+    const asset = name => new URL(`${name}?v=20260821-1`, pageScript).href;
     const stylesheetURL = asset('fly-home.css');
     let commandStyles = [...document.querySelectorAll('link[rel="stylesheet"]')]
       .find(link => new URL(link.href, location.href).pathname.endsWith('/fly-home.css'));
