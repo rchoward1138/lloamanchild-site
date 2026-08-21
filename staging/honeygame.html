@@ -960,6 +960,7 @@
             let difficultyTimer = 0;
             let spawnCount = 0;
             let lastSpawnType = "";
+            let stormSpawnStreak = 0;
             let lastTime = 0;
             let animationId = 0;
             let screenFlash = 0;
@@ -1673,6 +1674,11 @@
                 ctx.globalAlpha = 1;
             }
 
+            function chooseRecoveryDrop() {
+                if (shieldCount === 0 && Math.random() < 0.50) return "leaf";
+                return Math.random() < 0.52 ? "flower" : "honey";
+            }
+
             function chooseSpawnType() {
                 if (spawnCount === 0) return "flower";
                 if (spawnCount === 1) return "honey";
@@ -1699,13 +1705,12 @@
                 }
 
                 // Allow occasional back-to-back storms for real pressure, but
-                // soften most repeats and favor a recovery leaf when unshielded.
-                if (type === "storm" && lastSpawnType === "storm" && Math.random() < 0.55) {
-                    if (shieldCount === 0 && Math.random() < 0.50) {
-                        type = "leaf";
-                    } else {
-                        type = Math.random() < 0.52 ? "flower" : "honey";
-                    }
+                // guarantee a recovery drop after two storms and favor a leaf
+                // when Bea is unshielded.
+                if (type === "storm" && stormSpawnStreak >= 2) {
+                    type = chooseRecoveryDrop();
+                } else if (type === "storm" && lastSpawnType === "storm" && Math.random() < 0.55) {
+                    type = chooseRecoveryDrop();
                 }
                 return type;
             }
@@ -1734,6 +1739,7 @@
                     flashOffset: Math.random() * 80
                 });
                 lastSpawnType = type;
+                stormSpawnStreak = type === "storm" ? stormSpawnStreak + 1 : 0;
                 spawnCount += 1;
             }
 
@@ -1895,6 +1901,7 @@
                 difficultyTimer = 0;
                 spawnCount = 0;
                 lastSpawnType = "";
+                stormSpawnStreak = 0;
                 lastTime = 0;
                 screenFlash = 0;
                 items.length = 0;
