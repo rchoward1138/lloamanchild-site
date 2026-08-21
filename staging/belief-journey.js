@@ -1,7 +1,8 @@
 (() => {
     "use strict";
 
-    const BUILD = "bee-leaf-belief-journey-2026.08.21";
+    const BUILD = "bee-leaf-belief-journey-2026.08.21-r2";
+    const SEASON_CARD_DWELL_MS = 5200;
     const STATES = Object.freeze({
         READY: "ready",
         TRANSITION: "transition",
@@ -645,7 +646,10 @@
             : game.carriedGift
                 ? `Carry ${season.giftName} to ${activeTarget()?.name || "its purpose"}`
                 : season.mission;
-        missionProgress.textContent = finaleFlight ? "Trust the final current" : `${game.seasonLinks} of 3 connections`;
+        const missionProgressText = finaleFlight ? "Trust the final current" : `${game.seasonLinks} of 3 connections`;
+        missionProgress.textContent = missionProgressText;
+        missionProgress.dataset.compact = finaleFlight ? "Final current" : `${game.seasonLinks} / 3`;
+        missionProgress.setAttribute("aria-label", missionProgressText);
         if (announcement) announce(announcement);
     }
 
@@ -1662,7 +1666,7 @@
 
         if (game.seasonLinks >= 3) {
             game.state = STATES.SEASON_COMPLETE;
-            game.seasonCompleteAt = performance.now() + (reducedMotion ? 1200 : 2700);
+            game.seasonCompleteAt = performance.now() + SEASON_CARD_DWELL_MS;
             entities.length = 0;
             missionPanel.hidden = true;
             seasonKicker.textContent = `${season.shortName} remembered`;
@@ -1781,7 +1785,7 @@
         makeCheckpoint();
         const season = currentSeason();
         game.state = STATES.TRANSITION;
-        game.transitionEnds = performance.now() + (reducedMotion ? 1050 : 2250);
+        game.transitionEnds = performance.now() + SEASON_CARD_DWELL_MS;
         seasonKicker.textContent = season.roman;
         seasonName.textContent = season.title;
         seasonLesson.textContent = season.lesson;

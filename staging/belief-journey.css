@@ -1,6 +1,6 @@
 /*
  * The Belief Collector: The Unseen Thread
- * Stage build 2026.08.21 — responsive gameplay and finale layer.
+ * Stage build 2026.08.21-r2 — mobile readability polish.
  */
 
 .game-shell.playing {
@@ -25,10 +25,10 @@
     left: 50%;
     z-index: 6;
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: minmax(92px, 1fr) minmax(0, 3fr) minmax(92px, 1fr);
     align-items: center;
     gap: 8px 12px;
-    width: min(620px, calc(100% - 32px));
+    width: min(720px, calc(100% - 32px));
     min-height: 43px;
     padding: 8px 13px;
     border: 1px solid rgba(255, 255, 255, 0.7);
@@ -47,6 +47,7 @@
 .pause-toggle[hidden] { display: none; }
 
 .mission-season {
+    justify-self: start;
     padding: 5px 8px;
     border-radius: 999px;
     color: #27364d;
@@ -58,15 +59,26 @@
 }
 
 .mission-panel strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 0;
+    justify-self: stretch;
+    overflow: visible;
+    font-size: clamp(0.86rem, 1.8vw, 1rem);
+    line-height: 1.16;
+    text-align: center;
+    text-overflow: clip;
+    text-wrap: balance;
+    white-space: normal;
 }
 
 .mission-panel > span:last-child {
+    justify-self: end;
     color: rgba(255, 255, 255, 0.76);
     font-weight: 800;
     white-space: nowrap;
+}
+
+.toast {
+    top: 158px;
 }
 
 .faith-button {
@@ -238,7 +250,7 @@ body.game-expanded .lloamc-home-command {
 .pause-curtain {
     position: absolute;
     inset: 0;
-    z-index: 17;
+    z-index: 24;
     display: grid;
     place-content: center;
     gap: 7px;
@@ -491,17 +503,33 @@ canvas:focus-visible {
 
     .mission-panel {
         top: 116px;
-        grid-template-columns: auto 1fr;
-        gap: 5px 8px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-areas:
+            "season progress"
+            "title title";
+        gap: 4px 8px;
         width: calc(100% - 18px);
         padding: 7px 9px;
         font-size: 0.68rem;
     }
 
+    .mission-season {
+        grid-area: season;
+    }
+
+    .mission-panel strong {
+        grid-area: title;
+        font-size: 0.8rem;
+    }
+
     .mission-panel > span:last-child {
-        grid-column: 1 / -1;
-        justify-self: center;
+        grid-area: progress;
+        justify-self: end;
         font-size: 0.64rem;
+    }
+
+    .toast {
+        top: 177px;
     }
 
     .faith-button {
@@ -575,6 +603,7 @@ canvas:focus-visible {
     .game-shell.pseudo-fullscreen .mission-panel {
         top: calc(max(14px, env(safe-area-inset-top)) + 47px);
         grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-areas: "season title progress";
         gap: 5px 7px;
         min-height: 36px;
         padding: 5px 8px;
@@ -587,6 +616,29 @@ canvas:focus-visible {
         grid-column: auto;
         justify-self: end;
         font-size: 0.56rem;
+    }
+
+    .game-shell:fullscreen .toast,
+    .game-shell:-webkit-full-screen .toast,
+    .game-shell.pseudo-fullscreen .toast {
+        top: calc(max(14px, env(safe-area-inset-top)) + 99px);
+    }
+}
+
+@media (min-width: 641px) and (max-width: 760px) and (orientation: portrait) {
+    .mission-panel {
+        width: calc(100% - 24px);
+        grid-template-columns: minmax(102px, 1fr) minmax(0, 3.2fr) minmax(102px, 1fr);
+        column-gap: 10px;
+        padding-inline: 14px;
+    }
+
+    .mission-panel strong {
+        font-size: clamp(0.9rem, 2.15vw, 1rem);
+    }
+
+    .mission-panel > span:last-child {
+        font-size: 0.68rem;
     }
 }
 
@@ -605,6 +657,149 @@ canvas:focus-visible {
     }
     .credits-header .final-score { font-size: 0.76rem; }
     .credits-card > .footer-row { gap: 8px 14px; }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+    .hud,
+    .game-shell:fullscreen .hud,
+    .game-shell:-webkit-full-screen .hud,
+    .game-shell.pseudo-fullscreen .hud {
+        inset: 7px 7px auto;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) 40px;
+        grid-template-areas:
+            "belief shields sound"
+            "breeze sunshine sound"
+            "meter meter meter";
+        gap: 4px;
+    }
+
+    .game-shell:fullscreen .hud,
+    .game-shell:-webkit-full-screen .hud,
+    .game-shell.pseudo-fullscreen .hud {
+        top: max(7px, env(safe-area-inset-top));
+        right: max(7px, env(safe-area-inset-right));
+        left: max(7px, env(safe-area-inset-left));
+    }
+
+    .hud-chip,
+    .game-shell:fullscreen .hud-chip,
+    .game-shell:-webkit-full-screen .hud-chip,
+    .game-shell.pseudo-fullscreen .hud-chip {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 4px;
+        min-height: 27px;
+        padding: 4px 6px;
+        border-radius: 10px;
+    }
+
+    .hud-label,
+    .game-shell:fullscreen .hud-label,
+    .game-shell:-webkit-full-screen .hud-label,
+    .game-shell.pseudo-fullscreen .hud-label {
+        flex: 0 1 auto;
+        font-size: 0;
+        line-height: 1;
+    }
+
+    .hud-label::after {
+        font-size: 0.52rem;
+        letter-spacing: 0.06em;
+    }
+
+    .hud-chip.belief .hud-label::after { content: "BELIEF"; }
+    .hud-chip.shields .hud-label::after { content: "HOPE"; }
+    .hud-chip.breeze .hud-label::after { content: "SEASON"; }
+    .hud-chip.sunshine .hud-label::after { content: "THREAD"; }
+
+    .hud-value,
+    .game-shell:fullscreen .hud-value,
+    .game-shell:-webkit-full-screen .hud-value,
+    .game-shell.pseudo-fullscreen .hud-value {
+        flex: 0 0 auto;
+        font-size: 0.78rem;
+    }
+
+    .hud-chip.shields .hud-value { font-size: 0.72rem; letter-spacing: -0.04em; }
+
+    .sound-toggle,
+    .game-shell:fullscreen .sound-toggle,
+    .game-shell:-webkit-full-screen .sound-toggle,
+    .game-shell.pseudo-fullscreen .sound-toggle {
+        width: 40px;
+        min-width: 40px;
+    }
+
+    .sun-meter,
+    .game-shell:fullscreen .sun-meter,
+    .game-shell:-webkit-full-screen .sun-meter,
+    .game-shell.pseudo-fullscreen .sun-meter {
+        display: block;
+        height: 7px;
+    }
+
+    .mission-panel,
+    .game-shell:fullscreen .mission-panel,
+    .game-shell:-webkit-full-screen .mission-panel,
+    .game-shell.pseudo-fullscreen .mission-panel {
+        top: 85px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-areas:
+            "season progress"
+            "title title";
+        gap: 3px 8px;
+        width: calc(100% - 14px);
+        min-height: 0;
+        padding: 5px 8px 6px;
+    }
+
+    .game-shell:fullscreen .mission-panel,
+    .game-shell:-webkit-full-screen .mission-panel,
+    .game-shell.pseudo-fullscreen .mission-panel {
+        top: calc(max(7px, env(safe-area-inset-top)) + 78px);
+    }
+
+    .mission-season {
+        grid-area: season;
+        justify-self: start;
+        padding: 3px 6px;
+        font-size: 0.52rem;
+    }
+
+    .mission-panel strong {
+        grid-area: title;
+        justify-self: stretch;
+        overflow: visible;
+        font-size: 0.82rem;
+        line-height: 1.15;
+        text-align: center;
+        text-overflow: clip;
+        white-space: normal;
+    }
+
+    .mission-panel > span:last-child,
+    .game-shell:fullscreen .mission-panel > span:last-child,
+    .game-shell:-webkit-full-screen .mission-panel > span:last-child,
+    .game-shell.pseudo-fullscreen .mission-panel > span:last-child {
+        grid-area: progress;
+        grid-column: auto;
+        justify-self: end;
+        font-size: 0;
+    }
+
+    .mission-panel > span:last-child::after {
+        content: attr(data-compact);
+        font-size: 0.62rem;
+    }
+
+    .toast { top: 153px; }
+
+    .game-shell:fullscreen .toast,
+    .game-shell:-webkit-full-screen .toast,
+    .game-shell.pseudo-fullscreen .toast {
+        top: calc(max(7px, env(safe-area-inset-top)) + 146px);
+    }
 }
 
 @media (max-height: 620px) and (orientation: landscape) {
@@ -631,6 +826,7 @@ canvas:focus-visible {
     .mission-panel {
         top: 54px;
         grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-areas: "season title progress";
         gap: 5px 7px;
         width: calc(100% - 16px);
         min-height: 36px;
