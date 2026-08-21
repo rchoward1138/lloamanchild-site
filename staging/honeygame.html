@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="The Belief Collector — help Bea gather sweetness, find shelter, and bring sunshine back to the garden.">
     <meta name="robots" content="noindex, nofollow, noarchive">
-    <meta name="lloamc-build" content="bee-leaf-belief-journey-2026.08.21-r2">
+    <meta name="lloamc-build" content="bee-leaf-belief-journey-2026.08.21-r3">
     <title>The Belief Collector - Bee-Leaf Mini Game</title>
     <style>
         :root {
@@ -774,7 +774,7 @@
             *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
         }
     </style>
-    <link rel="stylesheet" href="belief-journey.css?v=20260821-3">
+    <link rel="stylesheet" href="belief-journey.css?v=20260821-4">
 </head>
 <body class="staging-page">
     <div id="lloamc-staging-banner" data-lloamc-staging-banner="true" role="status">
@@ -788,7 +788,7 @@
             <p class="tagline">Gather the sweetness. Find the shelter. Bring back the sun.</p>
         </header>
 
-        <section id="gameContainer" class="game-shell" aria-label="The Belief Collector: The Unseen Thread game" data-build="bee-leaf-belief-journey-2026.08.21-r2">
+        <section id="gameContainer" class="game-shell" aria-label="The Belief Collector: The Unseen Thread game" data-build="bee-leaf-belief-journey-2026.08.21-r3">
             <canvas id="gameCanvas" tabindex="-1">Guide Bea in every direction, connect the garden through four seasons, and trust the currents you cannot always see.</canvas>
 
             <button id="fullscreenToggle" class="fullscreen-toggle" type="button" aria-label="Enter full screen" aria-pressed="false" title="Enter full screen">
@@ -815,6 +815,11 @@
             <button id="faithButton" class="faith-button" type="button" aria-label="Use Faith Pulse. Three charges available." title="Reveal the unseen currents and Purpose Thread">
                 <span class="faith-symbol" aria-hidden="true">✦</span>
                 <span class="faith-copy"><strong>Believe</strong><small id="faithValue">3 pulses</small></span>
+            </button>
+
+            <button id="boostButton" class="boost-button" type="button" aria-label="Wing Burst ready. Tap to speed up." title="Wing Burst — click, tap, Shift, or controller trigger">
+                <span class="boost-symbol" aria-hidden="true">➤</span>
+                <span class="boost-copy"><strong>Wing Burst</strong><small id="boostValue">Ready</small></span>
             </button>
 
             <div id="seasonBanner" class="season-banner" role="status" aria-live="polite" hidden>
@@ -877,11 +882,11 @@
                     </ul>
 
                     <label class="assist-toggle"><input id="guidingGlowToggle" type="checkbox"> <span><strong>Guiding Glow</strong> — keep currents and destinations softly visible</span></label>
-                    <p class="control-hint">Mouse or finger: guide Bea anywhere • Keyboard: arrows/WASD + Space • Controller: left stick + A</p>
+                    <p class="control-hint">Guide: mouse, finger, arrows/WASD, or left stick • Wing Burst: click, Boost button, Shift, or trigger • Believe: Space or A</p>
                     <button class="primary-button" type="button" data-start-game>Begin the Journey</button>
 
                     <nav class="footer-row" aria-label="Ready screen game links">
-                        <a href="bee-leaf.html?v=20260821-3">Back to Bee-Leaf</a>
+                        <a href="bee-leaf.html?v=20260821-4">Back to Bee-Leaf</a>
                         <a href="index.html">Back to Home</a>
                     </nav>
                 </div>
@@ -905,7 +910,7 @@
                     <button class="primary-button" type="button" data-retry-season>Rise and Believe Again</button>
                     <button class="secondary-button" type="button" data-start-game>Restart the Four Seasons</button>
                     <nav class="footer-row" aria-label="Game over screen links">
-                        <a href="bee-leaf.html?v=20260821-3">Back to Bee-Leaf</a>
+                        <a href="bee-leaf.html?v=20260821-4">Back to Bee-Leaf</a>
                         <a href="index.html">Back to Home</a>
                     </nav>
                 </div>
@@ -966,7 +971,7 @@
                         <button class="primary-button" type="button" data-start-game>Fly Again</button>
                     </div>
                     <nav class="footer-row" aria-label="End credits links">
-                        <a href="bee-leaf.html?v=20260821-3">Back to Bee-Leaf</a>
+                        <a href="bee-leaf.html?v=20260821-4">Back to Bee-Leaf</a>
                         <a href="index.html">Back to Home</a>
                     </nav>
                 </div>
@@ -978,7 +983,7 @@
         <source src="Bee%20Leaf/soft-background-music-432715.mp3" type="audio/mpeg">
     </audio>
 
-    <script src="belief-journey.js?v=20260821-3"></script>
+    <script src="belief-journey.js?v=20260821-4"></script>
     <script src="dashboard-return.js?v=20260821-1"></script>
 </body>
 </html>

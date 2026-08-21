@@ -1,6 +1,6 @@
 /*
  * The Belief Collector: The Unseen Thread
- * Stage build 2026.08.21-r2 — mobile readability polish.
+ * Stage build 2026.08.21-r3 — arcade intensity and Wing Burst.
  */
 
 .game-shell.playing {
@@ -44,6 +44,7 @@
 
 .mission-panel[hidden] { display: none; }
 .faith-button[hidden],
+.boost-button[hidden],
 .pause-toggle[hidden] { display: none; }
 
 .mission-season {
@@ -148,13 +149,45 @@
     font-weight: 800;
 }
 
+.boost-button {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    z-index: 14;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 134px;
+    min-height: 50px;
+    padding: 7px 13px 7px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(145deg, rgba(164, 73, 38, 0.97), rgba(77, 50, 126, 0.97));
+    box-shadow: 0 9px 0 rgba(66, 38, 82, 0.92), 0 18px 34px rgba(21, 25, 65, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    cursor: pointer;
+    transform: translateX(-50%);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+
+.boost-button:hover { filter: saturate(1.2) brightness(1.08); transform: translate(-50%, -2px); }
+.boost-button:active,
+.boost-button.bursting { box-shadow: 0 3px 0 rgba(66, 38, 82, 0.92), 0 8px 22px rgba(21, 25, 65, 0.28), 0 0 34px rgba(255, 214, 104, 0.82); transform: translate(-50%, 6px); }
+.boost-button:disabled { cursor: not-allowed; filter: grayscale(0.45) brightness(0.8); opacity: 0.72; }
+.boost-symbol { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: #5c365e; background: radial-gradient(circle, #fff 0 22%, #ffe694 23% 48%, #f6a44e 49% 100%); box-shadow: 0 0 18px rgba(255, 219, 122, 0.8); font-size: 1.05rem; }
+.boost-copy { display: grid; gap: 1px; text-align: left; }
+.boost-copy strong { font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.boost-copy small { color: rgba(255, 255, 255, 0.76); font-size: 0.63rem; font-weight: 850; }
+
 .game-shell:not(.playing) .faith-button,
+.game-shell:not(.playing) .boost-button,
 .game-shell:not(.playing) .mission-panel,
 .game-shell:not(.playing) .pause-toggle {
     display: none;
 }
 
 .game-shell.finale:not(.finale-flight) .faith-button,
+.game-shell.finale:not(.finale-flight) .boost-button,
 .game-shell.finale:not(.finale-flight) .mission-panel {
     display: none;
 }
@@ -489,6 +522,12 @@ canvas:focus-visible {
     bottom: max(14px, env(safe-area-inset-bottom));
 }
 
+.game-shell:fullscreen .boost-button,
+.game-shell:-webkit-full-screen .boost-button,
+.game-shell.pseudo-fullscreen .boost-button {
+    bottom: max(14px, env(safe-area-inset-bottom));
+}
+
 .game-shell:fullscreen .pause-toggle,
 .game-shell:-webkit-full-screen .pause-toggle,
 .game-shell.pseudo-fullscreen .pause-toggle {
@@ -540,6 +579,17 @@ canvas:focus-visible {
         padding: 7px 11px 7px 7px;
         box-shadow: 0 7px 0 rgba(41, 38, 91, 0.9), 0 14px 26px rgba(21, 25, 65, 0.28);
     }
+
+    .boost-button {
+        bottom: 10px;
+        min-width: 112px;
+        min-height: 46px;
+        padding: 6px 10px 6px 7px;
+        box-shadow: 0 7px 0 rgba(66, 38, 82, 0.92), 0 14px 26px rgba(21, 25, 65, 0.28);
+    }
+    .boost-symbol { width: 30px; height: 30px; }
+    .boost-copy strong { font-size: 0.64rem; }
+    .boost-copy small { font-size: 0.57rem; }
 
     .pause-toggle { right: 10px; bottom: 64px; }
 
@@ -623,6 +673,24 @@ canvas:focus-visible {
     .game-shell.pseudo-fullscreen .toast {
         top: calc(max(14px, env(safe-area-inset-top)) + 99px);
     }
+}
+
+@media (max-width: 480px) {
+    .boost-button {
+        flex-direction: column;
+        justify-content: center;
+        gap: 1px;
+        width: 64px;
+        min-width: 64px;
+        height: 52px;
+        min-height: 52px;
+        padding: 3px;
+    }
+
+    .boost-symbol { width: 24px; height: 24px; font-size: 0.78rem; }
+    .boost-copy { display: block; text-align: center; line-height: 1; }
+    .boost-copy strong { display: block; max-width: 56px; font-size: 0.48rem; letter-spacing: 0.04em; }
+    .boost-copy small { display: none; }
 }
 
 @media (min-width: 641px) and (max-width: 760px) and (orientation: portrait) {
@@ -854,6 +922,7 @@ canvas:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
     .faith-button,
+    .boost-button,
     .season-banner,
     .credits-track { transition: none !important; animation: none !important; }
 }

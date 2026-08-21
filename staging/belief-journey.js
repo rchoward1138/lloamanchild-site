@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const BUILD = "bee-leaf-belief-journey-2026.08.21-r2";
+    const BUILD = "bee-leaf-belief-journey-2026.08.21-r3";
     const SEASON_CARD_DWELL_MS = 5200;
     const STATES = Object.freeze({
         READY: "ready",
@@ -35,6 +35,8 @@
     const pauseToggle = document.getElementById("pauseToggle");
     const faithButton = document.getElementById("faithButton");
     const faithValue = document.getElementById("faithValue");
+    const boostButton = document.getElementById("boostButton");
+    const boostValue = document.getElementById("boostValue");
     const guidingGlowToggle = document.getElementById("guidingGlowToggle");
     const missionPanel = document.getElementById("missionPanel");
     const missionSeason = document.getElementById("missionSeason");
@@ -71,8 +73,8 @@
             giftName: "living pollen",
             consequence: "A promise was planted. Its purpose may appear in another season.",
             reveal: "The flowers you touched are remembering the way to bloom.",
-            stormChance: 0.14,
-            spawnEvery: 72,
+            stormChance: 0.22,
+            spawnEvery: 40,
             tint: "rgba(85, 165, 104, 0.10)",
             fog: 0.03,
             targets: [
@@ -96,8 +98,8 @@
             giftName: "a gift of honey",
             consequence: "Sweetness was shared. The garden will carry it farther than Bea can see.",
             reveal: "Spring’s quiet flowers now feed the lives around them.",
-            stormChance: 0.23,
-            spawnEvery: 66,
+            stormChance: 0.30,
+            spawnEvery: 38,
             tint: "rgba(255, 193, 70, 0.10)",
             fog: 0.02,
             targets: [
@@ -122,8 +124,8 @@
             giftName: "Leif’s sheltering leaf",
             consequence: "What falls today has become shelter for tomorrow.",
             reveal: "The kindness Bea shared returns as courage in the changing wind.",
-            stormChance: 0.31,
-            spawnEvery: 61,
+            stormChance: 0.38,
+            spawnEvery: 36,
             tint: "rgba(180, 91, 37, 0.17)",
             fog: 0.08,
             targets: [
@@ -148,8 +150,8 @@
             giftName: "a spark of unseen hope",
             consequence: "The light was carried home. Winter can no longer hide what the garden has become.",
             reveal: "Leif’s shelter holds. The seeds beneath the frost are still alive.",
-            stormChance: 0.36,
-            spawnEvery: 58,
+            stormChance: 0.44,
+            spawnEvery: 34,
             tint: "rgba(52, 77, 132, 0.27)",
             fog: 0.25,
             targets: [
@@ -171,7 +173,7 @@
     const currentDust = [];
     const keys = { left: false, right: false, up: false, down: false };
     const pointer = { active: false, x: 0, y: 0, type: "mouse" };
-    const gamepadPrevious = { pulse: false, pause: false };
+    const gamepadPrevious = { pulse: false, pause: false, boost: false };
 
     const bee = {
         x: 0,
@@ -204,6 +206,8 @@
         stormSpawnStreak: 0,
         lastSpawnType: "",
         invulnerable: 0,
+        boostActive: 0,
+        boostCooldown: 0,
         transitionEnds: 0,
         seasonCompleteAt: 0,
         finaleStartedAt: 0,
@@ -310,6 +314,7 @@
     function setFlightControlsInert(inert) {
         gameHud.inert = inert;
         faithButton.inert = inert;
+        boostButton.inert = inert;
         pauseToggle.inert = inert;
         fullscreenToggle.inert = inert;
         canvas.tabIndex = inert ? -1 : 0;
@@ -640,6 +645,13 @@
         faithValue.textContent = `${game.faith} ${game.faith === 1 ? "pulse" : "pulses"}`;
         faithButton.disabled = game.faith <= 0 || (game.state !== STATES.PLAYING && !finaleFlight);
         faithButton.setAttribute("aria-label", `Use Faith Pulse. ${game.faith} ${game.faith === 1 ? "charge" : "charges"} available.`);
+        const boostReady = game.boostCooldown <= 0;
+        const boostSeconds = Math.max(0, game.boostCooldown / 60);
+        boostValue.textContent = boostReady ? "Ready" : `${boostSeconds.toFixed(1)}s`;
+        boostButton.disabled = !boostReady || (game.state !== STATES.PLAYING && !finaleFlight);
+        boostButton.setAttribute("aria-label", boostReady
+            ? "Wing Burst ready. Tap to speed up."
+            : `Wing Burst recharging. ${boostSeconds.toFixed(1)} seconds remaining.`);
         missionSeason.textContent = finaleActive ? "Finale" : season.shortName;
         missionTitle.textContent = finaleFlight
             ? "Carry the Seed of Spring to the Heart of the Garden"
@@ -1232,6 +1244,66 @@
         ctx.restore();
     }
 
+    function drawDragonfly(item) {
+        const bounds = playBounds();
+        if (item.telegraph > 0) {
+            const progress = 1 - item.telegraph / item.telegraphMax;
+            const edgeX = item.direction > 0 ? bounds.left + 18 : bounds.right - 18;
+            ctx.save();
+            ctx.globalAlpha = 0.48 + progress * 0.48;
+            ctx.translate(edgeX, item.y);
+            ctx.scale(item.direction, 1);
+            ctx.fillStyle = "rgba(255, 225, 112, 0.95)";
+            ctx.shadowColor = "rgba(255, 225, 112, 0.85)";
+            ctx.shadowBlur = 14;
+            ctx.beginPath();
+            ctx.moveTo(18, 0);
+            ctx.lineTo(-9, -13);
+            ctx.lineTo(-9, 13);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+            return;
+        }
+
+        const wingBeat = reducedMotion ? 0.45 : Math.sin(item.age * 0.58) * 0.7;
+        ctx.save();
+        ctx.translate(item.x, item.y);
+        ctx.scale(item.direction, 1);
+        ctx.shadowColor = "rgba(75, 226, 238, 0.72)";
+        ctx.shadowBlur = 13;
+        ctx.fillStyle = "rgba(184, 247, 249, 0.72)";
+        ctx.strokeStyle = "rgba(37, 112, 135, 0.92)";
+        ctx.lineWidth = 1.5;
+        [[-7, -7, -0.62 - wingBeat * 0.18], [-7, 7, 0.62 + wingBeat * 0.18], [8, -6, -0.42 + wingBeat * 0.15], [8, 6, 0.42 - wingBeat * 0.15]].forEach(([x, y, angle]) => {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 18, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        });
+        const body = ctx.createLinearGradient(-18, 0, 20, 0);
+        body.addColorStop(0, "#315b76");
+        body.addColorStop(0.55, "#4ad4dd");
+        body.addColorStop(1, "#172f4a");
+        ctx.fillStyle = body;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 24, 6.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#203553";
+        ctx.beginPath();
+        ctx.arc(20, 0, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#ffe371";
+        ctx.beginPath();
+        ctx.arc(23, -2.5, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
     function drawEntity(entity) {
         ctx.save();
         if (entity.role === "mission") {
@@ -1249,6 +1321,7 @@
         else if (entity.type === "seed") drawSeed(entity);
         else if (entity.type === "hope" || entity.type === "faith") drawHope(entity);
         else if (entity.type === "storm") drawStorm(entity);
+        else if (entity.type === "dragonfly") drawDragonfly(entity);
         else drawHoney(entity);
         ctx.restore();
     }
@@ -1464,34 +1537,65 @@
 
     function spawnBonus() {
         const bonusCount = entities.filter(entity => entity.role === "bonus").length;
-        if (bonusCount >= 4) return;
+        const bonusLimit = viewWidth < 480 ? 7 : viewWidth < 760 ? 9 : 12;
+        if (bonusCount >= bonusLimit) return;
         const roll = Math.random();
-        const type = roll < 0.29 ? "leaf" : roll < 0.51 ? "faith" : roll < 0.82 ? "honey" : "flower";
-        const point = randomPointInBounds(42);
+        const type = roll < 0.38 ? "leaf" : roll < 0.75 ? "honey" : roll < 0.88 ? "faith" : "flower";
+        const bounds = playBounds();
+        const x = bounds.left + 32 + Math.random() * Math.max(1, bounds.right - bounds.left - 64);
+        const y = bounds.top - 34 - Math.random() * 54;
         entities.push({
             role: "bonus",
             type,
-            x: point.x,
-            y: point.y,
-            anchorX: point.x,
-            anchorY: point.y,
-            vx: (Math.random() - 0.5) * 0.54,
-            vy: 0.16 + Math.random() * 0.24,
+            x,
+            y,
+            anchorX: x,
+            anchorY: y,
+            vx: (Math.random() - 0.5) * 0.42,
+            vy: 0.62 + Math.random() * 0.54,
             speed: 0,
             radius: type === "flower" ? 23 : 21,
             age: Math.random() * 90,
             rotation: Math.random() * Math.PI * 2,
             spin: (Math.random() - 0.5) * 0.024,
             swayRate: 0.02 + Math.random() * 0.02,
-            swayAmplitude: 12 + Math.random() * 16,
-            scale: 0.88,
-            expires: 680
+            swayAmplitude: 14 + Math.random() * 19,
+            scale: 0.78 + Math.random() * 0.18,
+            falling: true,
+            expires: 520
+        });
+    }
+
+    function dragonflyLimit() {
+        return viewWidth < 560 ? 1 : 2;
+    }
+
+    function spawnDragonfly() {
+        if (entities.filter(entity => entity.type === "dragonfly").length >= dragonflyLimit()) return;
+        const bounds = playBounds();
+        const direction = Math.random() < 0.5 ? 1 : -1;
+        const y = lerp(bounds.top + 52, bounds.bottom - 52, 0.12 + Math.random() * 0.76);
+        const startX = direction > 0 ? bounds.left - 70 : bounds.right + 70;
+        entities.push({
+            role: "hazard",
+            type: "dragonfly",
+            x: startX,
+            y,
+            anchorX: startX,
+            anchorY: y,
+            vx: direction * (4.5 + game.seasonIndex * 0.48 + Math.random() * 0.7),
+            vy: 0,
+            radius: 27,
+            age: 0,
+            direction,
+            telegraph: (reducedMotion ? 62 : 48) + (game.guidingGlow ? 16 : 0),
+            telegraphMax: (reducedMotion ? 62 : 48) + (game.guidingGlow ? 16 : 0)
         });
     }
 
     function spawnStorm(preferredX = null) {
         const bounds = playBounds();
-        const stormLimit = viewWidth < 480 ? 2 : Math.min(4, 2 + game.seasonIndex);
+        const stormLimit = viewWidth < 480 ? 3 : Math.min(6, 3 + game.seasonIndex);
         if (entities.filter(entity => entity.type === "storm").length >= stormLimit) return;
         const minX = bounds.left + 34;
         const maxX = bounds.right - 34;
@@ -1538,17 +1642,22 @@
     function spawnAmbientEntity() {
         const season = currentSeason();
         const pressure = clamp(game.difficultyTimer / 3600, 0, 1) * 0.07;
-        const stormLimit = viewWidth < 480 ? 2 : Math.min(4, 2 + game.seasonIndex);
+        const stormLimit = viewWidth < 480 ? 3 : Math.min(6, 3 + game.seasonIndex);
         const canStorm = entities.filter(entity => entity.type === "storm").length < stormLimit;
+        const canDragonfly = entities.filter(entity => entity.type === "dragonfly").length < dragonflyLimit();
         const chooseStorm = canStorm
             && game.stormSpawnStreak < 2
             && Math.random() < season.stormChance + pressure;
+
+        // Keep the meadow busy even when the next hazard is being chosen.
+        // These are collectible bonuses, never duplicates of the mission gift.
+        if (Math.random() < 0.88) spawnBonus();
 
         if (chooseStorm) {
             spawnStorm();
             game.stormSpawnStreak += 1;
             game.lastSpawnType = "storm";
-            if (viewWidth >= 640 && game.seasonIndex >= 2 && Math.random() < 0.18) {
+            if (viewWidth >= 640 && game.seasonIndex >= 1 && Math.random() < 0.26) {
                 const bounds = playBounds();
                 const secondX = bee.x < viewWidth / 2 ? bounds.right - 48 : bounds.left + 48;
                 spawnStorm(secondX);
@@ -1556,9 +1665,15 @@
             return;
         }
 
+        if (canDragonfly && Math.random() < 0.12 + game.seasonIndex * 0.035) {
+            spawnDragonfly();
+            game.stormSpawnStreak = 0;
+            game.lastSpawnType = "dragonfly";
+            return;
+        }
+
         game.stormSpawnStreak = 0;
         game.lastSpawnType = "relief";
-        if (Math.random() < 0.58) spawnBonus();
     }
 
     function updateCurrentDust(delta) {
@@ -1614,17 +1729,25 @@
 
     function handleStormHit(entity) {
         if (game.invulnerable > 0) return;
-        sfxThunder();
+        const isDragonfly = entity.type === "dragonfly";
+        if (isDragonfly) {
+            playNoise({ duration: 0.18, gain: 0.042, frequency: 1280, filterType: "bandpass" });
+            playTone({ type: "sawtooth", frequency: 122, gain: 0.025, duration: 0.15 });
+        } else {
+            sfxThunder();
+        }
         screenFlash = reducedMotion ? 0.06 : 1;
         game.invulnerable = 92;
-        game.stats.stormsWeathered += 1;
+        if (!isDragonfly) game.stats.stormsWeathered += 1;
         burst(entity.x, entity.y, ["#d5dcff", "#7e8fb8", "#ffe563"], 20);
 
         if (game.shields > 0) {
             game.shields -= 1;
             addFloater(entity.x, entity.y, "Leif's shelter held", "#d9e5ff");
-            showCaption("The storm struck—but a kindness gathered earlier became shelter now.");
-            updateHud("A leaf shield protected Bea.");
+            showCaption(isDragonfly
+                ? "The dragonfly’s crosswind met Leif’s shelter. Bea kept her purpose."
+                : "The storm struck—but a kindness gathered earlier became shelter now.");
+            updateHud(isDragonfly ? "Leif’s shelter softened the crosswind." : "A leaf shield protected Bea.");
             return;
         }
 
@@ -1640,8 +1763,10 @@
             gameOver();
             return;
         }
-        showCaption("The wind scattered Bea’s path, not her purpose. Hope remains.");
-        updateHud(`Storm weathered. ${game.hope} hope ${game.hope === 1 ? "petal remains" : "petals remain"}.`);
+        showCaption(isDragonfly
+            ? "A swift shadow crossed Bea’s path. She steadied her wings and believed forward."
+            : "The wind scattered Bea’s path, not her purpose. Hope remains.");
+        updateHud(`${isDragonfly ? "Crosswind dodged too late" : "Storm weathered"}. ${game.hope} hope ${game.hope === 1 ? "petal remains" : "petals remain"}.`);
     }
 
     function completeConnection() {
@@ -1697,6 +1822,18 @@
                     entity.y += entity.speed * delta;
                     entity.x = clamp(entity.anchorX + Math.sin(entity.age * entity.swayRate) * entity.swayAmplitude, bounds.left + 25, bounds.right - 25);
                 }
+            } else if (entity.type === "dragonfly") {
+                if (entity.telegraph > 0) {
+                    entity.telegraph -= delta;
+                } else {
+                    entity.x += entity.vx * delta;
+                    entity.y = entity.anchorY + Math.sin(entity.age * 0.055) * 8;
+                }
+            } else if (entity.falling) {
+                entity.anchorX += entity.vx * delta;
+                entity.anchorY += entity.vy * delta;
+                entity.x = entity.anchorX + Math.sin(entity.age * entity.swayRate) * entity.swayAmplitude;
+                entity.y = entity.anchorY;
             } else {
                 entity.anchorX += entity.vx * delta;
                 entity.anchorY += entity.vy * delta;
@@ -1710,13 +1847,17 @@
 
             const expired = entity.type === "storm"
                 ? entity.y > bounds.bottom + 85
+                : entity.type === "dragonfly"
+                    ? (entity.direction > 0 ? entity.x > bounds.right + 90 : entity.x < bounds.left - 90)
+                    : entity.falling
+                        ? entity.y > bounds.bottom + 52
                 : entity.role === "bonus" && entity.age > entity.expires;
             if (expired) {
                 entities.splice(index, 1);
                 continue;
             }
 
-            if (entity.type === "storm" && entity.telegraph > 0) continue;
+            if ((entity.type === "storm" || entity.type === "dragonfly") && entity.telegraph > 0) continue;
             if (Math.hypot(bee.x - entity.x, bee.y - entity.y) >= entity.radius + 24) continue;
             entities.splice(index, 1);
             if (entity.role === "mission") collectMissionGift(entity);
@@ -1770,6 +1911,8 @@
         game.stormSpawnStreak = 0;
         game.lastSpawnType = "";
         game.invulnerable = 0;
+        game.boostActive = 0;
+        game.boostCooldown = 0;
         bee.x = viewWidth / 2;
         bee.y = lerp(bounds.top, bounds.bottom, 0.68);
         bee.vx = 0;
@@ -1792,6 +1935,7 @@
         seasonBanner.hidden = false;
         missionPanel.hidden = true;
         faithButton.hidden = false;
+        boostButton.hidden = false;
         pauseToggle.hidden = false;
         pauseCurtain.hidden = true;
         gameContainer.classList.add("playing");
@@ -1908,6 +2052,7 @@
         if (!pad) {
             gamepadPrevious.pulse = false;
             gamepadPrevious.pause = false;
+            gamepadPrevious.boost = false;
             return { x: 0, y: 0, active: false };
         }
         const deadzone = 0.18;
@@ -1923,10 +2068,13 @@
         const dpadY = (pad.buttons[13]?.pressed ? 1 : 0) - (pad.buttons[12]?.pressed ? 1 : 0);
         const pulsePressed = Boolean(pad.buttons[0]?.pressed);
         const pausePressed = Boolean(pad.buttons[9]?.pressed);
+        const boostPressed = Boolean(pad.buttons[1]?.pressed || pad.buttons[5]?.pressed || pad.buttons[7]?.pressed);
         if (pulsePressed && !gamepadPrevious.pulse) useFaithPulse();
         if (pausePressed && !gamepadPrevious.pause) togglePause();
+        if (boostPressed && !gamepadPrevious.boost) useWingBurst();
         gamepadPrevious.pulse = pulsePressed;
         gamepadPrevious.pause = pausePressed;
+        gamepadPrevious.boost = boostPressed;
         let x = dpadX || axisX;
         let y = dpadY || axisY;
         const magnitude = Math.hypot(x, y);
@@ -2009,11 +2157,12 @@
             }
         }
 
-        const maxSpeed = clamp(Math.min(viewWidth, viewHeight) / 86, 4.6, 7.1);
+        const burstMultiplier = game.boostActive > 0 ? 1.9 : 1;
+        const maxSpeed = clamp(Math.min(viewWidth, viewHeight) / 86, 4.6, 7.1) * burstMultiplier;
         const current = currentVectorAt(bee.x, bee.y);
         const desiredX = (inputActive ? inputX * maxSpeed : 0) + current.x * 18;
         const desiredY = (inputActive ? inputY * maxSpeed : 0) + current.y * 18;
-        const response = 1 - Math.pow(inputActive ? 0.74 : 0.82, delta);
+        const response = 1 - Math.pow(game.boostActive > 0 ? 0.58 : inputActive ? 0.74 : 0.82, delta);
         bee.vx = lerp(bee.vx, desiredX, response);
         bee.vy = lerp(bee.vy, desiredY, response);
         bee.x += bee.vx * delta;
@@ -2044,6 +2193,21 @@
         const target = activeTarget();
         showToast(target ? `Faith reveals a way toward ${target.name}.` : "The unseen current becomes visible.", 1900);
         updateHud(`Faith Pulse used. ${game.faith} ${game.faith === 1 ? "charge remains" : "charges remain"}.`);
+    }
+
+    function useWingBurst() {
+        const finaleFlight = game.state === STATES.FINALE && game.finalePhase === "flight";
+        if ((game.state !== STATES.PLAYING && !finaleFlight) || game.boostCooldown > 0) return false;
+        game.boostActive = reducedMotion ? 34 : 44;
+        game.boostCooldown = 96;
+        boostButton.classList.add("bursting");
+        window.setTimeout(() => boostButton.classList.remove("bursting"), 260);
+        playNoise({ duration: 0.12, gain: 0.026, frequency: 1600, filterType: "highpass" });
+        playTone({ type: "triangle", frequency: 330, gain: 0.032, duration: 0.12 });
+        burst(bee.x, bee.y, ["#fff1a2", "#b7fff2", "#f7a34f"], 12);
+        addFloater(bee.x, bee.y - 28, "Wing Burst!", "#fff1a2");
+        updateHud();
+        return true;
     }
 
     function drawFaithWave() {
@@ -2244,6 +2408,10 @@
     function updatePlaying(delta) {
         game.faithReveal = Math.max(0, game.faithReveal - delta);
         game.invulnerable = Math.max(0, game.invulnerable - delta);
+        game.boostActive = Math.max(0, game.boostActive - delta);
+        const previousBoostSecond = Math.ceil(game.boostCooldown / 6);
+        game.boostCooldown = Math.max(0, game.boostCooldown - delta);
+        if (Math.ceil(game.boostCooldown / 6) !== previousBoostSecond || game.boostCooldown === 0) updateHud();
         if (game.pulseWave > 0) {
             game.pulseWave += 0.022 * delta;
             if (game.pulseWave >= 1) game.pulseWave = 0;
@@ -2253,7 +2421,7 @@
         updateCurrentDust(delta);
         game.spawnTimer += delta;
         game.difficultyTimer += delta;
-        const spawnEvery = Math.max(44, currentSeason().spawnEvery - Math.min(10, game.difficultyTimer / 720));
+        const spawnEvery = Math.max(27, currentSeason().spawnEvery - Math.min(8, game.difficultyTimer / 780));
         if (game.spawnTimer >= spawnEvery) {
             game.spawnTimer = 0;
             spawnAmbientEntity();
@@ -2407,6 +2575,8 @@
         game.difficultyTimer = 0;
         game.stormSpawnStreak = 0;
         game.invulnerable = 80;
+        game.boostActive = 0;
+        game.boostCooldown = 0;
         entities.length = 0;
         particles.length = 0;
         floaters.length = 0;
@@ -2418,6 +2588,7 @@
         gameContainer.classList.add("finale", "finale-flight", "playing");
         setFlightControlsInert(false);
         faithButton.hidden = false;
+        boostButton.hidden = false;
         missionPanel.hidden = false;
         pauseToggle.hidden = false;
         seasonKicker.textContent = "Finale · Playable";
@@ -2440,6 +2611,7 @@
         entities.length = 0;
         missionPanel.hidden = true;
         faithButton.hidden = true;
+        boostButton.hidden = true;
         gameContainer.classList.remove("finale-flight");
         seasonKicker.textContent = "Purpose Revealed";
         seasonName.textContent = "The Garden Remembers";
@@ -2513,6 +2685,7 @@
         setFlightControlsInert(true);
         missionPanel.hidden = true;
         faithButton.hidden = true;
+        boostButton.hidden = true;
         pauseToggle.hidden = true;
         seasonBanner.hidden = true;
         pauseCurtain.hidden = true;
@@ -2631,6 +2804,11 @@
         useFaithPulse();
         canvas.focus({ preventScroll: true });
     });
+    boostButton.addEventListener("click", event => {
+        event.stopPropagation();
+        useWingBurst();
+        canvas.focus({ preventScroll: true });
+    });
     pauseToggle.addEventListener("click", event => {
         event.stopPropagation();
         togglePause();
@@ -2662,6 +2840,7 @@
     canvas.addEventListener("pointerdown", event => {
         if (!acceptsFlightInput()) return;
         updatePointerFromEvent(event);
+        if ((event.pointerType || "mouse") === "mouse" && event.button === 0) useWingBurst();
         canvas.setPointerCapture?.(event.pointerId);
         event.preventDefault();
     });
@@ -2699,6 +2878,9 @@
         else if (["ArrowDown", "s"].includes(key)) keys.down = true;
         else if (key === " " || key === "Spacebar") {
             if (!event.repeat) useFaithPulse();
+        }
+        else if (key === "Shift" || key === "b") {
+            if (!event.repeat) useWingBurst();
         }
         else return;
         pointer.active = false;
@@ -2765,6 +2947,8 @@
                 hope: game.hope,
                 shields: game.shields,
                 faith: game.faith,
+                boostActive: game.boostActive,
+                boostCooldown: game.boostCooldown,
                 carriedGift: game.carriedGift,
                 bee: { x: bee.x, y: bee.y, vx: bee.vx, vy: bee.vy },
                 pointer: { active: pointer.active, x: pointer.x, y: pointer.y },
@@ -2778,6 +2962,8 @@
                 entities: entities.map(entity => ({ type: entity.type, role: entity.role, x: entity.x, y: entity.y }))
             }),
             useFaithPulse,
+            useWingBurst,
+            spawnDragonfly,
             showCredits: () => {
                 seedDebugProgress(12);
                 showCredits();
