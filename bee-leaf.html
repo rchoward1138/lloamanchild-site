@@ -167,6 +167,11 @@
             z-index: 1;
         }
 
+        .scene:focus-visible {
+            outline: 3px solid var(--cyan);
+            outline-offset: -5px;
+        }
+
         .visual-area {
             flex: 1;
             background: var(--sky-blue);
@@ -567,7 +572,7 @@
 
     <div class="scanlines"></div>
 
-    <audio id="bgMusic" preload="auto" loop autoplay>
+    <audio id="bgMusic" preload="metadata" loop autoplay>
         <source src="Bee%20Leaf/soft-background-music-432715.mp3" type="audio/mpeg">
     </audio>
     <audio id="pageTurnSfx" preload="auto">
@@ -582,7 +587,7 @@
             <div class="story-shell">
                 <div class="story-container" aria-label="Bee-Leaf interactive picture book">
                     <div class="scene active">
-                        <div class="visual-area bg-garden">
+                        <div class="visual-area bg-garden" aria-hidden="true">
                             <div class="emoji-char sun">🌞</div>
                             <div class="cloud">☁️</div>
                             <div class="cloud c2">☁️</div>
@@ -604,7 +609,7 @@
                     </div>
 
                     <div class="scene">
-                        <div class="visual-area bg-garden">
+                        <div class="visual-area bg-garden" aria-hidden="true">
                             <div class="emoji-char sun">🌞</div>
                             <div class="cloud">☁️</div>
                             <div class="cloud c2">☁️</div>
@@ -623,7 +628,7 @@
                     </div>
 
                     <div class="scene">
-                        <div class="visual-area bg-tree">
+                        <div class="visual-area bg-tree" aria-hidden="true">
                             <div class="emoji-char sun">🌞</div>
                             <div class="emoji-char bee" style="top: 20%; left: 20%;">🐝</div>
                             <div class="tree-limb" aria-hidden="true"></div>
@@ -637,7 +642,7 @@
                     </div>
 
                     <div class="scene">
-                        <div class="visual-area bg-tree">
+                        <div class="visual-area bg-tree" aria-hidden="true">
                             <div class="emoji-char sun">🌞</div>
                             <div class="bird" style="top: 14%; left: 12%;">🐦</div>
                             <div class="bird b2" style="top: 22%; left: 28%;">🐤</div>
@@ -658,7 +663,7 @@
                     </div>
 
                     <div class="scene">
-                        <div class="visual-area bg-sunset">
+                        <div class="visual-area bg-sunset" aria-hidden="true">
                             <div class="emoji-char sun sun-peek">🌞</div>
                             <div class="speech-bubble" aria-hidden="true">Hoot</div>
                             <div class="perch-branch" aria-hidden="true"></div>
@@ -677,7 +682,7 @@
                     </div>
 
                     <div class="scene">
-                        <div class="visual-area bg-night">
+                        <div class="visual-area bg-night" aria-hidden="true">
                             <div class="emoji-char sun">🌞</div>
                             <div class="emoji-char bee-flying" style="top: 20%;">🐝</div>
                             <div class="emoji-char leaf" style="bottom: 20%; right: 10%;">🍂</div>
@@ -690,7 +695,7 @@
                     </div>
 
                     <div class="scene">
-                        <div class="visual-area bg-garden">
+                        <div class="visual-area bg-garden" aria-hidden="true">
                             <div class="emoji-char sun" style="top: 6%; right: 6%; font-size: 3.6rem; z-index: 2;">🌞</div>
                             <div class="cloud">☁️</div>
                             <div class="cloud c2">☁️</div>
@@ -769,7 +774,7 @@
 
                 <div class="controls" aria-label="Story navigation">
                     <button id="prevBtn" type="button">Previous</button>
-                    <span id="pageIndicator" class="page-indicator">Page 1 of 6</span>
+                    <span id="pageIndicator" class="page-indicator" aria-live="polite" aria-atomic="true">Page 1 of 7</span>
                     <button id="nextBtn" type="button">Next</button>
                 </div>
 
@@ -786,6 +791,16 @@
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const pageIndicator = document.getElementById('pageIndicator');
+
+        scenes.forEach((scene, index) => {
+            const active = index === currentScene;
+            scene.tabIndex = -1;
+            scene.setAttribute('role', 'group');
+            scene.setAttribute('aria-roledescription', 'story page');
+            scene.setAttribute('aria-label', `Bee-Leaf story page ${index + 1} of ${scenes.length}`);
+            scene.setAttribute('aria-hidden', active ? 'false' : 'true');
+            scene.inert = !active;
+        });
 
         const bgMusic = document.getElementById('bgMusic');
         const pageTurnSfx = document.getElementById('pageTurnSfx');
@@ -814,10 +829,17 @@
 
         function showScene(index) {
             if (index < 0 || index >= scenes.length) return;
-            scenes[currentScene].classList.remove('active');
+            const previousScene = scenes[currentScene];
+            previousScene.classList.remove('active');
+            previousScene.setAttribute('aria-hidden', 'true');
+            previousScene.inert = true;
             currentScene = index;
-            scenes[currentScene].classList.add('active');
+            const activeScene = scenes[currentScene];
+            activeScene.classList.add('active');
+            activeScene.setAttribute('aria-hidden', 'false');
+            activeScene.inert = false;
             updateControls();
+            requestAnimationFrame(() => activeScene.focus({ preventScroll: true }));
         }
 
         function ensureMusicStarted() {
@@ -846,7 +868,7 @@
             ensureMusicStarted();
             playPageTurn();
             if (currentScene === scenes.length - 1) {
-                window.location.replace('honeygame.html');
+                window.location.replace('honeygame.html?v=20260822-4');
                 return;
             }
             showScene(currentScene + 1);
@@ -868,6 +890,6 @@
 
         updateControls();
     </script>
-  <script src="dashboard-return.js"></script>
+  <script src="dashboard-return.js?v=20260822-5"></script>
 </body>
 </html>
