@@ -1,8 +1,16 @@
 (() => {
     "use strict";
 
-    const BUILD = "bee-leaf-belief-journey-2026.08.22-r4";
+    const BUILD = "bee-leaf-belief-journey-2026.08.22-r5";
     const SEASON_CARD_DWELL_MS = 5200;
+    const CREDITS_OPENING_HOLD_MS = 3800;
+    const SEASON_BACKGROUND_SOURCES = Object.freeze({
+        spring: "assets/belief-collector-spring-church.webp",
+        summer: "assets/belief-collector-summer.webp",
+        autumn: "assets/belief-collector-autumn.webp",
+        winter: "assets/belief-collector-winter.webp"
+    });
+    const LEGACY_BACKGROUND_SOURCE = "assets/belief-collector-meadow.webp";
     const STATES = Object.freeze({
         READY: "ready",
         TRANSITION: "transition",
@@ -58,8 +66,6 @@
     const query = new URLSearchParams(location.search);
     const debugAllowed = /\/staging(?:\/|$)/.test(location.pathname);
     const debugMode = debugAllowed ? (query.get("debug") || "") : "";
-    const backgroundImage = new Image();
-    backgroundImage.src = "assets/belief-collector-meadow.webp";
 
     const seasonDefinitions = [
         {
@@ -167,6 +173,54 @@
         }
     ];
 
+    function createBackgroundRecord(key, src) {
+        const image = new Image();
+        image.decoding = "async";
+        const record = { key, src, image, requested: false, ready: false, failed: false };
+        image.addEventListener("load", () => {
+            record.ready = Boolean(image.naturalWidth);
+            record.failed = !record.ready;
+            requestAnimationFrame(() => {
+                if (viewWidth > 0 && viewHeight > 0) drawScene(performance.now(), 0);
+            });
+        });
+        image.addEventListener("error", () => {
+            record.ready = false;
+            record.failed = true;
+            if (record.key === "spring") requestBackgroundRecord(legacyBackgroundRecord);
+        });
+        return record;
+    }
+
+    function requestBackgroundRecord(record) {
+        if (!record || record.requested) return;
+        record.requested = true;
+        record.image.src = record.src;
+    }
+
+    const backgroundRecords = Object.fromEntries(Object.entries(SEASON_BACKGROUND_SOURCES)
+        .map(([key, src]) => [key, createBackgroundRecord(key, src)]));
+    const legacyBackgroundRecord = createBackgroundRecord("legacy", LEGACY_BACKGROUND_SOURCE);
+
+    function requestSeasonBackground(index) {
+        const current = seasonDefinitions[index];
+        const next = seasonDefinitions[index + 1];
+        if (current) requestBackgroundRecord(backgroundRecords[current.key]);
+        if (next) requestBackgroundRecord(backgroundRecords[next.key]);
+    }
+
+    function selectedBackgroundRecord() {
+        const current = backgroundRecords[currentSeason().key];
+        if (current?.ready) return current;
+        const spring = backgroundRecords.spring;
+        if (spring?.ready) return spring;
+        if (spring?.failed) requestBackgroundRecord(legacyBackgroundRecord);
+        if (legacyBackgroundRecord.ready) return legacyBackgroundRecord;
+        return current || spring || legacyBackgroundRecord;
+    }
+
+    requestBackgroundRecord(backgroundRecords.spring);
+
     const entities = [];
     const particles = [];
     const floaters = [];
@@ -221,6 +275,8 @@
         pausedAt: 0,
         creditsRunning: false,
         creditsAutoStartAt: 0,
+        weatherIntensity: 1,
+        weatherTarget: 1,
         guidingGlow: false,
         audioEnabled: true,
         connections: [],
@@ -281,6 +337,24 @@
 
     function currentSeason() {
         return seasonDefinitions[game.seasonIndex] || seasonDefinitions[0];
+    }
+
+    function weatherFloor(season = currentSeason()) {
+        return season.key === "autumn" ? 0.16 : 0;
+    }
+
+    function weatherTargetForProgress(season = currentSeason()) {
+        const remaining = 1 - clamp(game.seasonLinks / 3, 0, 1);
+        const floor = weatherFloor(season);
+        return floor + (1 - floor) * remaining;
+    }
+
+    function updateSeasonWeather(delta) {
+        const response = 1 - Math.pow(0.965, delta);
+        game.weatherIntensity = lerp(game.weatherIntensity, game.weatherTarget, response);
+        if (Math.abs(game.weatherIntensity - game.weatherTarget) < 0.002) {
+            game.weatherIntensity = game.weatherTarget;
+        }
     }
 
     function playBounds() {
@@ -747,7 +821,7 @@
 
     gameContainer.dataset.build = BUILD;
 
-    function drawImageCover(image, focusX) {
+    function drawImageCover(image, focusX = 0.5, heatStrength = 0, time = 0) {
         if (!image.complete || !image.naturalWidth) {
             const fallback = ctx.createLinearGradient(0, 0, 0, viewHeight);
             fallback.addColorStop(0, "#6e91ba");
@@ -764,7 +838,35 @@
         const overflowY = Math.max(0, height - viewHeight);
         const x = -overflowX * clamp(focusX, 0.08, 0.92);
         const y = -overflowY * 0.61;
-        ctx.drawImage(image, x, y, width, height);
+        const shimmer = reducedMotion ? 0 : clamp(heatStrength, 0, 1);
+        if (shimmer <= 0.01) {
+            ctx.drawImage(image, x, y, width, height);
+            return;
+        }
+
+        // Refract the already-cropped source in a small number of horizontal
+        // bands. This produces a road-heat shimmer without allocating a
+        // full-frame buffer or touching gameplay objects.
+        const bandHeight = clamp(Math.round(viewHeight / 11), 30, 58);
+        for (let top = 0; top < viewHeight; top += bandHeight) {
+            const destinationHeight = Math.min(bandHeight + 1, viewHeight - top + 1);
+            const sourceTop = clamp((top - y) / height * image.naturalHeight, 0, image.naturalHeight);
+            const sourceBottom = clamp((top + destinationHeight - y) / height * image.naturalHeight, 0, image.naturalHeight);
+            const sourceHeight = Math.max(1, sourceBottom - sourceTop);
+            const lowerField = clamp((top / Math.max(1, viewHeight) - 0.28) / 0.72, 0, 1);
+            const offset = Math.sin(time * 0.0048 + top * 0.052) * 3.8 * shimmer * lowerField;
+            ctx.drawImage(
+                image,
+                0,
+                sourceTop,
+                image.naturalWidth,
+                sourceHeight,
+                x + offset,
+                top,
+                width,
+                destinationHeight
+            );
+        }
     }
 
     function drawAmbientCloud(x, y, scale, alpha, dark = false) {
@@ -838,6 +940,159 @@
         ctx.restore();
     }
 
+    function seededUnit(index, salt = 0) {
+        const value = Math.sin((index + 1) * 12.9898 + salt * 78.233) * 43758.5453;
+        return value - Math.floor(value);
+    }
+
+    function drawSpringRain(time, strength) {
+        if (strength <= 0.01) return;
+        const count = Math.max(8, Math.round((reducedMotion ? 18 : clamp(viewWidth / 18, 32, 76)) * strength));
+        ctx.save();
+        ctx.strokeStyle = `rgba(214, 235, 255, ${strength * (0.18 + strength * 0.36)})`;
+        ctx.lineWidth = viewWidth < 520 ? 1.2 : 1.6;
+        ctx.lineCap = "round";
+        for (let index = 0; index < count; index++) {
+            const speed = 0.00028 + seededUnit(index, 2) * 0.00022;
+            const progress = (seededUnit(index, 4) + time * speed) % 1;
+            const x = seededUnit(index, 7) * (viewWidth + 90) - 30 - progress * 42 * strength;
+            const y = progress * (viewHeight + 70) - 35;
+            const length = 8 + seededUnit(index, 9) * 13 + strength * 6;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - 4 - strength * 4, y + length);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    function drawSummerHeat(time, strength) {
+        if (strength <= 0.01) return;
+        ctx.save();
+        const haze = ctx.createLinearGradient(0, viewHeight * 0.28, 0, viewHeight);
+        haze.addColorStop(0, "rgba(255, 224, 123, 0)");
+        haze.addColorStop(0.58, `rgba(255, 211, 102, ${strength * 0.055})`);
+        haze.addColorStop(1, `rgba(255, 239, 184, ${strength * 0.13})`);
+        ctx.fillStyle = haze;
+        ctx.fillRect(0, 0, viewWidth, viewHeight);
+        if (!reducedMotion) {
+            ctx.strokeStyle = `rgba(255, 250, 218, ${strength * 0.13})`;
+            ctx.lineWidth = 1.4;
+            for (let wave = 0; wave < 4; wave++) {
+                const baseY = viewHeight * (0.53 + wave * 0.105);
+                ctx.beginPath();
+                for (let x = -24; x <= viewWidth + 24; x += 24) {
+                    const y = baseY + Math.sin(x * 0.026 + time * 0.0032 + wave * 1.7) * (3 + strength * 4);
+                    if (x === -24) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+        }
+        ctx.restore();
+    }
+
+    function drawAutumnWind(time, strength) {
+        if (strength <= 0.01) return;
+        const bounds = playBounds();
+        const gustCount = Math.max(3, Math.round((reducedMotion ? 6 : 13) * strength));
+        const leafCount = Math.max(2, Math.round((reducedMotion ? 7 : 20) * strength));
+        ctx.save();
+        ctx.lineCap = "round";
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = `rgba(255, 231, 176, ${0.12 + strength * 0.22})`;
+        for (let index = 0; index < gustCount; index++) {
+            const direction = index % 4 === 0 ? -1 : 1;
+            const speed = 0.000055 + seededUnit(index, 13) * 0.000035;
+            const progress = (seededUnit(index, 11) + time * speed) % 1;
+            const x = direction > 0
+                ? -100 + progress * (viewWidth + 200)
+                : viewWidth + 100 - progress * (viewWidth + 200);
+            const y = bounds.top + seededUnit(index, 15) * Math.max(40, bounds.bottom - bounds.top);
+            const length = 40 + seededUnit(index, 17) * 72;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.bezierCurveTo(
+                x + direction * length * 0.32,
+                y - 8,
+                x + direction * length * 0.68,
+                y + 8,
+                x + direction * length,
+                y
+            );
+            ctx.stroke();
+        }
+
+        for (let index = 0; index < leafCount; index++) {
+            const direction = index % 5 === 0 ? -1 : 1;
+            const progress = (seededUnit(index, 21) + time * (0.00005 + seededUnit(index, 22) * 0.00005)) % 1;
+            const x = direction > 0
+                ? -30 + progress * (viewWidth + 60)
+                : viewWidth + 30 - progress * (viewWidth + 60);
+            const lane = seededUnit(index, 23);
+            const y = bounds.top + lane * Math.max(30, bounds.bottom - bounds.top)
+                + Math.sin(time * 0.003 + index * 1.9) * (4 + strength * 8);
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(time * 0.002 * direction + index * 0.74);
+            ctx.scale(0.56 + seededUnit(index, 25) * 0.40, 0.56 + seededUnit(index, 25) * 0.40);
+            ctx.fillStyle = index % 3 === 0 ? "rgba(241, 154, 52, 0.86)"
+                : index % 3 === 1 ? "rgba(204, 82, 48, 0.84)"
+                    : "rgba(255, 204, 83, 0.88)";
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 8, 4.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(101, 61, 31, 0.55)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(-8, 0);
+            ctx.lineTo(9, 0);
+            ctx.stroke();
+            ctx.restore();
+        }
+        ctx.restore();
+    }
+
+    function drawWinterBlizzard(time, strength) {
+        if (strength <= 0.01) return;
+        const count = Math.max(12, Math.round((reducedMotion ? 28 : clamp(viewWidth / 11, 54, 112)) * strength));
+        ctx.save();
+        const fog = ctx.createLinearGradient(0, playBounds().top, 0, viewHeight);
+        fog.addColorStop(0, `rgba(225, 237, 249, ${strength * 0.11})`);
+        fog.addColorStop(0.62, `rgba(220, 232, 245, ${strength * 0.22})`);
+        fog.addColorStop(1, `rgba(240, 247, 252, ${strength * 0.14})`);
+        ctx.fillStyle = fog;
+        ctx.fillRect(0, playBounds().top, viewWidth, viewHeight);
+        ctx.lineCap = "round";
+        for (let index = 0; index < count; index++) {
+            const progress = (seededUnit(index, 31) + time * (0.00012 + seededUnit(index, 32) * 0.00014)) % 1;
+            const x = (seededUnit(index, 33) * (viewWidth + 160) - 80 + progress * 94 * strength) % (viewWidth + 120) - 40;
+            const y = progress * (viewHeight + 70) - 35;
+            const size = 1.2 + seededUnit(index, 35) * 3.2;
+            if (reducedMotion) {
+                ctx.fillStyle = `rgba(250, 253, 255, ${strength * (0.28 + strength * 0.42)})`;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.strokeStyle = `rgba(250, 253, 255, ${strength * (0.24 + strength * 0.52)})`;
+                ctx.lineWidth = Math.max(1, size * 0.58);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + 7 + strength * 10, y + 9 + size * 2);
+                ctx.stroke();
+            }
+        }
+        ctx.restore();
+    }
+
+    function drawSeasonWeather(time, season, strength) {
+        if (season.key === "spring") drawSpringRain(time, strength);
+        else if (season.key === "summer") drawSummerHeat(time, strength);
+        else if (season.key === "autumn") drawAutumnWind(time, strength);
+        else if (season.key === "winter") drawWinterBlizzard(time, strength);
+    }
+
     function drawConsequences(time, finaleStrength = 0) {
         const connectionCounts = game.connections.reduce((counts, connection) => {
             counts[connection.season] = (counts[connection.season] || 0) + 1;
@@ -895,12 +1150,20 @@
 
     function drawBackground(time, finaleStrength = 0) {
         const season = currentSeason();
-        const focus = viewWidth ? bee.x / viewWidth : 0.5;
-        const drift = reducedMotion ? 0 : Math.sin(time * 0.00008) * 0.022;
-        drawImageCover(backgroundImage, 0.5 + (focus - 0.5) * 0.16 + drift);
+        const record = selectedBackgroundRecord();
+        const finaleActive = game.state === STATES.FINALE
+            || (game.state === STATES.PAUSED && game.resumeState === STATES.FINALE);
+        const weatherStrength = finaleActive
+            ? (game.finalePhase === "flight" ? 0.92 : clamp(1 - finaleStrength, 0, 1))
+            : clamp(game.weatherIntensity, 0, 1);
+        const heatStrength = season.key === "summer" ? weatherStrength : 0;
 
-        const completion = clamp(game.totalLinks / 12 + finaleStrength * 0.7, 0, 1);
-        const veilAlpha = 0.44 * (1 - completion * 0.65);
+        // A stable center crop keeps the recurring church in the same perceived
+        // location on laptops, foldables, and narrow phones.
+        drawImageCover(record.image, 0.5, heatStrength, time);
+
+        const journeyCompletion = clamp(game.totalLinks / 12 + finaleStrength * 0.7, 0, 1);
+        const veilAlpha = 0.44 * (1 - journeyCompletion * 0.65);
         const veil = ctx.createLinearGradient(0, 0, 0, viewHeight);
         veil.addColorStop(0, `rgba(23, 39, 89, ${veilAlpha})`);
         veil.addColorStop(1, `rgba(42, 57, 76, ${veilAlpha * 0.50})`);
@@ -910,25 +1173,42 @@
         ctx.fillRect(0, 0, viewWidth, viewHeight);
 
         const cloudShift = reducedMotion ? 0 : (time * (0.004 + game.seasonIndex * 0.0015)) % (viewWidth + 300);
-        const darkCloud = game.seasonIndex >= 2;
-        drawAmbientCloud(viewWidth - cloudShift, viewHeight * 0.22, 0.88, 0.17 + game.seasonIndex * 0.035, darkCloud);
-        drawAmbientCloud(viewWidth * 0.36 - cloudShift * 0.38, viewHeight * 0.16, 0.62, 0.13 + game.seasonIndex * 0.026, darkCloud);
-        drawSunlight(completion);
+        const darkCloud = season.key === "spring" || season.key === "autumn" || season.key === "winter";
+        const cloudAlpha = season.key === "summer"
+            ? 0.08 + weatherStrength * 0.04
+            : 0.05 + weatherStrength * (season.key === "winter" ? 0.34 : 0.27);
+        drawAmbientCloud(viewWidth - cloudShift, viewHeight * 0.22, 0.92, cloudAlpha, darkCloud);
+        drawAmbientCloud(viewWidth * 0.36 - cloudShift * 0.38, viewHeight * 0.16, 0.66, cloudAlpha * 0.82, darkCloud);
+        drawSunlight(clamp((1 - weatherStrength) * 0.92 + journeyCompletion * 0.18, 0, 1));
         drawConsequences(time, finaleStrength);
         drawForeground(time);
+        drawSeasonWeather(time, season, weatherStrength);
 
         if (season.fog > 0 && finaleStrength < 0.8) {
+            const fogStrength = season.key === "autumn"
+                ? 0.22 + weatherStrength * 0.78
+                : weatherStrength;
+            const fogAmount = season.fog * fogStrength;
             const fog = ctx.createLinearGradient(0, playBounds().top, 0, viewHeight);
-            fog.addColorStop(0, `rgba(224, 234, 246, ${season.fog * 0.22})`);
-            fog.addColorStop(0.62, `rgba(209, 223, 239, ${season.fog})`);
-            fog.addColorStop(1, `rgba(222, 231, 240, ${season.fog * 0.34})`);
+            fog.addColorStop(0, `rgba(224, 234, 246, ${fogAmount * 0.22})`);
+            fog.addColorStop(0.62, `rgba(209, 223, 239, ${fogAmount})`);
+            fog.addColorStop(1, `rgba(222, 231, 240, ${fogAmount * 0.34})`);
             ctx.fillStyle = fog;
             ctx.fillRect(0, playBounds().top, viewWidth, viewHeight);
         }
     }
 
+    function currentWeatherMultiplier(season = currentSeason()) {
+        const strength = clamp(game.weatherIntensity, 0, 1);
+        if (season.key === "spring") return 0.82 + strength * 0.28;
+        if (season.key === "summer") return 0.84 + strength * 0.24;
+        if (season.key === "autumn") return 0.58 + strength * 0.82;
+        return 0.62 + strength * 0.83;
+    }
+
     function currentVectorAt(x, y) {
         const bounds = playBounds();
+        const multiplier = currentWeatherMultiplier();
         let vx = 0;
         let vy = 0;
         currentSeason().currents.forEach(current => {
@@ -938,8 +1218,8 @@
             const distance = Math.hypot(x - centerX, y - centerY);
             if (distance >= radius) return;
             const falloff = 1 - distance / radius;
-            vx += Math.cos(current.angle) * current.strength * falloff;
-            vy += Math.sin(current.angle) * current.strength * falloff;
+            vx += Math.cos(current.angle) * current.strength * falloff * multiplier;
+            vy += Math.sin(current.angle) * current.strength * falloff * multiplier;
         });
         return { x: vx, y: vy };
     }
@@ -1911,6 +2191,7 @@
         game.boostDestination = null;
         game.seasonLinks += 1;
         game.totalLinks += 1;
+        game.weatherTarget = weatherTargetForProgress(season);
         game.score += 125 + game.seasonIndex * 25;
         game.faith = Math.min(game.maxFaith, game.faith + 1);
         game.connections.push({ season: season.key, targetIndex, name: target.name });
@@ -2048,6 +2329,8 @@
         game.invulnerable = 0;
         game.boostActive = 0;
         game.boostDestination = null;
+        game.weatherIntensity = 1;
+        game.weatherTarget = 1;
         bee.x = viewWidth / 2;
         bee.y = lerp(bounds.top, bounds.bottom, 0.68);
         bee.vx = 0;
@@ -2059,6 +2342,7 @@
 
     function beginSeason(index) {
         game.seasonIndex = clamp(index, 0, seasonDefinitions.length - 1);
+        requestSeasonBackground(game.seasonIndex);
         resetSeasonRuntime();
         makeCheckpoint();
         const season = currentSeason();
@@ -2094,6 +2378,8 @@
         game.checkpoint = null;
         game.creditsRunning = false;
         game.creditsAutoStartAt = 0;
+        game.weatherIntensity = 1;
+        game.weatherTarget = 1;
         game.finaleBeat = 0;
         game.finalePhase = "flight";
         game.failedInFinale = false;
@@ -2875,13 +3161,11 @@
         winScreen.hidden = false;
         creditsViewport.scrollTop = 0;
         game.creditsRunning = false;
-        game.creditsAutoStartAt = reducedMotion ? 0 : performance.now() + 6000;
-        creditsToggle.textContent = reducedMotion ? "Play Credits" : "Start Credits Now";
+        game.creditsAutoStartAt = performance.now() + CREDITS_OPENING_HOLD_MS;
+        creditsToggle.textContent = "Start Credits Now";
         sfxConnection();
         window.setTimeout(() => sfxPulse(), 180);
-        announce(reducedMotion
-            ? "The garden remembers. End credits are ready to play."
-            : "The garden remembers. End credits will begin scrolling in six seconds.");
+        announce("The garden remembers. End credits will begin scrolling in four seconds.");
         creditsViewport.focus({ preventScroll: true });
     }
 
@@ -2903,7 +3187,7 @@
         }
         if (!game.creditsRunning) return;
         const maxScroll = Math.max(0, creditsViewport.scrollHeight - creditsViewport.clientHeight);
-        const scrollSpeed = viewWidth <= 640 ? 0.36 : 0.48;
+        const scrollSpeed = reducedMotion ? 0.25 : viewWidth <= 640 ? 0.36 : 0.48;
         creditsViewport.scrollTop = Math.min(maxScroll, creditsViewport.scrollTop + delta * scrollSpeed);
         if (creditsViewport.scrollTop >= maxScroll - 1) {
             game.creditsRunning = false;
@@ -2960,6 +3244,9 @@
             || (game.state === STATES.FINALE && game.finalePhase === "flight");
         if (!movementState) pollMenuGamepad();
         advanceJourney(timestamp, delta);
+        if ([STATES.TRANSITION, STATES.PLAYING, STATES.SEASON_COMPLETE].includes(game.state)) {
+            updateSeasonWeather(delta);
+        }
         if (game.state === STATES.PLAYING) updatePlaying(delta);
         if (game.state === STATES.CREDITS) updateCredits(timestamp, delta);
         const staticOverlay = [STATES.READY, STATES.PAUSED, STATES.OVER, STATES.CREDITS].includes(game.state);
@@ -3136,7 +3423,6 @@
 
     const resizeObserver = new ResizeObserver(() => resizeCanvas());
     resizeObserver.observe(gameContainer);
-    backgroundImage.addEventListener("load", () => drawScene(performance.now(), 0));
     window.addEventListener("resize", () => scheduleViewportSync({ delay: 150 }));
     window.visualViewport?.addEventListener("resize", () => scheduleViewportSync({ delay: 190 }));
     window.addEventListener("orientationchange", () => {
@@ -3164,35 +3450,43 @@
     if (debugAllowed) {
         window.BeliefJourneyDebug = Object.freeze({
             build: BUILD,
-            getState: () => ({
-                state: game.state,
-                finalePhase: game.finalePhase,
-                season: currentSeason().key,
-                seasonLinks: game.seasonLinks,
-                totalLinks: game.totalLinks,
-                score: game.score,
-                hope: game.hope,
-                shields: game.shields,
-                faith: game.faith,
-                boostActive: game.boostActive,
-                boostCharges: game.boostCharges,
-                boostDestination: game.boostDestination ? { ...game.boostDestination } : null,
-                creditsRunning: game.creditsRunning,
-                creditsAutoStartAt: game.creditsAutoStartAt,
-                caption: storyCaption.hidden ? "" : storyCaption.textContent,
-                captionRemaining,
-                carriedGift: game.carriedGift,
-                bee: { x: bee.x, y: bee.y, vx: bee.vx, vy: bee.vy },
-                pointer: { active: pointer.active, x: pointer.x, y: pointer.y },
-                target: (() => {
-                    if (game.state === STATES.FINALE && game.finalePhase === "flight") {
-                        return { name: "Heart of the Garden", ...finaleTargetPoint() };
-                    }
-                    const target = activeTarget();
-                    return target ? { name: target.name, ...pointFromTarget(target) } : null;
-                })(),
-                entities: entities.map(entity => ({ type: entity.type, role: entity.role, x: entity.x, y: entity.y }))
-            }),
+            getState: () => {
+                const selectedBackground = selectedBackgroundRecord();
+                const currentBackground = backgroundRecords[currentSeason().key];
+                return {
+                    state: game.state,
+                    finalePhase: game.finalePhase,
+                    season: currentSeason().key,
+                    seasonLinks: game.seasonLinks,
+                    totalLinks: game.totalLinks,
+                    score: game.score,
+                    hope: game.hope,
+                    shields: game.shields,
+                    faith: game.faith,
+                    boostActive: game.boostActive,
+                    boostCharges: game.boostCharges,
+                    boostDestination: game.boostDestination ? { ...game.boostDestination } : null,
+                    creditsRunning: game.creditsRunning,
+                    creditsAutoStartAt: game.creditsAutoStartAt,
+                    backgroundReady: Boolean(currentBackground?.ready),
+                    backgroundKey: selectedBackground?.key || "gradient",
+                    weatherIntensity: Number(game.weatherIntensity.toFixed(3)),
+                    weatherTarget: Number(game.weatherTarget.toFixed(3)),
+                    caption: storyCaption.hidden ? "" : storyCaption.textContent,
+                    captionRemaining,
+                    carriedGift: game.carriedGift,
+                    bee: { x: bee.x, y: bee.y, vx: bee.vx, vy: bee.vy },
+                    pointer: { active: pointer.active, x: pointer.x, y: pointer.y },
+                    target: (() => {
+                        if (game.state === STATES.FINALE && game.finalePhase === "flight") {
+                            return { name: "Heart of the Garden", ...finaleTargetPoint() };
+                        }
+                        const target = activeTarget();
+                        return target ? { name: target.name, ...pointFromTarget(target) } : null;
+                    })(),
+                    entities: entities.map(entity => ({ type: entity.type, role: entity.role, x: entity.x, y: entity.y }))
+                };
+            },
             useFaithPulse,
             useWingBurst,
             collectWingBurstEmblem: () => collectBonus({ type: "wingburst", x: bee.x, y: bee.y }),
@@ -3233,11 +3527,12 @@
         window.setTimeout(() => window.BeliefJourneyDebug.showCredits(), 80);
     } else if (debugMode === "finale") {
         window.setTimeout(() => window.BeliefJourneyDebug.beginFinale(), 80);
-    } else if (debugMode === "winter") {
+    } else if (["spring", "summer", "autumn", "winter"].includes(debugMode)) {
         window.setTimeout(() => {
+            const seasonIndex = seasonDefinitions.findIndex(season => season.key === debugMode);
             startGame();
-            seedDebugProgress(9);
-            beginSeason(3);
+            seedDebugProgress(Math.max(0, seasonIndex) * 3);
+            beginSeason(Math.max(0, seasonIndex));
         }, 80);
     }
 })();
