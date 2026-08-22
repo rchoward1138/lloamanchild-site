@@ -391,8 +391,26 @@ canvas:focus-visible {
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-color: rgba(255, 225, 123, 0.72) rgba(255, 255, 255, 0.08);
-    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.credits-viewport::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+html.credits-active {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+html.credits-active::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 .credits-track {

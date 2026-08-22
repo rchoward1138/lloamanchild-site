@@ -1,9 +1,16 @@
 (() => {
     "use strict";
 
-    const BUILD = "bee-leaf-belief-journey-2026.08.22-r6";
+    const BUILD = "bee-leaf-belief-journey-2026.08.22-r7";
     const SEASON_CARD_DWELL_MS = 5200;
     const CREDITS_OPENING_HOLD_MS = 3800;
+    const FINALE_GATE_COUNT = 4;
+    const FINALE_GATE_DEFINITIONS = Object.freeze([
+        Object.freeze({ key: "spring", label: "Spring", title: "Awaken the Ascent", lesson: "Begin before the whole path can be seen.", help: "Marigold opened a living current through the rain." }),
+        Object.freeze({ key: "summer", label: "Summer", title: "Carry the Light", lesson: "What was nurtured becomes strength for the climb.", help: "Esther revealed the thermal hidden inside the heat." }),
+        Object.freeze({ key: "autumn", label: "Autumn", title: "Release into Purpose", lesson: "What falls can still carry life forward.", help: "Leif’s shelter returned in the fiercest crosswind." }),
+        Object.freeze({ key: "winter", label: "Winter", title: "Believe Beyond Sight", lesson: "The final way opens only to faith in motion.", help: "Solomon’s light found the path no eye could see." })
+    ]);
     const SEASON_BACKGROUND_SOURCES = Object.freeze({
         spring: "assets/belief-collector-spring-church.webp",
         summer: "assets/belief-collector-summer.webp",
@@ -270,11 +277,17 @@
         finaleStartedAt: 0,
         finaleBeat: 0,
         finalePhase: "flight",
+        finaleGate: 0,
+        finaleGateReady: false,
+        finaleEmblemTimer: 0,
+        finaleBarrierNoticeAt: 0,
         failedInFinale: false,
         finaleCheckpoint: null,
         pausedAt: 0,
         creditsRunning: false,
         creditsAutoStartAt: 0,
+        creditsScrollPosition: 0,
+        creditsLastTick: 0,
         weatherIntensity: 1,
         weatherTarget: 1,
         guidingGlow: false,
@@ -756,6 +769,7 @@
         const finaleActive = game.state === STATES.FINALE
             || (game.state === STATES.PAUSED && game.resumeState === STATES.FINALE);
         const finaleFlight = finaleActive && game.finalePhase === "flight";
+        gameContainer.dataset.finaleGate = finaleFlight ? String(game.finaleGate) : "";
         seasonValue.textContent = finaleActive ? "Finale" : season.shortName;
         threadValue.textContent = `${game.totalLinks} / 12`;
         threadMeterFill.style.width = `${(game.totalLinks / 12) * 100}%`;
@@ -776,15 +790,24 @@
         boostButton.title = boostReady
             ? "Ready — double-tap on mobile, or activate on laptop/controller"
             : `Catch ${game.maxBoostCharges - game.boostCharges} more Burst ${game.maxBoostCharges - game.boostCharges === 1 ? "emblem" : "emblems"}`;
-        missionSeason.textContent = finaleActive ? "Finale" : season.shortName;
+        const finaleGate = finaleGateDefinition();
+        missionSeason.textContent = finaleActive
+            ? (finaleFlight ? `${game.finaleGate + 1} / ${FINALE_GATE_COUNT}` : "Finale")
+            : season.shortName;
         missionTitle.textContent = finaleFlight
-            ? "Carry the Seed of Spring to the Heart of the Garden"
+            ? (boostReady
+                ? `Wing Burst ready — break through ${finaleGate.label}`
+                : `Gather Burst emblems to cross ${finaleGate.label}`)
             : game.carriedGift
                 ? `Carry ${season.giftName} to ${activeTarget()?.name || "its purpose"}`
                 : season.mission;
-        const missionProgressText = finaleFlight ? "Trust the final current" : `${game.seasonLinks} of 3 connections`;
+        const missionProgressText = finaleFlight
+            ? `Ascent ${game.finaleGate} of ${FINALE_GATE_COUNT} · Burst ${game.boostCharges} of ${game.maxBoostCharges}`
+            : `${game.seasonLinks} of 3 connections`;
         missionProgress.textContent = missionProgressText;
-        missionProgress.dataset.compact = finaleFlight ? "Final current" : `${game.seasonLinks} / 3`;
+        missionProgress.dataset.compact = finaleFlight
+            ? `Gate ${game.finaleGate + 1} · ${game.boostCharges}/${game.maxBoostCharges}`
+            : `${game.seasonLinks} / 3`;
         missionProgress.setAttribute("aria-label", missionProgressText);
         if (announcement) announce(announcement);
     }
@@ -1132,6 +1155,98 @@
         else if (season.key === "winter") drawWinterBlizzard(time, strength);
     }
 
+    function drawFinaleBackgroundSlice(record, index) {
+        const fallbackRecord = selectedBackgroundRecord();
+        const image = record?.ready ? record.image : fallbackRecord?.image;
+        const destinationX = viewWidth * index / FINALE_GATE_COUNT;
+        const destinationRight = index === FINALE_GATE_COUNT - 1
+            ? viewWidth
+            : viewWidth * (index + 1) / FINALE_GATE_COUNT;
+        const destinationWidth = destinationRight - destinationX;
+
+        if (!image?.complete || !image.naturalWidth) {
+            const fallbackColors = ["#83a985", "#c9ae68", "#a8784b", "#8097b5"];
+            ctx.fillStyle = fallbackColors[index] || fallbackColors[0];
+            ctx.fillRect(destinationX, 0, destinationWidth + 1, viewHeight);
+            return;
+        }
+
+        // Calculate the same stable full-screen cover crop used by every season,
+        // then reveal only that season's matching quarter. The four independent
+        // source crops remain responsive instead of becoming a fragile flat image.
+        const scale = Math.max(viewWidth / image.naturalWidth, viewHeight / image.naturalHeight) * 1.07;
+        const fullSourceWidth = viewWidth / scale;
+        const fullSourceHeight = viewHeight / scale;
+        const sourceX = Math.max(0, (image.naturalWidth - fullSourceWidth) * 0.5);
+        const sourceY = Math.max(0, (image.naturalHeight - fullSourceHeight) * 0.61);
+        const sourceSliceWidth = fullSourceWidth / FINALE_GATE_COUNT;
+
+        ctx.drawImage(
+            image,
+            sourceX + sourceSliceWidth * index,
+            sourceY,
+            sourceSliceWidth,
+            fullSourceHeight,
+            destinationX,
+            0,
+            destinationWidth + 1,
+            viewHeight
+        );
+    }
+
+    function drawFinaleCompositeBackground(time, settlement = 0) {
+        FINALE_GATE_DEFINITIONS.forEach((gate, index) => {
+            drawFinaleBackgroundSlice(backgroundRecords[gate.key], index);
+        });
+
+        const sliceTints = [
+            "rgba(70, 151, 101, 0.08)",
+            "rgba(255, 190, 73, 0.07)",
+            "rgba(174, 82, 39, 0.10)",
+            "rgba(57, 79, 139, 0.14)"
+        ];
+        sliceTints.forEach((tint, index) => {
+            const x = viewWidth * index / FINALE_GATE_COUNT;
+            const right = index === FINALE_GATE_COUNT - 1 ? viewWidth : viewWidth * (index + 1) / FINALE_GATE_COUNT;
+            ctx.fillStyle = tint;
+            ctx.fillRect(x, 0, right - x + 1, viewHeight);
+        });
+
+        const veil = ctx.createLinearGradient(0, 0, 0, viewHeight);
+        veil.addColorStop(0, "rgba(18, 29, 68, 0.33)");
+        veil.addColorStop(0.64, "rgba(26, 35, 66, 0.18)");
+        veil.addColorStop(1, "rgba(30, 34, 57, 0.27)");
+        ctx.fillStyle = veil;
+        ctx.fillRect(0, 0, viewWidth, viewHeight);
+
+        // Each season keeps its own weather lane while the soft Purpose Thread
+        // seams make the impossible landscape feel intentionally woven together.
+        const stormStrength = clamp((0.94 - game.finaleGate * 0.10) * (1 - clamp(settlement, 0, 1) * 0.88), 0, 0.94);
+        FINALE_GATE_DEFINITIONS.forEach((gate, index) => {
+            const x = viewWidth * index / FINALE_GATE_COUNT;
+            const right = index === FINALE_GATE_COUNT - 1 ? viewWidth : viewWidth * (index + 1) / FINALE_GATE_COUNT;
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(x, 0, right - x + 1, viewHeight);
+            ctx.clip();
+            drawSeasonWeather(time, seasonDefinitions[index], stormStrength);
+            ctx.restore();
+        });
+
+        for (let index = 1; index < FINALE_GATE_COUNT; index++) {
+            const x = viewWidth * index / FINALE_GATE_COUNT;
+            const seam = ctx.createLinearGradient(x - 14, 0, x + 14, 0);
+            seam.addColorStop(0, "rgba(255, 239, 170, 0)");
+            seam.addColorStop(0.48, "rgba(226, 255, 238, 0.12)");
+            seam.addColorStop(0.5, "rgba(255, 239, 170, 0.24)");
+            seam.addColorStop(0.52, "rgba(226, 255, 238, 0.12)");
+            seam.addColorStop(1, "rgba(255, 239, 170, 0)");
+            ctx.fillStyle = seam;
+            ctx.fillRect(x - 14, 0, 28, viewHeight);
+        }
+        if (settlement > 0.02) drawSunlight(settlement * 0.94);
+    }
+
     function drawConsequences(time, finaleStrength = 0) {
         const connectionCounts = game.connections.reduce((counts, connection) => {
             counts[connection.season] = (counts[connection.season] || 0) + 1;
@@ -1245,7 +1360,44 @@
         return 0.62 + strength * 0.83;
     }
 
+    function finaleCurrentVectorAt(x, y) {
+        const bounds = playBounds();
+        const nx = clamp((x - bounds.left) / Math.max(1, bounds.right - bounds.left), 0, 1);
+        const ny = clamp((y - bounds.top) / Math.max(1, bounds.bottom - bounds.top), 0, 1);
+        const quarter = Math.min(FINALE_GATE_COUNT - 1, Math.floor(nx * FINALE_GATE_COUNT));
+        const phase = game.difficultyTimer * 0.018;
+        const remainingStorm = clamp(1 - game.finaleGate * 0.11, 0.58, 1);
+
+        if (quarter === 0) {
+            // Spring rain presses downward while a faint current carries Bea in.
+            return { x: 0.018 * Math.sin(phase + ny * 5), y: 0.054 * remainingStorm };
+        }
+        if (quarter === 1) {
+            // Summer thermals rise, then wobble as heat bends the visible path.
+            return {
+                x: 0.032 * Math.sin(phase * 1.3 + ny * 7),
+                y: -0.044 * remainingStorm + 0.012 * Math.cos(phase + nx * 8)
+            };
+        }
+        if (quarter === 2) {
+            // Autumn is the strongest lateral test and changes direction slowly.
+            return {
+                x: (0.080 + 0.018 * Math.sin(phase * 0.72)) * (Math.sin(phase * 0.34) >= 0 ? 1 : -1) * remainingStorm,
+                y: 0.012 * Math.sin(phase + nx * 4)
+            };
+        }
+        // Winter swirls inward around the final unseen path.
+        const centerX = 0.875;
+        return {
+            x: (centerX - nx) * 0.11 + 0.028 * Math.sin(phase + ny * 6),
+            y: 0.036 * remainingStorm + 0.020 * Math.cos(phase * 0.8 + nx * 5)
+        };
+    }
+
     function currentVectorAt(x, y) {
+        if (game.state === STATES.FINALE && game.finalePhase === "flight") {
+            return finaleCurrentVectorAt(x, y);
+        }
         const bounds = playBounds();
         const multiplier = currentWeatherMultiplier();
         let vx = 0;
@@ -1984,6 +2136,39 @@
         });
     }
 
+    function spawnFinaleWingBurstEmblem() {
+        if (game.boostCharges >= game.maxBoostCharges) return false;
+        const existing = entities.filter(entity => entity.type === "wingburst").length;
+        if (existing >= (viewWidth < 560 ? 2 : 3)) return false;
+        const bounds = playBounds();
+        const gate = finaleGatePoint();
+        const margin = viewWidth < 480 ? 40 : 54;
+        const x = bounds.left + margin + Math.random() * Math.max(1, bounds.right - bounds.left - margin * 2);
+        const y = Math.max(bounds.top - 22, gate.y + 18 - Math.random() * 28);
+        entities.push({
+            role: "bonus",
+            type: "wingburst",
+            x,
+            y,
+            anchorX: x,
+            anchorY: y,
+            vx: (Math.random() - 0.5) * 0.34,
+            vy: 0.74 + Math.random() * 0.30,
+            speed: 0,
+            radius: viewWidth < 560 ? 33 : 27,
+            age: Math.random() * 35,
+            rotation: Math.random() * Math.PI * 2,
+            spin: (Math.random() - 0.5) * 0.022,
+            swayRate: 0.022 + Math.random() * 0.015,
+            swayAmplitude: 12 + Math.random() * 15,
+            scale: viewWidth < 560 ? 0.94 : 0.86,
+            falling: true,
+            expires: 520,
+            finaleEmblem: true
+        });
+        return true;
+    }
+
     function dragonflyLimit() {
         return viewWidth < 560 ? 1 : 2;
     }
@@ -2417,10 +2602,16 @@
         game.checkpoint = null;
         game.creditsRunning = false;
         game.creditsAutoStartAt = 0;
+        game.creditsScrollPosition = 0;
+        game.creditsLastTick = 0;
         game.weatherIntensity = 1;
         game.weatherTarget = 1;
         game.finaleBeat = 0;
         game.finalePhase = "flight";
+        game.finaleGate = 0;
+        game.finaleGateReady = false;
+        game.finaleEmblemTimer = 0;
+        game.finaleBarrierNoticeAt = 0;
         game.failedInFinale = false;
         game.finaleCheckpoint = null;
         game.stats = { stormsWeathered: 0, pulsesUsed: 0, giftsCarried: 0, distance: 0, optionalHelp: game.guidingGlow ? 1 : 0 };
@@ -2432,6 +2623,7 @@
         hideCaption();
         hideToast();
         creditsViewport.scrollTop = 0;
+        document.documentElement.classList.remove("credits-active");
         document.body.classList.add("game-focused");
         startScreen.hidden = true;
         gameOverScreen.hidden = true;
@@ -2575,13 +2767,12 @@
         }
 
         if (game.state === STATES.CREDITS) {
-            const axisY = Math.abs(pad.axes[1] || 0) > 0.22 ? pad.axes[1] : 0;
+            const axisY = Math.abs(pad.axes[1] || 0) > 0.42 ? pad.axes[1] : 0;
             const dpadY = (pad.buttons[13]?.pressed ? 1 : 0) - (pad.buttons[12]?.pressed ? 1 : 0);
             if (axisY || dpadY) {
-                game.creditsRunning = false;
-                game.creditsAutoStartAt = 0;
-                creditsToggle.textContent = "Play Credits";
+                pauseCreditsForManualNavigation();
                 creditsViewport.scrollTop += (axisY || dpadY) * 9;
+                game.creditsScrollPosition = creditsViewport.scrollTop;
             }
         }
         gamepadPrevious.pulse = primaryPressed;
@@ -2683,7 +2874,7 @@
         }
         let destination;
         if (finaleFlight) {
-            destination = finaleTargetPoint();
+            destination = finaleGatePoint();
         } else if (game.carriedGift) {
             const target = activeTarget();
             destination = target ? pointFromTarget(target) : null;
@@ -2697,16 +2888,19 @@
             return false;
         }
         game.boostCharges = 0;
-        game.boostActive = reducedMotion ? 72 : 92;
+        game.boostActive = finaleFlight ? (reducedMotion ? 110 : 136) : (reducedMotion ? 72 : 92);
         game.boostDestination = { ...destination };
+        if (finaleFlight) game.finaleGateReady = true;
         pointer.active = false;
         boostButton.classList.add("bursting");
         window.setTimeout(() => boostButton.classList.remove("bursting"), 260);
         playNoise({ duration: 0.12, gain: 0.026, frequency: 1600, filterType: "highpass" });
         playTone({ type: "triangle", frequency: 330, gain: 0.032, duration: 0.12 });
         burst(bee.x, bee.y, ["#fff1a2", "#b7fff2", "#f7a34f"], 12);
-        addFloater(bee.x, bee.y - 28, "Wing Burst — Purpose Locked!", "#fff1a2");
-        showToast("Wing Burst locked onto the next Purpose Thread objective.");
+        addFloater(bee.x, bee.y - 28, finaleFlight ? "Threshold Break!" : "Wing Burst — Purpose Locked!", "#fff1a2");
+        showToast(finaleFlight
+            ? `Wing Burst locked onto the ${finaleGateDefinition().label} threshold.`
+            : "Wing Burst locked onto the next Purpose Thread objective.");
         updateHud();
         return true;
     }
@@ -2953,9 +3147,90 @@
         });
     }
 
+    function finaleStartPoint() {
+        const bounds = playBounds();
+        return { x: viewWidth / 2, y: lerp(bounds.top, bounds.bottom, 0.88) };
+    }
+
     function finaleTargetPoint() {
         const bounds = playBounds();
         return { x: viewWidth / 2, y: lerp(bounds.top, bounds.bottom, 0.18) };
+    }
+
+    function finaleGatePoint(index = game.finaleGate) {
+        const start = finaleStartPoint();
+        const heart = finaleTargetPoint();
+        const clampedIndex = clamp(index, 0, FINALE_GATE_COUNT - 1);
+        const xFractions = [0.28, 0.70, 0.36, 0.50];
+        const bounds = playBounds();
+        return {
+            x: lerp(bounds.left, bounds.right, xFractions[clampedIndex]),
+            y: lerp(start.y, heart.y, (clampedIndex + 1) / FINALE_GATE_COUNT)
+        };
+    }
+
+    function finaleGateDefinition(index = game.finaleGate) {
+        return FINALE_GATE_DEFINITIONS[clamp(index, 0, FINALE_GATE_COUNT - 1)];
+    }
+
+    function finaleGateCeiling() {
+        const step = Math.abs(finaleStartPoint().y - finaleTargetPoint().y) / FINALE_GATE_COUNT;
+        return finaleGatePoint().y + clamp(step * 0.38, 6, 30);
+    }
+
+    function drawFinaleThresholds(time) {
+        const bounds = playBounds();
+        const availableWidth = bounds.right - bounds.left;
+        ctx.save();
+        ctx.lineCap = "round";
+        FINALE_GATE_DEFINITIONS.forEach((gate, index) => {
+            const point = finaleGatePoint(index);
+            const complete = index < game.finaleGate;
+            const active = index === game.finaleGate;
+            const alpha = complete ? 0.20 : active ? 0.82 : 0.14;
+            const pulse = active && !reducedMotion ? 0.10 + Math.sin(time * 0.006) * 0.07 : 0;
+            const gradient = ctx.createLinearGradient(bounds.left, 0, bounds.right, 0);
+            gradient.addColorStop(0, `rgba(214, 255, 240, ${alpha * 0.28})`);
+            gradient.addColorStop(0.5, `rgba(255, 230, 126, ${alpha + pulse})`);
+            gradient.addColorStop(1, `rgba(214, 255, 240, ${alpha * 0.28})`);
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = active ? 3.2 : 1.5;
+            ctx.setLineDash(active ? [10, 8] : [4, 12]);
+            ctx.lineDashOffset = reducedMotion ? 0 : -time * (active ? 0.025 : 0.010);
+            ctx.beginPath();
+            ctx.moveTo(bounds.left, point.y);
+            ctx.bezierCurveTo(
+                bounds.left + availableWidth * 0.30,
+                point.y - 7,
+                bounds.left + availableWidth * 0.70,
+                point.y + 7,
+                bounds.right,
+                point.y
+            );
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            if (!active) return;
+            const markerRadius = viewHeight <= 560 ? 17 : viewWidth <= 480 ? 25 : 30;
+            ctx.fillStyle = "rgba(23, 35, 75, 0.88)";
+            ctx.strokeStyle = game.boostCharges >= game.maxBoostCharges
+                ? "rgba(255, 231, 126, 0.96)"
+                : "rgba(213, 255, 239, 0.68)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, markerRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = `900 ${viewWidth <= 480 ? 10 : 12}px Inter, 'Segoe UI', sans-serif`;
+            ctx.fillText(`${index + 1} / ${FINALE_GATE_COUNT}`, point.x, point.y - 4);
+            ctx.fillStyle = "#ffe17b";
+            ctx.font = `900 ${viewWidth <= 480 ? 7 : 9}px Inter, 'Segoe UI', sans-serif`;
+            ctx.fillText(gate.label.toUpperCase(), point.x, point.y + 9);
+        });
+        ctx.restore();
     }
 
     function drawFinaleObjective(time) {
@@ -2989,11 +3264,12 @@
 
     function drawFinaleScene(time, delta = 1) {
         if (game.finalePhase === "flight") {
-            drawBackground(time, 0.08);
-            ctx.fillStyle = "rgba(20, 28, 62, 0.34)";
+            drawFinaleCompositeBackground(time);
+            ctx.fillStyle = "rgba(20, 28, 62, 0.20)";
             ctx.fillRect(0, 0, viewWidth, viewHeight);
             drawCurrentField(time);
             drawPurposeThread(time, 0.34);
+            drawFinaleThresholds(time);
             drawFinaleObjective(time);
             entities.forEach(drawEntity);
             drawFaithWave();
@@ -3006,7 +3282,7 @@
 
         const elapsed = Math.max(0, time - game.finaleStartedAt);
         const strength = clamp((elapsed - 1550) / 5200, 0, 1);
-        drawBackground(time, strength);
+        drawFinaleCompositeBackground(time, strength);
         const stormStrength = 1 - clamp((elapsed - 1450) / 3300, 0, 1);
         if (stormStrength > 0) {
             ctx.save();
@@ -3047,11 +3323,14 @@
     }
 
     function beginFinale({ retry = false } = {}) {
-        const bounds = playBounds();
+        Object.values(backgroundRecords).forEach(requestBackgroundRecord);
         game.state = STATES.FINALE;
         game.finalePhase = "flight";
         game.finaleStartedAt = performance.now();
         game.finaleBeat = 0;
+        game.finaleGateReady = false;
+        game.finaleEmblemTimer = -18;
+        game.finaleBarrierNoticeAt = 0;
         game.failedInFinale = false;
         game.carriedGift = "seed";
         game.hope = 3;
@@ -3059,13 +3338,18 @@
             game.score = game.finaleCheckpoint.score;
             game.shields = game.finaleCheckpoint.shields;
             game.boostCharges = game.finaleCheckpoint.boostCharges || 0;
+            game.finaleGate = game.finaleCheckpoint.finaleGate || 0;
             game.stats = { ...game.finaleCheckpoint.stats };
         } else {
+            game.finaleGate = 0;
+            game.boostCharges = 0;
             game.shields = Math.max(1, game.shields);
             game.finaleCheckpoint = {
                 score: game.score,
                 shields: game.shields,
-                boostCharges: game.boostCharges,
+                boostCharges: 0,
+                finaleGate: 0,
+                bee: finaleStartPoint(),
                 stats: { ...game.stats }
             };
         }
@@ -3081,8 +3365,13 @@
         entities.length = 0;
         particles.length = 0;
         floaters.length = 0;
-        bee.x = viewWidth / 2;
-        bee.y = lerp(bounds.top, bounds.bottom, 0.84);
+        const resumePoint = retry && game.finaleCheckpoint?.bee
+            ? game.finaleCheckpoint.bee
+            : game.finaleGate > 0
+                ? finaleGatePoint(game.finaleGate - 1)
+                : finaleStartPoint();
+        bee.x = resumePoint.x;
+        bee.y = resumePoint.y;
         bee.vx = 0;
         bee.vy = 0;
         clearKeys();
@@ -3096,10 +3385,66 @@
         seasonName.textContent = "The Great Storm";
         seasonLesson.textContent = "Carry the Seed of Spring through the final unseen current.";
         seasonBanner.hidden = false;
-        updateHud("Final flight. Carry the Seed of Spring to the Heart of the Garden.");
-        showCaption("Every season has led here. Carry the Seed of Spring through the Great Storm.", 5200, 4);
-        announce("Final playable flight. Carry the Seed of Spring to the Heart of the Garden.");
+        const gate = finaleGateDefinition();
+        updateHud(`Final ascent. Gather three Burst emblems to cross ${gate.label}.`);
+        showCaption(retry && game.finaleGate > 0
+            ? `The garden remembers how far Bea climbed. ${gate.label} is the next threshold.`
+            : "Four seasons. Four thresholds. Cursor flight can reach each boundary—but only earned Wing Bursts can carry Bea through.", 6200, 4);
+        announce(`Final playable ascent. Gate ${game.finaleGate + 1} of four: ${gate.label}. Gather three Wing Burst emblems.`);
         sfxThunder();
+    }
+
+    function saveFinaleCheckpoint(point) {
+        game.finaleCheckpoint = {
+            score: game.score,
+            shields: game.shields,
+            boostCharges: game.boostCharges,
+            finaleGate: game.finaleGate,
+            bee: { x: point.x, y: point.y },
+            stats: { ...game.stats }
+        };
+    }
+
+    function completeFinaleGate() {
+        if (game.finaleGate >= FINALE_GATE_COUNT) return;
+        const completedIndex = game.finaleGate;
+        const completedGate = finaleGateDefinition(completedIndex);
+        const point = finaleGatePoint(completedIndex);
+        game.finaleGate += 1;
+        game.finaleGateReady = false;
+        game.boostActive = 0;
+        game.boostDestination = null;
+        game.boostCharges = 0;
+        game.finaleEmblemTimer = -34;
+        game.spawnTimer = -26;
+        game.invulnerable = 88;
+        game.score += 175 + completedIndex * 25;
+        game.shields = Math.min(3, game.shields + 1);
+        bee.x = point.x;
+        bee.y = point.y;
+        bee.vx = 0;
+        bee.vy = 0;
+        for (let index = entities.length - 1; index >= 0; index--) {
+            if (entities[index].role === "hazard" || entities[index].type === "wingburst") entities.splice(index, 1);
+        }
+        burst(point.x, point.y, ["#fff2a1", "#b7fff2", "#f08bc5", "#ffe17b"], 30);
+        screenFlash = reducedMotion ? 0.05 : 0.54;
+        sfxConnection();
+
+        if (game.finaleGate >= FINALE_GATE_COUNT) {
+            completeFinaleFlight();
+            return;
+        }
+
+        saveFinaleCheckpoint(point);
+        const nextGate = finaleGateDefinition();
+        showCaption(
+            `${completedGate.label.toUpperCase()} — ${completedGate.title}. ${completedGate.lesson} ${completedGate.help} ${nextGate.label} now waits above.`,
+            6200,
+            4
+        );
+        updateHud(`${completedGate.label} threshold crossed. ${completedGate.help} Gate ${game.finaleGate + 1} of four: ${nextGate.label}.`);
+        announce(`${completedGate.label} threshold crossed. Gather three new Wing Burst emblems for ${nextGate.label}.`);
     }
 
     function completeFinaleFlight() {
@@ -3107,6 +3452,7 @@
         game.finaleStartedAt = performance.now();
         game.finaleBeat = 0;
         game.carriedGift = null;
+        game.finaleGateReady = false;
         game.boostActive = 0;
         game.boostDestination = null;
         game.score += 500;
@@ -3123,7 +3469,7 @@
         screenFlash = reducedMotion ? 0.06 : 0.72;
         burst(bee.x, bee.y, ["#fff2a1", "#b7fff2", "#f08bc5", "#ffe17b"], 34);
         sfxConnection();
-        showCaption("The Seed reached the garden’s heart—and every unseen thread answered.", 5200, 4);
+        showCaption("Solomon’s light found the final path. The Seed reached the garden’s heart—and every unseen thread answered.", 6200, 4);
         updateHud("The final connection is complete.");
     }
 
@@ -3138,17 +3484,61 @@
         }
         updateBeeMovement(delta);
         if (game.state !== STATES.FINALE) return;
+
+        const gatePoint = finaleGatePoint();
+        if (game.finaleGateReady && distanceBetween(bee, gatePoint) < 18) {
+            completeFinaleGate();
+            return;
+        }
+
+        if (game.finaleGateReady && game.boostActive <= 0) {
+            // A resize or extreme frame stall must never consume an earned Burst.
+            game.finaleGateReady = false;
+            game.boostCharges = game.maxBoostCharges;
+            showToast("The current shifted. Wing Burst restored—try the threshold again.", 2600);
+            updateHud("Wing Burst restored after the current shifted.");
+        }
+
+        if (!game.finaleGateReady) {
+            const ceiling = finaleGateCeiling();
+            if (bee.y < ceiling) {
+                bee.y = ceiling;
+                bee.vy = Math.max(0, bee.vy) * 0.12;
+                const now = performance.now();
+                if (now - game.finaleBarrierNoticeAt > 2500) {
+                    game.finaleBarrierNoticeAt = now;
+                    const needed = game.maxBoostCharges - game.boostCharges;
+                    showToast(needed > 0
+                        ? `${finaleGateDefinition().label} resists ordinary flight. Catch ${needed} more Burst ${needed === 1 ? "emblem" : "emblems"}.`
+                        : "The threshold is waiting—activate Wing Burst to break through.", 2600);
+                }
+            }
+        }
+
         updateCurrentDust(delta);
         game.spawnTimer += delta;
         game.difficultyTimer += delta;
-        if (game.spawnTimer >= (viewWidth < 480 ? 64 : 52)) {
+
+        game.finaleEmblemTimer += delta;
+        const emblemInterval = viewWidth < 560 ? 54 : 46;
+        if (game.boostCharges < game.maxBoostCharges && game.finaleEmblemTimer >= emblemInterval) {
+            if (spawnFinaleWingBurstEmblem()) game.finaleEmblemTimer = 0;
+        }
+
+        const hazardInterval = viewWidth < 560 ? 62 : 48;
+        if (game.spawnTimer >= hazardInterval) {
             game.spawnTimer = 0;
-            spawnStorm();
-            if (Math.random() < 0.24) spawnBonus();
+            const hazardCount = entities.filter(entity => entity.role === "hazard").length;
+            const hazardLimit = viewWidth < 560 ? 2 : 4;
+            if (hazardCount < hazardLimit) {
+                const autumnGate = game.finaleGate === 2;
+                if ((autumnGate && Math.random() < 0.56) || Math.random() < 0.24) spawnDragonfly();
+                else spawnStorm();
+            }
+            if (game.boostCharges >= game.maxBoostCharges && Math.random() < 0.34) spawnBonus();
         }
         updateEntities(delta);
         if (game.state !== STATES.FINALE) return;
-        if (distanceBetween(bee, finaleTargetPoint()) < 52) completeFinaleFlight();
     }
 
     function updateFinale(timestamp, delta) {
@@ -3201,6 +3591,9 @@
         creditsViewport.scrollTop = 0;
         game.creditsRunning = false;
         game.creditsAutoStartAt = performance.now() + CREDITS_OPENING_HOLD_MS;
+        game.creditsScrollPosition = 0;
+        game.creditsLastTick = 0;
+        document.documentElement.classList.add("credits-active");
         creditsToggle.textContent = "Start Credits Now";
         sfxConnection();
         window.setTimeout(() => sfxPulse(), 180);
@@ -3211,25 +3604,46 @@
     function toggleCredits() {
         if (game.state !== STATES.CREDITS) return;
         const maxScroll = Math.max(0, creditsViewport.scrollHeight - creditsViewport.clientHeight);
-        if (creditsViewport.scrollTop >= maxScroll - 2) creditsViewport.scrollTop = 0;
+        if (creditsViewport.scrollTop >= maxScroll - 2) {
+            creditsViewport.scrollTop = 0;
+            game.creditsScrollPosition = 0;
+        } else {
+            game.creditsScrollPosition = creditsViewport.scrollTop;
+        }
         game.creditsAutoStartAt = 0;
         game.creditsRunning = !game.creditsRunning;
+        game.creditsLastTick = game.creditsRunning ? performance.now() : 0;
         creditsToggle.textContent = game.creditsRunning ? "Pause Credits" : "Play Credits";
+    }
+
+    function pauseCreditsForManualNavigation() {
+        if (game.state !== STATES.CREDITS) return;
+        game.creditsRunning = false;
+        game.creditsAutoStartAt = 0;
+        game.creditsLastTick = 0;
+        game.creditsScrollPosition = creditsViewport.scrollTop;
+        creditsToggle.textContent = "Play Credits";
     }
 
     function updateCredits(timestamp, delta) {
         if (!game.creditsRunning && game.creditsAutoStartAt && timestamp >= game.creditsAutoStartAt) {
             game.creditsAutoStartAt = 0;
             game.creditsRunning = true;
+            game.creditsLastTick = timestamp;
+            game.creditsScrollPosition = creditsViewport.scrollTop;
             creditsToggle.textContent = "Pause Credits";
             announce("End credits are now scrolling.");
         }
         if (!game.creditsRunning) return;
         const maxScroll = Math.max(0, creditsViewport.scrollHeight - creditsViewport.clientHeight);
-        const scrollSpeed = reducedMotion ? 0.25 : viewWidth <= 640 ? 0.36 : 0.48;
-        creditsViewport.scrollTop = Math.min(maxScroll, creditsViewport.scrollTop + delta * scrollSpeed);
+        const elapsedMs = game.creditsLastTick ? clamp(timestamp - game.creditsLastTick, 0, 250) : 0;
+        game.creditsLastTick = timestamp;
+        const scrollSpeed = reducedMotion ? 18 : viewWidth <= 640 ? 24 : 30;
+        game.creditsScrollPosition = Math.min(maxScroll, game.creditsScrollPosition + elapsedMs / 1000 * scrollSpeed);
+        creditsViewport.scrollTop = Math.floor(game.creditsScrollPosition);
         if (creditsViewport.scrollTop >= maxScroll - 1) {
             game.creditsRunning = false;
+            game.creditsLastTick = 0;
             creditsToggle.textContent = "Replay Credits";
         }
     }
@@ -3346,6 +3760,13 @@
         }
     });
     creditsToggle.addEventListener("click", toggleCredits);
+    creditsViewport.addEventListener("wheel", pauseCreditsForManualNavigation, { passive: true });
+    creditsViewport.addEventListener("touchstart", pauseCreditsForManualNavigation, { passive: true });
+    creditsViewport.addEventListener("keydown", event => {
+        if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " ", "Spacebar"].includes(event.key)) {
+            pauseCreditsForManualNavigation();
+        }
+    });
     fullscreenToggle.addEventListener("click", event => {
         event.stopPropagation();
         toggleFullscreen();
@@ -3495,6 +3916,8 @@
                 return {
                     state: game.state,
                     finalePhase: game.finalePhase,
+                    finaleGate: game.finaleGate,
+                    finaleGateReady: game.finaleGateReady,
                     season: currentSeason().key,
                     seasonLinks: game.seasonLinks,
                     totalLinks: game.totalLinks,
@@ -3507,6 +3930,9 @@
                     boostDestination: game.boostDestination ? { ...game.boostDestination } : null,
                     creditsRunning: game.creditsRunning,
                     creditsAutoStartAt: game.creditsAutoStartAt,
+                    creditsScrollTop: creditsViewport.scrollTop,
+                    creditsScrollPosition: Number(game.creditsScrollPosition.toFixed(2)),
+                    creditsMaxScroll: Math.max(0, creditsViewport.scrollHeight - creditsViewport.clientHeight),
                     backgroundReady: Boolean(currentBackground?.ready),
                     backgroundKey: selectedBackground?.key || "gradient",
                     weatherIntensity: Number(game.weatherIntensity.toFixed(3)),
@@ -3518,7 +3944,13 @@
                     pointer: { active: pointer.active, x: pointer.x, y: pointer.y },
                     target: (() => {
                         if (game.state === STATES.FINALE && game.finalePhase === "flight") {
-                            return { name: "Heart of the Garden", ...finaleTargetPoint() };
+                            return {
+                                name: game.finaleGate >= FINALE_GATE_COUNT - 1
+                                    ? "Heart of the Garden"
+                                    : `${finaleGateDefinition().label} threshold`,
+                                gate: game.finaleGate,
+                                ...finaleGatePoint()
+                            };
                         }
                         const target = activeTarget();
                         return target ? { name: target.name, ...pointFromTarget(target) } : null;
