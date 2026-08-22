@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const BUILD = "bee-leaf-belief-journey-2026.08.21-r3";
+    const BUILD = "bee-leaf-belief-journey-2026.08.22-r4";
     const SEASON_CARD_DWELL_MS = 5200;
     const STATES = Object.freeze({
         READY: "ready",
@@ -173,6 +173,7 @@
     const currentDust = [];
     const keys = { left: false, right: false, up: false, down: false };
     const pointer = { active: false, x: 0, y: 0, type: "mouse" };
+    const touchTap = { at: 0, x: 0, y: 0, downAt: 0, downX: 0, downY: 0, moved: false };
     const gamepadPrevious = { pulse: false, pause: false, boost: false };
 
     const bee = {
@@ -207,7 +208,9 @@
         lastSpawnType: "",
         invulnerable: 0,
         boostActive: 0,
-        boostCooldown: 0,
+        boostCharges: 0,
+        maxBoostCharges: 3,
+        boostDestination: null,
         transitionEnds: 0,
         seasonCompleteAt: 0,
         finaleStartedAt: 0,
@@ -217,6 +220,7 @@
         finaleCheckpoint: null,
         pausedAt: 0,
         creditsRunning: false,
+        creditsAutoStartAt: 0,
         guidingGlow: false,
         audioEnabled: true,
         connections: [],
@@ -241,6 +245,8 @@
     let captionExpiresAt = 0;
     let toastRemaining = 0;
     let captionRemaining = 0;
+    let currentCaptionMessage = "";
+    const captionQueue = [];
     let screenFlash = 0;
     let pseudoFullscreen = false;
     let fullscreenScrollY = 0;
@@ -352,6 +358,7 @@
             particles.forEach(particle => { particle.x *= widthScale; });
             floaters.forEach(floater => { floater.x *= widthScale; });
             currentDust.forEach(dust => { dust.x *= widthScale; });
+            if (game.boostDestination) game.boostDestination.x *= widthScale;
         }
 
         if (viewHeight > 1 && heightChanged) {
@@ -361,6 +368,7 @@
             particles.forEach(particle => { particle.y *= heightScale; });
             floaters.forEach(floater => { floater.y *= heightScale; });
             currentDust.forEach(dust => { dust.y *= heightScale; });
+            if (game.boostDestination) game.boostDestination.y *= heightScale;
         }
 
         viewWidth = nextWidth;
@@ -569,23 +577,60 @@
         soundToggle.title = game.audioEnabled ? "Mute game sound" : "Turn on game sound";
     }
 
-    function showToast(message, duration = 1500) {
+    function readingTime(message, { minimum, maximum, millisecondsPerWord }) {
+        const wordCount = String(message).trim().split(/\s+/).filter(Boolean).length;
+        return clamp(900 + wordCount * millisecondsPerWord, minimum, maximum);
+    }
+
+    function showToast(message, duration = 0) {
+        const readableDuration = readingTime(message, { minimum: 2800, maximum: 6200, millisecondsPerWord: 250 });
+        const hold = Math.max(duration, readableDuration);
         window.clearTimeout(toastTimer);
         gameToast.textContent = message;
         gameToast.classList.add("show");
-        toastRemaining = duration;
-        toastExpiresAt = performance.now() + duration;
-        toastTimer = window.setTimeout(hideToast, duration);
+        toastRemaining = hold;
+        toastExpiresAt = performance.now() + hold;
+        toastTimer = window.setTimeout(hideToast, hold);
     }
 
-    function showCaption(message, duration = 2800) {
+    function displayCaption({ message, hold }) {
+        const readableDuration = readingTime(message, { minimum: 4300, maximum: 8200, millisecondsPerWord: 310 });
+        const finalHold = Math.max(hold, readableDuration);
         window.clearTimeout(captionTimer);
+        currentCaptionMessage = message;
         storyCaption.textContent = message;
         storyCaption.hidden = false;
         announce(message);
-        captionRemaining = duration;
-        captionExpiresAt = performance.now() + duration;
-        captionTimer = window.setTimeout(hideCaption, duration);
+        captionRemaining = finalHold;
+        captionExpiresAt = performance.now() + finalHold;
+        captionTimer = window.setTimeout(finishCaption, finalHold);
+    }
+
+    function showCaption(message, duration = 0, priority = 2) {
+        const entry = { message, hold: duration, priority };
+        if (storyCaption.hidden || !currentCaptionMessage) {
+            displayCaption(entry);
+            return;
+        }
+        if (message === currentCaptionMessage || captionQueue.some(item => item.message === message)) return;
+        if (captionQueue.length < 3) {
+            captionQueue.push(entry);
+            return;
+        }
+        const lowestPriority = Math.min(...captionQueue.map(item => item.priority));
+        if (priority <= lowestPriority) return;
+        const replaceIndex = captionQueue.findIndex(item => item.priority === lowestPriority);
+        captionQueue.splice(replaceIndex, 1, entry);
+    }
+
+    function finishCaption() {
+        storyCaption.hidden = true;
+        currentCaptionMessage = "";
+        captionRemaining = 0;
+        captionExpiresAt = 0;
+        if (!captionQueue.length) return;
+        captionQueue.sort((a, b) => b.priority - a.priority);
+        displayCaption(captionQueue.shift());
     }
 
     function hideToast() {
@@ -595,7 +640,10 @@
     }
 
     function hideCaption() {
+        window.clearTimeout(captionTimer);
         storyCaption.hidden = true;
+        currentCaptionMessage = "";
+        captionQueue.length = 0;
         captionRemaining = 0;
         captionExpiresAt = 0;
     }
@@ -618,7 +666,7 @@
         }
         if (captionRemaining > 0 && !storyCaption.hidden) {
             captionExpiresAt = now + captionRemaining;
-            captionTimer = window.setTimeout(hideCaption, captionRemaining);
+            captionTimer = window.setTimeout(finishCaption, captionRemaining);
         }
     }
 
@@ -645,13 +693,15 @@
         faithValue.textContent = `${game.faith} ${game.faith === 1 ? "pulse" : "pulses"}`;
         faithButton.disabled = game.faith <= 0 || (game.state !== STATES.PLAYING && !finaleFlight);
         faithButton.setAttribute("aria-label", `Use Faith Pulse. ${game.faith} ${game.faith === 1 ? "charge" : "charges"} available.`);
-        const boostReady = game.boostCooldown <= 0;
-        const boostSeconds = Math.max(0, game.boostCooldown / 60);
-        boostValue.textContent = boostReady ? "Ready" : `${boostSeconds.toFixed(1)}s`;
+        const boostReady = game.boostCharges >= game.maxBoostCharges;
+        boostValue.textContent = boostReady ? "Ready!" : `${game.boostCharges} / ${game.maxBoostCharges}`;
         boostButton.disabled = !boostReady || (game.state !== STATES.PLAYING && !finaleFlight);
         boostButton.setAttribute("aria-label", boostReady
-            ? "Wing Burst ready. Tap to speed up."
-            : `Wing Burst recharging. ${boostSeconds.toFixed(1)} seconds remaining.`);
+            ? "Wing Burst ready. On mobile, double-tap the garden to fly to the next objective."
+            : `Wing Burst has ${game.boostCharges} of ${game.maxBoostCharges} emblems. Catch falling Burst emblems to charge it.`);
+        boostButton.title = boostReady
+            ? "Ready — double-tap on mobile, or activate on laptop/controller"
+            : `Catch ${game.maxBoostCharges - game.boostCharges} more Burst ${game.maxBoostCharges - game.boostCharges === 1 ? "emblem" : "emblems"}`;
         missionSeason.textContent = finaleActive ? "Finale" : season.shortName;
         missionTitle.textContent = finaleFlight
             ? "Carry the Seed of Spring to the Heart of the Garden"
@@ -1170,6 +1220,53 @@
         ctx.restore();
     }
 
+    function drawWingBurstEmblem(item) {
+        const pulse = reducedMotion ? 1 : 1 + Math.sin(item.age * 0.09) * 0.1;
+        ctx.save();
+        ctx.translate(item.x, item.y);
+        ctx.rotate(Math.sin(item.age * 0.035) * 0.16);
+        ctx.scale(pulse, pulse);
+        const glow = ctx.createRadialGradient(0, 0, 3, 0, 0, 30);
+        glow.addColorStop(0, "rgba(255, 251, 210, 1)");
+        glow.addColorStop(0.42, "rgba(255, 205, 82, 0.82)");
+        glow.addColorStop(1, "rgba(255, 190, 72, 0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(0, 0, 30, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff8ca";
+        ctx.strokeStyle = "#9c6330";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-4, 1);
+        ctx.bezierCurveTo(-23, -17, -28, -5, -12, 5);
+        ctx.bezierCurveTo(-24, 5, -22, 17, -4, 8);
+        ctx.bezierCurveTo(4, 4, 4, 3, -4, 1);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(4, 1);
+        ctx.bezierCurveTo(23, -17, 28, -5, 12, 5);
+        ctx.bezierCurveTo(24, 5, 22, 17, 4, 8);
+        ctx.bezierCurveTo(-4, 4, -4, 3, 4, 1);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#f2a73d";
+        ctx.shadowColor = "rgba(255, 225, 112, 0.95)";
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(-3, -14);
+        ctx.lineTo(8, -14);
+        ctx.lineTo(1, -2);
+        ctx.lineTo(9, -2);
+        ctx.lineTo(-6, 17);
+        ctx.lineTo(-1, 3);
+        ctx.lineTo(-9, 3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+
     function drawSeed(item) {
         const scale = item.scale || 1;
         ctx.save();
@@ -1320,6 +1417,7 @@
         else if (entity.type === "leaf") drawLeaf(entity);
         else if (entity.type === "seed") drawSeed(entity);
         else if (entity.type === "hope" || entity.type === "faith") drawHope(entity);
+        else if (entity.type === "wingburst") drawWingBurstEmblem(entity);
         else if (entity.type === "storm") drawStorm(entity);
         else if (entity.type === "dragonfly") drawDragonfly(entity);
         else drawHoney(entity);
@@ -1540,7 +1638,8 @@
         const bonusLimit = viewWidth < 480 ? 7 : viewWidth < 760 ? 9 : 12;
         if (bonusCount >= bonusLimit) return;
         const roll = Math.random();
-        const type = roll < 0.38 ? "leaf" : roll < 0.75 ? "honey" : roll < 0.88 ? "faith" : "flower";
+        let type = roll < 0.32 ? "leaf" : roll < 0.64 ? "honey" : roll < 0.82 ? "wingburst" : roll < 0.91 ? "faith" : "flower";
+        if (type === "wingburst" && game.boostCharges >= game.maxBoostCharges) type = Math.random() < 0.5 ? "leaf" : "honey";
         const bounds = playBounds();
         const x = bounds.left + 32 + Math.random() * Math.max(1, bounds.right - bounds.left - 64);
         const y = bounds.top - 34 - Math.random() * 54;
@@ -1554,7 +1653,7 @@
             vx: (Math.random() - 0.5) * 0.42,
             vy: 0.62 + Math.random() * 0.54,
             speed: 0,
-            radius: type === "flower" ? 23 : 21,
+            radius: type === "flower" ? 23 : type === "wingburst" ? 24 : 21,
             age: Math.random() * 90,
             rotation: Math.random() * Math.PI * 2,
             spin: (Math.random() - 0.5) * 0.024,
@@ -1693,6 +1792,8 @@
     function collectMissionGift(entity) {
         const season = currentSeason();
         game.carriedGift = entity.type;
+        game.boostActive = 0;
+        game.boostDestination = null;
         game.score += 25;
         game.stats.giftsCarried += 1;
         burst(entity.x, entity.y, ["#fff2a1", "#d9fff4", "#ffc84e"], 15);
@@ -1703,7 +1804,32 @@
     }
 
     function collectBonus(entity) {
-        if (entity.type === "leaf") {
+        let announcement = "";
+        if (entity.type === "wingburst") {
+            const previousCharges = game.boostCharges;
+            game.boostCharges = Math.min(game.maxBoostCharges, game.boostCharges + 1);
+            if (previousCharges >= game.maxBoostCharges) {
+                game.score += 5;
+                addFloater(entity.x, entity.y, "+5 Belief", "#fff1a2");
+            } else {
+                game.score += 20;
+                burst(entity.x, entity.y, ["#fff1a2", "#ffd360", "#b7fff2"], 15);
+                addFloater(entity.x, entity.y, `Burst ${game.boostCharges} / ${game.maxBoostCharges}`, "#fff1a2");
+                playTone({ type: "triangle", frequency: 392 + game.boostCharges * 90, gain: 0.04, duration: 0.14 });
+            }
+            if (previousCharges < game.maxBoostCharges && game.boostCharges >= game.maxBoostCharges) {
+                entities.forEach(item => {
+                    if (item.type === "wingburst") {
+                        item.type = "honey";
+                        item.radius = 21;
+                    }
+                });
+                showToast("Wing Burst charged! Double-tap the garden to fly straight toward the next objective.");
+                announcement = "Wing Burst fully charged. Double-tap the garden to fly to the next objective.";
+            } else if (previousCharges < game.maxBoostCharges) {
+                announcement = `Wing Burst charge ${game.boostCharges} of ${game.maxBoostCharges}.`;
+            }
+        } else if (entity.type === "leaf") {
             game.shields = Math.min(3, game.shields + 1);
             game.score += 18;
             burst(entity.x, entity.y, ["#8ee294", "#d6ffd3", "#4da866"], 13);
@@ -1723,12 +1849,17 @@
             burst(entity.x, entity.y, ["#ffc84e", "#fff0a1", "#e7901d"], 14);
             addFloater(entity.x, entity.y, "+38 Belief", "#ffe8a0");
         }
-        sfxGift(entity.type);
-        updateHud();
+        if (entity.type !== "wingburst") sfxGift(entity.type);
+        updateHud(announcement);
     }
 
     function handleStormHit(entity) {
         if (game.invulnerable > 0) return;
+        if (game.boostActive > 0) {
+            burst(entity.x, entity.y, ["#fff1a2", "#b7fff2", "#f7a34f"], 14);
+            addFloater(entity.x, entity.y, "Purpose held the course", "#fff1a2");
+            return;
+        }
         const isDragonfly = entity.type === "dragonfly";
         if (isDragonfly) {
             playNoise({ duration: 0.18, gain: 0.042, frequency: 1280, filterType: "bandpass" });
@@ -1746,7 +1877,7 @@
             addFloater(entity.x, entity.y, "Leif's shelter held", "#d9e5ff");
             showCaption(isDragonfly
                 ? "The dragonfly’s crosswind met Leif’s shelter. Bea kept her purpose."
-                : "The storm struck—but a kindness gathered earlier became shelter now.");
+                : "The storm struck—but a kindness gathered earlier became shelter now.", 0, 1);
             updateHud(isDragonfly ? "Leif’s shelter softened the crosswind." : "A leaf shield protected Bea.");
             return;
         }
@@ -1765,7 +1896,7 @@
         }
         showCaption(isDragonfly
             ? "A swift shadow crossed Bea’s path. She steadied her wings and believed forward."
-            : "The wind scattered Bea’s path, not her purpose. Hope remains.");
+            : "The wind scattered Bea’s path, not her purpose. Hope remains.", 0, 1);
         updateHud(`${isDragonfly ? "Crosswind dodged too late" : "Storm weathered"}. ${game.hope} hope ${game.hope === 1 ? "petal remains" : "petals remain"}.`);
     }
 
@@ -1776,6 +1907,8 @@
         if (!target || !game.carriedGift) return;
         const point = pointFromTarget(target);
         game.carriedGift = null;
+        game.boostActive = 0;
+        game.boostDestination = null;
         game.seasonLinks += 1;
         game.totalLinks += 1;
         game.score += 125 + game.seasonIndex * 25;
@@ -1786,7 +1919,7 @@
         sfxConnection();
         game.faithReveal = Math.max(game.faithReveal, 90);
         screenFlash = Math.max(screenFlash, reducedMotion ? 0.06 : 0.38);
-        showCaption(season.consequence, 3200);
+        showCaption(season.consequence, 0, 3);
         updateHud(`${target.name} connected to the Purpose Thread. ${game.totalLinks} of 12 connections complete.`);
 
         if (game.seasonLinks >= 3) {
@@ -1878,6 +2011,7 @@
             totalLinks: game.totalLinks,
             score: game.score,
             shields: game.shields,
+            boostCharges: game.boostCharges,
             connections: game.connections.map(connection => ({ ...connection })),
             stats: { ...game.stats }
         };
@@ -1890,6 +2024,7 @@
         game.totalLinks = checkpoint.totalLinks;
         game.score = checkpoint.score;
         game.shields = checkpoint.shields;
+        game.boostCharges = checkpoint.boostCharges || 0;
         game.connections = checkpoint.connections.map(connection => ({ ...connection }));
         game.stats = { ...checkpoint.stats };
     }
@@ -1912,7 +2047,7 @@
         game.lastSpawnType = "";
         game.invulnerable = 0;
         game.boostActive = 0;
-        game.boostCooldown = 0;
+        game.boostDestination = null;
         bee.x = viewWidth / 2;
         bee.y = lerp(bounds.top, bounds.bottom, 0.68);
         bee.vx = 0;
@@ -1952,9 +2087,13 @@
         game.hope = 3;
         game.shields = 0;
         game.faith = game.maxFaith;
+        game.boostCharges = 0;
+        game.boostActive = 0;
+        game.boostDestination = null;
         game.connections = [];
         game.checkpoint = null;
         game.creditsRunning = false;
+        game.creditsAutoStartAt = 0;
         game.finaleBeat = 0;
         game.finalePhase = "flight";
         game.failedInFinale = false;
@@ -2115,6 +2254,7 @@
             const dpadY = (pad.buttons[13]?.pressed ? 1 : 0) - (pad.buttons[12]?.pressed ? 1 : 0);
             if (axisY || dpadY) {
                 game.creditsRunning = false;
+                game.creditsAutoStartAt = 0;
                 creditsToggle.textContent = "Play Credits";
                 creditsViewport.scrollTop += (axisY || dpadY) * 9;
             }
@@ -2132,7 +2272,19 @@
         let inputY = 0;
         let inputActive = false;
 
-        if (pad.active) {
+        if (game.boostActive > 0 && game.boostDestination) {
+            const dx = game.boostDestination.x - bee.x;
+            const dy = game.boostDestination.y - bee.y;
+            const distance = Math.hypot(dx, dy);
+            if (distance <= 16) {
+                game.boostActive = 0;
+                game.boostDestination = null;
+            } else {
+                inputX = dx / distance;
+                inputY = dy / distance;
+                inputActive = true;
+            }
+        } else if (pad.active) {
             inputX = pad.x;
             inputY = pad.y;
             inputActive = true;
@@ -2157,12 +2309,13 @@
             }
         }
 
-        const burstMultiplier = game.boostActive > 0 ? 1.9 : 1;
+        const burstMultiplier = game.boostActive > 0 ? 2.65 : 1;
         const maxSpeed = clamp(Math.min(viewWidth, viewHeight) / 86, 4.6, 7.1) * burstMultiplier;
         const current = currentVectorAt(bee.x, bee.y);
-        const desiredX = (inputActive ? inputX * maxSpeed : 0) + current.x * 18;
-        const desiredY = (inputActive ? inputY * maxSpeed : 0) + current.y * 18;
-        const response = 1 - Math.pow(game.boostActive > 0 ? 0.58 : inputActive ? 0.74 : 0.82, delta);
+        const currentInfluence = game.boostActive > 0 ? 3.5 : 18;
+        const desiredX = (inputActive ? inputX * maxSpeed : 0) + current.x * currentInfluence;
+        const desiredY = (inputActive ? inputY * maxSpeed : 0) + current.y * currentInfluence;
+        const response = 1 - Math.pow(game.boostActive > 0 ? 0.46 : inputActive ? 0.74 : 0.82, delta);
         bee.vx = lerp(bee.vx, desiredX, response);
         bee.vy = lerp(bee.vy, desiredY, response);
         bee.x += bee.vx * delta;
@@ -2197,15 +2350,38 @@
 
     function useWingBurst() {
         const finaleFlight = game.state === STATES.FINALE && game.finalePhase === "flight";
-        if ((game.state !== STATES.PLAYING && !finaleFlight) || game.boostCooldown > 0) return false;
-        game.boostActive = reducedMotion ? 34 : 44;
-        game.boostCooldown = 96;
+        if (game.state !== STATES.PLAYING && !finaleFlight) return false;
+        if (game.boostCharges < game.maxBoostCharges) {
+            const needed = game.maxBoostCharges - game.boostCharges;
+            showToast(`Wing Burst needs ${needed} more falling ${needed === 1 ? "emblem" : "emblems"}.`);
+            return false;
+        }
+        let destination;
+        if (finaleFlight) {
+            destination = finaleTargetPoint();
+        } else if (game.carriedGift) {
+            const target = activeTarget();
+            destination = target ? pointFromTarget(target) : null;
+        } else {
+            if (!missionEntity()) spawnMissionGift();
+            const mission = missionEntity();
+            destination = mission ? { x: mission.x, y: mission.y } : null;
+        }
+        if (!destination) {
+            showToast("The next Purpose Thread objective is still revealing itself.");
+            return false;
+        }
+        game.boostCharges = 0;
+        game.boostActive = reducedMotion ? 72 : 92;
+        game.boostDestination = { ...destination };
+        pointer.active = false;
         boostButton.classList.add("bursting");
         window.setTimeout(() => boostButton.classList.remove("bursting"), 260);
         playNoise({ duration: 0.12, gain: 0.026, frequency: 1600, filterType: "highpass" });
         playTone({ type: "triangle", frequency: 330, gain: 0.032, duration: 0.12 });
         burst(bee.x, bee.y, ["#fff1a2", "#b7fff2", "#f7a34f"], 12);
-        addFloater(bee.x, bee.y - 28, "Wing Burst!", "#fff1a2");
+        addFloater(bee.x, bee.y - 28, "Wing Burst — Purpose Locked!", "#fff1a2");
+        showToast("Wing Burst locked onto the next Purpose Thread objective.");
         updateHud();
         return true;
     }
@@ -2409,9 +2585,7 @@
         game.faithReveal = Math.max(0, game.faithReveal - delta);
         game.invulnerable = Math.max(0, game.invulnerable - delta);
         game.boostActive = Math.max(0, game.boostActive - delta);
-        const previousBoostSecond = Math.ceil(game.boostCooldown / 6);
-        game.boostCooldown = Math.max(0, game.boostCooldown - delta);
-        if (Math.ceil(game.boostCooldown / 6) !== previousBoostSecond || game.boostCooldown === 0) updateHud();
+        if (game.boostActive <= 0) game.boostDestination = null;
         if (game.pulseWave > 0) {
             game.pulseWave += 0.022 * delta;
             if (game.pulseWave >= 1) game.pulseWave = 0;
@@ -2559,12 +2733,14 @@
         if (retry && game.finaleCheckpoint) {
             game.score = game.finaleCheckpoint.score;
             game.shields = game.finaleCheckpoint.shields;
+            game.boostCharges = game.finaleCheckpoint.boostCharges || 0;
             game.stats = { ...game.finaleCheckpoint.stats };
         } else {
             game.shields = Math.max(1, game.shields);
             game.finaleCheckpoint = {
                 score: game.score,
                 shields: game.shields,
+                boostCharges: game.boostCharges,
                 stats: { ...game.stats }
             };
         }
@@ -2576,7 +2752,7 @@
         game.stormSpawnStreak = 0;
         game.invulnerable = 80;
         game.boostActive = 0;
-        game.boostCooldown = 0;
+        game.boostDestination = null;
         entities.length = 0;
         particles.length = 0;
         floaters.length = 0;
@@ -2596,7 +2772,7 @@
         seasonLesson.textContent = "Carry the Seed of Spring through the final unseen current.";
         seasonBanner.hidden = false;
         updateHud("Final flight. Carry the Seed of Spring to the Heart of the Garden.");
-        showCaption("Every season has led here. Carry the Seed of Spring through the Great Storm.", 3300);
+        showCaption("Every season has led here. Carry the Seed of Spring through the Great Storm.", 5200, 4);
         announce("Final playable flight. Carry the Seed of Spring to the Heart of the Garden.");
         sfxThunder();
     }
@@ -2606,6 +2782,8 @@
         game.finaleStartedAt = performance.now();
         game.finaleBeat = 0;
         game.carriedGift = null;
+        game.boostActive = 0;
+        game.boostDestination = null;
         game.score += 500;
         canvas.tabIndex = -1;
         entities.length = 0;
@@ -2620,13 +2798,15 @@
         screenFlash = reducedMotion ? 0.06 : 0.72;
         burst(bee.x, bee.y, ["#fff2a1", "#b7fff2", "#f08bc5", "#ffe17b"], 34);
         sfxConnection();
-        showCaption("The Seed reached the garden’s heart—and every unseen thread answered.", 2800);
+        showCaption("The Seed reached the garden’s heart—and every unseen thread answered.", 5200, 4);
         updateHud("The final connection is complete.");
     }
 
     function updateFinaleFlight(delta) {
         game.faithReveal = Math.max(0, game.faithReveal - delta);
         game.invulnerable = Math.max(0, game.invulnerable - delta);
+        game.boostActive = Math.max(0, game.boostActive - delta);
+        if (game.boostActive <= 0) game.boostDestination = null;
         if (game.pulseWave > 0) {
             game.pulseWave += 0.022 * delta;
             if (game.pulseWave >= 1) game.pulseWave = 0;
@@ -2648,21 +2828,21 @@
 
     function updateFinale(timestamp, delta) {
         if (game.finalePhase === "flight") {
-            if (timestamp - game.finaleStartedAt > 1500) seasonBanner.hidden = true;
+            if (timestamp - game.finaleStartedAt > SEASON_CARD_DWELL_MS) seasonBanner.hidden = true;
             updateFinaleFlight(delta);
             return;
         }
         const elapsed = timestamp - game.finaleStartedAt;
         const beats = [
-            { at: 1900, text: "But every promise Bea carried answered at once." },
-            { at: 3900, text: "Leif became shelter. The flowers became food. Small lives became a living network." },
-            { at: 6100, text: "The garden remembered." },
-            { at: 7900, text: "And Bea finally saw what faith had built." }
+            { at: 6200, hold: 4600, text: "But every promise Bea carried answered at once." },
+            { at: 11400, hold: 5400, text: "Leif became shelter. The flowers became food. Small lives became a living network." },
+            { at: 17600, hold: 4600, text: "The garden remembered." },
+            { at: 22800, hold: 5200, text: "And Bea finally saw what faith had built." }
         ];
-        if (elapsed > 1500) seasonBanner.hidden = true;
+        if (elapsed > SEASON_CARD_DWELL_MS) seasonBanner.hidden = true;
         while (game.finaleBeat < beats.length && elapsed >= beats[game.finaleBeat].at) {
             const beat = beats[game.finaleBeat];
-            showCaption(beat.text, game.finaleBeat === beats.length - 1 ? 2600 : 2300);
+            showCaption(beat.text, beat.hold, 4);
             if (game.finaleBeat === 1) sfxConnection();
             if (game.finaleBeat === 2) {
                 sfxPulse();
@@ -2670,7 +2850,9 @@
             }
             game.finaleBeat += 1;
         }
-        if (elapsed >= 10300) showCredits();
+        // Leave the complete caption sequence on-screen through its full reading
+        // time before changing scenes. The credits then add their own opening hold.
+        if (elapsed >= 33000) showCredits();
     }
 
     function showCredits() {
@@ -2692,11 +2874,14 @@
         winScoreDisplay.textContent = `Belief Collected: ${game.score} · 12 connections · ${game.stats.stormsWeathered} storms weathered`;
         winScreen.hidden = false;
         creditsViewport.scrollTop = 0;
-        game.creditsRunning = !reducedMotion;
-        creditsToggle.textContent = game.creditsRunning ? "Pause Credits" : "Play Credits";
+        game.creditsRunning = false;
+        game.creditsAutoStartAt = reducedMotion ? 0 : performance.now() + 6000;
+        creditsToggle.textContent = reducedMotion ? "Play Credits" : "Start Credits Now";
         sfxConnection();
         window.setTimeout(() => sfxPulse(), 180);
-        announce("The garden remembers. The end credits are now playing.");
+        announce(reducedMotion
+            ? "The garden remembers. End credits are ready to play."
+            : "The garden remembers. End credits will begin scrolling in six seconds.");
         creditsViewport.focus({ preventScroll: true });
     }
 
@@ -2704,14 +2889,22 @@
         if (game.state !== STATES.CREDITS) return;
         const maxScroll = Math.max(0, creditsViewport.scrollHeight - creditsViewport.clientHeight);
         if (creditsViewport.scrollTop >= maxScroll - 2) creditsViewport.scrollTop = 0;
+        game.creditsAutoStartAt = 0;
         game.creditsRunning = !game.creditsRunning;
         creditsToggle.textContent = game.creditsRunning ? "Pause Credits" : "Play Credits";
     }
 
-    function updateCredits(delta) {
+    function updateCredits(timestamp, delta) {
+        if (!game.creditsRunning && game.creditsAutoStartAt && timestamp >= game.creditsAutoStartAt) {
+            game.creditsAutoStartAt = 0;
+            game.creditsRunning = true;
+            creditsToggle.textContent = "Pause Credits";
+            announce("End credits are now scrolling.");
+        }
         if (!game.creditsRunning) return;
         const maxScroll = Math.max(0, creditsViewport.scrollHeight - creditsViewport.clientHeight);
-        creditsViewport.scrollTop = Math.min(maxScroll, creditsViewport.scrollTop + delta * 0.58);
+        const scrollSpeed = viewWidth <= 640 ? 0.36 : 0.48;
+        creditsViewport.scrollTop = Math.min(maxScroll, creditsViewport.scrollTop + delta * scrollSpeed);
         if (creditsViewport.scrollTop >= maxScroll - 1) {
             game.creditsRunning = false;
             creditsToggle.textContent = "Replay Credits";
@@ -2768,7 +2961,7 @@
         if (!movementState) pollMenuGamepad();
         advanceJourney(timestamp, delta);
         if (game.state === STATES.PLAYING) updatePlaying(delta);
-        if (game.state === STATES.CREDITS) updateCredits(delta);
+        if (game.state === STATES.CREDITS) updateCredits(timestamp, delta);
         const staticOverlay = [STATES.READY, STATES.PAUSED, STATES.OVER, STATES.CREDITS].includes(game.state);
         if (!staticOverlay || timestamp - lastRenderTime >= 180) {
             const renderTimestamp = game.state === STATES.PAUSED ? game.pausedAt : timestamp;
@@ -2835,21 +3028,55 @@
     canvas.addEventListener("pointermove", event => {
         if (!acceptsFlightInput()) return;
         if (event.pointerType === "mouse" || pointer.active) updatePointerFromEvent(event);
+        if ((event.pointerType === "touch" || event.pointerType === "pen") && touchTap.downAt) {
+            if (Math.hypot(pointer.x - touchTap.downX, pointer.y - touchTap.downY) > 18) touchTap.moved = true;
+        }
         if (event.pointerType !== "mouse") event.preventDefault();
     });
     canvas.addEventListener("pointerdown", event => {
         if (!acceptsFlightInput()) return;
+        if ((event.pointerType === "touch" || event.pointerType === "pen") && event.isPrimary === false) return;
         updatePointerFromEvent(event);
-        if ((event.pointerType || "mouse") === "mouse" && event.button === 0) useWingBurst();
+        const pointerType = event.pointerType || "mouse";
+        if (pointerType === "mouse" && event.button === 0) {
+            useWingBurst();
+        } else if (pointerType === "touch" || pointerType === "pen") {
+            touchTap.downAt = performance.now();
+            touchTap.downX = pointer.x;
+            touchTap.downY = pointer.y;
+            touchTap.moved = false;
+        }
         canvas.setPointerCapture?.(event.pointerId);
         event.preventDefault();
     });
     canvas.addEventListener("pointerup", event => {
-        if (event.pointerType !== "mouse") pointer.active = false;
+        if (event.pointerType !== "mouse") {
+            const now = performance.now();
+            const wasTap = touchTap.downAt > 0 && !touchTap.moved && now - touchTap.downAt <= 280;
+            if (wasTap) {
+                const closeInTime = touchTap.at > 0 && now - touchTap.at <= 380;
+                const closeInSpace = Math.hypot(pointer.x - touchTap.x, pointer.y - touchTap.y) <= 90;
+                if (closeInTime && closeInSpace) {
+                    touchTap.at = 0;
+                    useWingBurst();
+                } else {
+                    touchTap.at = now;
+                    touchTap.x = pointer.x;
+                    touchTap.y = pointer.y;
+                }
+            }
+            touchTap.downAt = 0;
+            touchTap.moved = false;
+            pointer.active = false;
+        }
         canvas.releasePointerCapture?.(event.pointerId);
     });
     canvas.addEventListener("pointercancel", event => {
-        if (event.pointerType !== "mouse") pointer.active = false;
+        if (event.pointerType !== "mouse") {
+            touchTap.downAt = 0;
+            touchTap.moved = false;
+            pointer.active = false;
+        }
     });
 
     function keyName(event) {
@@ -2948,7 +3175,12 @@
                 shields: game.shields,
                 faith: game.faith,
                 boostActive: game.boostActive,
-                boostCooldown: game.boostCooldown,
+                boostCharges: game.boostCharges,
+                boostDestination: game.boostDestination ? { ...game.boostDestination } : null,
+                creditsRunning: game.creditsRunning,
+                creditsAutoStartAt: game.creditsAutoStartAt,
+                caption: storyCaption.hidden ? "" : storyCaption.textContent,
+                captionRemaining,
                 carriedGift: game.carriedGift,
                 bee: { x: bee.x, y: bee.y, vx: bee.vx, vy: bee.vy },
                 pointer: { active: pointer.active, x: pointer.x, y: pointer.y },
@@ -2963,6 +3195,11 @@
             }),
             useFaithPulse,
             useWingBurst,
+            collectWingBurstEmblem: () => collectBonus({ type: "wingburst", x: bee.x, y: bee.y }),
+            chargeWingBurst: () => {
+                game.boostCharges = game.maxBoostCharges;
+                updateHud("Wing Burst debug charge ready.");
+            },
             spawnDragonfly,
             showCredits: () => {
                 seedDebugProgress(12);

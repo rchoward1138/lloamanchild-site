@@ -1,6 +1,6 @@
 /*
  * The Belief Collector: The Unseen Thread
- * Stage build 2026.08.21-r3 — arcade intensity and Wing Burst.
+ * Stage build 2026.08.22-r4 — earned objective-seeking Wing Burst and readable finale pacing.
  */
 
 .game-shell.playing {
@@ -689,8 +689,24 @@ canvas:focus-visible {
 
     .boost-symbol { width: 24px; height: 24px; font-size: 0.78rem; }
     .boost-copy { display: block; text-align: center; line-height: 1; }
-    .boost-copy strong { display: block; max-width: 56px; font-size: 0.48rem; letter-spacing: 0.04em; }
-    .boost-copy small { display: none; }
+    .boost-copy strong { display: none; }
+    .boost-copy small { display: block; color: white; font-size: 0.54rem; letter-spacing: 0.03em; }
+    .boost-copy small::before { content: "BURST "; }
+}
+
+@media (pointer: coarse) {
+    .boost-button {
+        pointer-events: none;
+    }
+
+    .boost-button:not(:disabled) {
+        animation: burst-ready-pulse 1.35s ease-in-out infinite;
+    }
+}
+
+@keyframes burst-ready-pulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.2) saturate(1.16); }
 }
 
 @media (min-width: 641px) and (max-width: 760px) and (orientation: portrait) {
@@ -925,4 +941,5 @@ canvas:focus-visible {
     .boost-button,
     .season-banner,
     .credits-track { transition: none !important; animation: none !important; }
+    .boost-button { animation: none !important; }
 }
