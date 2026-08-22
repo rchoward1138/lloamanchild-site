@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const BUILD = "bee-leaf-belief-journey-2026.08.22-r5";
+    const BUILD = "bee-leaf-belief-journey-2026.08.22-r6";
     const SEASON_CARD_DWELL_MS = 5200;
     const CREDITS_OPENING_HOLD_MS = 3800;
     const SEASON_BACKGROUND_SOURCES = Object.freeze({
@@ -1053,9 +1053,47 @@
         ctx.restore();
     }
 
+    function drawWinterSnowflake(x, y, radius, rotation, alpha, detailed) {
+        ctx.strokeStyle = `rgba(250, 253, 255, ${alpha})`;
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(0.96, alpha + 0.08)})`;
+        ctx.lineWidth = Math.max(0.8, radius * 0.18);
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        for (let axis = 0; axis < 3; axis++) {
+            const angle = rotation + axis * Math.PI / 3;
+            const dx = Math.cos(angle) * radius;
+            const dy = Math.sin(angle) * radius;
+            ctx.moveTo(x - dx, y - dy);
+            ctx.lineTo(x + dx, y + dy);
+        }
+
+        if (detailed) {
+            for (let arm = 0; arm < 6; arm++) {
+                const angle = rotation + arm * Math.PI / 3;
+                const branchX = x + Math.cos(angle) * radius * 0.58;
+                const branchY = y + Math.sin(angle) * radius * 0.58;
+                const branchLength = radius * 0.30;
+                ctx.moveTo(branchX, branchY);
+                ctx.lineTo(
+                    branchX + Math.cos(angle + Math.PI - 0.62) * branchLength,
+                    branchY + Math.sin(angle + Math.PI - 0.62) * branchLength
+                );
+                ctx.moveTo(branchX, branchY);
+                ctx.lineTo(
+                    branchX + Math.cos(angle + Math.PI + 0.62) * branchLength,
+                    branchY + Math.sin(angle + Math.PI + 0.62) * branchLength
+                );
+            }
+        }
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(x, y, Math.max(0.7, radius * 0.12), 0, Math.PI * 2);
+        ctx.fill();
+    }
+
     function drawWinterBlizzard(time, strength) {
         if (strength <= 0.01) return;
-        const count = Math.max(12, Math.round((reducedMotion ? 28 : clamp(viewWidth / 11, 54, 112)) * strength));
+        const count = Math.max(12, Math.round((reducedMotion ? 26 : clamp(viewWidth / 13, 48, 104)) * strength));
         ctx.save();
         const fog = ctx.createLinearGradient(0, playBounds().top, 0, viewHeight);
         fog.addColorStop(0, `rgba(225, 237, 249, ${strength * 0.11})`);
@@ -1063,25 +1101,26 @@
         fog.addColorStop(1, `rgba(240, 247, 252, ${strength * 0.14})`);
         ctx.fillStyle = fog;
         ctx.fillRect(0, playBounds().top, viewWidth, viewHeight);
-        ctx.lineCap = "round";
         for (let index = 0; index < count; index++) {
-            const progress = (seededUnit(index, 31) + time * (0.00012 + seededUnit(index, 32) * 0.00014)) % 1;
-            const x = (seededUnit(index, 33) * (viewWidth + 160) - 80 + progress * 94 * strength) % (viewWidth + 120) - 40;
+            const depth = 0.25 + seededUnit(index, 34) * 0.75;
+            const speed = reducedMotion
+                ? 0.000035 + depth * 0.000025
+                : 0.00007 + depth * 0.00009;
+            const progress = (seededUnit(index, 31) + time * speed) % 1;
+            const span = viewWidth + 180;
+            const windDrift = progress * (34 + depth * 82) * strength;
+            const sway = reducedMotion
+                ? 0
+                : Math.sin(time * (0.00055 + depth * 0.00035) + index * 1.73) * (2 + depth * 7);
+            const rawX = seededUnit(index, 33) * span - 90 + windDrift + sway;
+            const x = ((rawX + 90) % span + span) % span - 90;
             const y = progress * (viewHeight + 70) - 35;
-            const size = 1.2 + seededUnit(index, 35) * 3.2;
-            if (reducedMotion) {
-                ctx.fillStyle = `rgba(250, 253, 255, ${strength * (0.28 + strength * 0.42)})`;
-                ctx.beginPath();
-                ctx.arc(x, y, size, 0, Math.PI * 2);
-                ctx.fill();
-            } else {
-                ctx.strokeStyle = `rgba(250, 253, 255, ${strength * (0.24 + strength * 0.52)})`;
-                ctx.lineWidth = Math.max(1, size * 0.58);
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + 7 + strength * 10, y + 9 + size * 2);
-                ctx.stroke();
-            }
+            const radius = 2.5 + depth * 6.5;
+            const rotation = reducedMotion
+                ? seededUnit(index, 36) * Math.PI
+                : seededUnit(index, 36) * Math.PI + time * (0.00012 + depth * 0.00018) * (index % 2 ? -1 : 1);
+            const alpha = strength * (0.34 + depth * 0.56);
+            drawWinterSnowflake(x, y, radius, rotation, alpha, depth > 0.58 && index % 2 === 0);
         }
         ctx.restore();
     }
