@@ -954,6 +954,27 @@ html.credits-active::-webkit-scrollbar {
     .credits-track { padding-top: 26px; }
 }
 
+/* Budget the opening screen as well as active play against the viewport. */
+.game-page, body.game-focused .game-page { padding-top: 10px; }
+.page-heading { gap: 4px; margin-bottom: 10px; }
+.page-heading h1 { font-size: clamp(1.7rem, 3.5vw, 2.6rem); }
+.page-heading .eyebrow { padding: 5px 10px; font-size: .65rem; }
+.page-heading .tagline { font-size: 1rem; }
+.game-shell { height: var(--playfield-height, clamp(300px, calc(100svh - 230px), 660px)); }
+.game-shell.playing { height: var(--playfield-height, clamp(360px, calc(100svh - 120px), 660px)); }
+.overlay { padding: 14px; }
+.overlay-card { padding: 20px; }
+.overlay-mark { display: none; }
+.overlay h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+.sound-toggle, .fullscreen-toggle, .pause-toggle { min-height: 44px; }
+.sound-toggle { min-width: 44px; }
+
+@media (max-height: 620px) {
+    .page-heading .eyebrow, .page-heading .tagline { display: none; }
+    .page-heading h1 { font-size: 1.7rem; }
+    .overlay-card { padding: 16px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .faith-button,
     .boost-button,
@@ -961,3 +982,4 @@ html.credits-active::-webkit-scrollbar {
     .credits-track { transition: none !important; animation: none !important; }
     .boost-button { animation: none !important; }
 }
+
