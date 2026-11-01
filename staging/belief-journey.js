@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const BUILD = "bee-leaf-belief-journey-2026.08.22-r7";
+    const BUILD = "bee-leaf-belief-journey-2026.11.01-responsive-r1";
     const SEASON_CARD_DWELL_MS = 5200;
     const CREDITS_OPENING_HOLD_MS = 3800;
     const FINALE_GATE_COUNT = 4;
@@ -322,6 +322,8 @@
     let viewportSyncFrame = 0;
     let viewportSettleTimer = 0;
     let lockedLayoutWidth = 0;
+    let lockedViewportHeight = 0;
+    let lockedTopInset = 0;
     let lockedOrientation = "";
     let lastRenderTime = 0;
 
@@ -489,7 +491,10 @@
     }
 
     function usableViewportHeight() {
-        return Math.max(1, Math.round(window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight));
+        // Browser zoom changes the layout viewport. Pinch zoom should magnify
+        // the existing playfield rather than move the game underneath a finger.
+        const height = window.visualViewport?.scale === 1 ? window.visualViewport.height : window.innerHeight;
+        return Math.max(1, Math.round(height || document.documentElement.clientHeight));
     }
 
     function gameTopInset(viewportHeight = usableViewportHeight()) {
@@ -517,8 +522,10 @@
             viewportSyncFrame = 0;
             const nativeFullscreen = nativeFullscreenElement() === gameContainer;
             if (!isActivePlayState() || nativeFullscreen || pseudoFullscreen) {
-                if (!isActivePlayState() && gameContainer.style.getPropertyValue("--playfield-height")) {
-                    gameContainer.style.removeProperty("--playfield-height");
+                if (!nativeFullscreen && !pseudoFullscreen) {
+                    const top = gameContainer.getBoundingClientRect().top + window.scrollY;
+                    const height = clamp(Math.floor(usableViewportHeight() - top - 16), 300, 660);
+                    gameContainer.style.setProperty("--playfield-height", `${height}px`);
                 }
                 resizeCanvas();
                 return;
@@ -526,17 +533,19 @@
 
             const layoutWidth = Math.round(document.documentElement.clientWidth || window.innerWidth || 1);
             const orientation = currentOrientation();
+            const viewportHeight = usableViewportHeight();
+            const topInset = gameTopInset(viewportHeight);
             const layoutChanged = forceLayout
                 || !lockedLayoutWidth
                 || orientation !== lockedOrientation
-                || Math.abs(layoutWidth - lockedLayoutWidth) >= 48;
+                || Math.abs(layoutWidth - lockedLayoutWidth) >= 1
+                || Math.abs(viewportHeight - lockedViewportHeight) >= 1
+                || Math.abs(topInset - lockedTopInset) >= 1;
             if (!layoutChanged && !reveal) {
                 resizeCanvas();
                 return;
             }
 
-            const viewportHeight = usableViewportHeight();
-            const topInset = gameTopInset(viewportHeight);
             const bottomInset = 12;
             if (layoutChanged) {
                 const compactLandscape = orientation === "landscape" && viewportHeight < 620;
@@ -544,6 +553,8 @@
                 const nextHeight = clamp(Math.floor(viewportHeight - topInset - bottomInset), minPlayfieldHeight, 660);
                 gameContainer.style.setProperty("--playfield-height", `${nextHeight}px`);
                 lockedLayoutWidth = layoutWidth;
+                lockedViewportHeight = viewportHeight;
+                lockedTopInset = topInset;
                 lockedOrientation = orientation;
             }
 
@@ -3883,8 +3894,10 @@
 
     const resizeObserver = new ResizeObserver(() => resizeCanvas());
     resizeObserver.observe(gameContainer);
-    window.addEventListener("resize", () => scheduleViewportSync({ delay: 150 }));
-    window.visualViewport?.addEventListener("resize", () => scheduleViewportSync({ delay: 190 }));
+    window.addEventListener("resize", () => scheduleViewportSync({ reveal: isActivePlayState(), delay: 150 }));
+    window.visualViewport?.addEventListener("resize", () => scheduleViewportSync({ reveal: isActivePlayState(), delay: 190 }));
+    window.addEventListener("load", () => scheduleViewportSync({ delay: 0 }));
+    document.fonts?.ready.then(() => scheduleViewportSync({ delay: 0 }));
     window.addEventListener("orientationchange", () => {
         pauseGame(true);
         scheduleViewportSync({ reveal: isActivePlayState(), forceLayout: true, delay: 360 });
@@ -4007,3 +4020,4 @@
         }, 80);
     }
 })();
+

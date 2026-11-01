@@ -30,6 +30,31 @@
   let soundEnabled = safelyRead(localStorage, soundKey) === 'true';
   let swipeStart = null;
   let pointerFrame = 0;
+  let layoutFrame = 0;
+
+  // Fit the illustration into the space left by real text and controls.
+  // Keep a readable minimum and let the document scroll on very short screens.
+  function fitStoryViewport() {
+    const page = pages[currentPage];
+    if (!page?.classList.contains('poem-page')) return;
+    const spread = matchMedia('(min-width: 880px), (min-width: 640px) and (orientation: landscape)').matches;
+    const blockHeight = element => {
+      const style = getComputedStyle(element);
+      return element.getBoundingClientRect().height + parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+    };
+    const top = storyPages.getBoundingClientRect().top + window.scrollY;
+    const footer = blockHeight(document.querySelector('.story-navigation')) + blockHeight(document.querySelector('.gesture-hint'));
+    const copy = spread ? 0 : page.querySelector('.poem-copy').getBoundingClientRect().height;
+    const viewport = window.visualViewport?.scale === 1 ? window.visualViewport.height : window.innerHeight;
+    const height = Math.max(160, Math.floor(viewport - top - footer - copy - 16));
+    const value = `${height}px`;
+    if (storyPages.style.getPropertyValue('--scene-height') !== value) storyPages.style.setProperty('--scene-height', value);
+  }
+
+  function scheduleStoryFit() {
+    cancelAnimationFrame(layoutFrame);
+    layoutFrame = requestAnimationFrame(fitStoryViewport);
+  }
 
   const sceneRatios = new Map(livingScenes.map(scene => [scene, 0]));
 
@@ -122,17 +147,23 @@
     });
 
     currentPage = destination;
+    document.body.dataset.storyMode = destination === finalPage ? 'full' : 'picture';
     furthestPage = Math.max(furthestPage, destination);
     safelyStore(sessionStorage, pageKey, currentPage);
     safelyStore(localStorage, furthestKey, furthestPage);
     updateProgress();
+    fitStoryViewport();
 
     requestAnimationFrame(syncMotion);
 
     if (!options.initial) {
       playPageTurn();
       const behavior = reducedMotion.matches ? 'auto' : 'smooth';
-      pages[currentPage].scrollIntoView({ behavior, block: 'start' });
+      if (currentPage !== finalPage && document.documentElement.scrollHeight <= window.innerHeight + 2) {
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      } else {
+        pages[currentPage].scrollIntoView({ behavior, block: 'start' });
+      }
       const heading = pages[currentPage].querySelector('h2, h3');
       heading?.setAttribute('tabindex', '-1');
       if (options.focus !== false) {
@@ -298,6 +329,13 @@
     setupPointerParallax();
     showPage(currentPage, { initial: true, focus: false });
 
+    const layoutObserver = new ResizeObserver(scheduleStoryFit);
+    document.querySelectorAll('.storybook-masthead, .chapter-progress, .poem-copy, .story-navigation, .gesture-hint').forEach(element => layoutObserver.observe(element));
+    window.addEventListener('resize', scheduleStoryFit);
+    window.visualViewport?.addEventListener('resize', scheduleStoryFit);
+    window.addEventListener('load', scheduleStoryFit);
+    document.fonts?.ready.then(scheduleStoryFit);
+
     if (reducedMotion.matches) {
       motionButton.disabled = true;
       motionButton.setAttribute('aria-pressed', 'true');
@@ -311,3 +349,4 @@
 
   initialize();
 })();
+

@@ -966,6 +966,62 @@ body[data-motion-lite="true"] .fx-heat { display: none; }
   .living-fx { display: none; }
 }
 
+/* Keep the book, its text and page controls together at ordinary zoom levels. */
+@media screen {
+  .storybook-masthead, .storybook { width: min(1240px, calc(100% - 24px)); }
+  .storybook-masthead { align-items: center; gap: 12px; margin: 10px auto 8px; padding: 12px 18px; border-radius: 18px 18px 8px 8px; }
+  .storybook-masthead h1 { font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1; }
+  .storybook-masthead h1 span { font-size: .65rem; line-height: 1.4; margin-top: 6px; letter-spacing: .09em; }
+  .eyebrow { margin-bottom: 5px; font-size: .62rem; letter-spacing: .12em; }
+  .reader-tools { gap: 6px; }
+  .tool-button { padding: 7px 10px; font-size: .8rem; }
+  .storybook { margin-bottom: 12px; }
+  .chapter-progress { margin-bottom: 8px; padding: 4px 8px 7px; }
+  .chapter-progress button { min-height: 44px; }
+  .progress-track { margin-top: 4px; }
+  .poem-page { background: #1b2b38; }
+  .poem-page .living-scene { width: min(100%, calc(var(--scene-height, 40svh) * 1.5)); aspect-ratio: 3 / 2; justify-self: center; }
+  .poem-copy { padding: 14px 22px; }
+  .poem { font-size: clamp(1rem, 1.35vw, 1.18rem); line-height: 1.55; }
+  .poem br { margin-bottom: 0; }
+  .page-number { margin-bottom: 8px; font-size: .65rem; }
+  .story-navigation { margin-top: 8px; }
+  .page-button { min-height: 44px; }
+  .gesture-hint { margin-top: 6px; padding: 0; }
+}
+
+@media screen and (min-width: 880px), screen and (min-width: 640px) and (orientation: landscape) {
+  .poem-page { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); grid-template-rows: auto; align-items: center; }
+  .poem-copy { align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding: clamp(14px, 2vw, 28px); }
+  .poem { max-width: 32em; line-height: 1.7; }
+  .poem-copy::before { display: none; }
+}
+
+@media screen and (max-width: 620px) {
+  .storybook-masthead, .storybook { width: calc(100% - 16px); }
+  .storybook-masthead { gap: 9px; margin-top: 8px; padding: 10px 12px; }
+  .reader-tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .reader-tools .tool-button { gap: 4px; padding: 6px 4px; font-size: .73rem; }
+  .reader-tools .tool-button:first-child { grid-column: auto; }
+  .tool-button svg { width: 17px; height: 17px; }
+  .poem-copy { padding: 12px 16px; }
+  .chapter-progress { padding-inline: 3px; }
+  .chapter-progress ol { gap: 0; }
+  .page-button { font-size: .77rem; }
+}
+
+@media screen and (max-height: 620px) {
+  .storybook-masthead { padding-block: 8px; }
+  .storybook-masthead .eyebrow, .storybook-masthead h1 span { display: none; }
+}
+
+@media screen and (max-width: 350px) {
+  .tool-button svg { display: none; }
+  .story-navigation { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 5px; }
+  .page-button { padding-inline: 6px; font-size: .7rem; }
+  .page-button svg { width: 16px; }
+}
+
 @media print {
   body { background: white; color: black; }
   #lloamc-staging-banner, .storybook-masthead .reader-tools, .chapter-progress, .story-navigation, .gesture-hint, .lloamc-home-command, .living-fx, .scroll-cue { display: none !important; }
@@ -980,3 +1036,4 @@ body[data-motion-lite="true"] .fx-heat { display: none; }
   .story-beat { display: block; content-visibility: visible; }
   .story-prose { max-width: none; }
 }
+
