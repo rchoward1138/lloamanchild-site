@@ -35,3 +35,13 @@ Static validation covers all local HTML links/anchors/assets, image alternative 
 Physical phone/tablet/Fold orientation tests and actual browser zoom remain Chris's UAT before production. Controller navigation is implemented for Chapter One but not verified with physical hardware. Podcast transcripts remain unavailable. Latest YouTube uploads and a production analytics property still need verification/connection.
 
 Production promotion requires Chris's explicit approval of this candidate. Do not overwrite root or existing stage as part of a preview update.
+
+## Lost & Found revision 2
+
+Replaces the abstract four-word puzzle with a cassette rescue: follow the note and BEST arcade score to unlock the drawer, rewind the loose cassette with a pencil, and load/play it. The soundtrack is the existing credited Helkimer track; no new assets or spending.
+
+- `lost-found.html`, `lost-found.css`, `lost-found.js`, and `lost-found-engine.js` are the canonical source for this game.
+- Save key: `rch-clubhouse-preview-v1:lost-found-v2`; the previous game's saved state is left intact.
+- Hints, an equivalent one-step rewind, and silent completion are available. No timer, dragging, or audio requirement.
+- Run progression checks: `node clubhouse-preview/tests/lost-found-engine.test.cjs` from the repository root.
+- Revision applies only to `clubhouse-preview/`; production, current staging, and other games remain unchanged.
