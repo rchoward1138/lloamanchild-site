@@ -72,6 +72,7 @@
         padding: 0.8rem;
       }
     }
+    .control-button:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
   </style>
   <!-- Overrides to let the cover image pop more and prefer the new asset -->
   <style>
@@ -136,9 +137,9 @@
     .success-popup .amazon-button { margin-top: 0.6rem; }
   </style>
 <meta name="robots" content="noindex,nofollow"><script src="preview-storage.js"></script><script defer src="clubhouse.js?v=1"></script><link rel="stylesheet" href="legacy-clubhouse.css?v=1"></head><body>
-<div class="scanlines"></div>  <div class="container">    <div class="main-content">      <h1 class="title">Shall We Play a Game?</h1>      <div class="subtitle"><em>You already know the 'two letters' you need to begin this cryptogram…don't you?</em></div>            <div class="controls">        <button class="control-button" id="hint-btn">Reveal one letter</button><span id="puzzle-save" role="status" style="font:14px Arial;display:block"></span><button class="control-button" id="restart-btn">Restart Puzzle</button>        <button class="control-button sound-button" id="sound-btn">
+<div class="scanlines"></div>  <div class="container">    <div class="main-content">      <h1 class="title">Shall We Play a Game?</h1>      <div class="subtitle"><em>You already know the 'two letters' you need to begin this cryptogram…don't you?</em></div>            <div class="controls">        <button class="control-button" id="hint-btn" aria-describedby="hint-status">Reveal a letter · 3 left</button><span id="puzzle-save" role="status" style="font:14px Arial;display:block"></span><button class="control-button" id="restart-btn">Restart Puzzle</button>        <button class="control-button sound-button" id="sound-btn">
           ▶ Shall we play a game?
-        </button><span id="sound-status" role="status" aria-live="polite" style="flex-basis:100%;font:14px Arial;color:#fff" hidden></span>      </div>            <div class="cryptogram-container">        <div class="cryptogram" id="cryptogram-puzzle">          <!-- Puzzle will be generated here -->
+        </button><span id="hint-status" role="status" aria-live="polite" style="flex-basis:100%;font:14px Arial;color:#fff">3 hints per puzzle. Each reveals one letter everywhere it appears.</span><span id="sound-status" role="status" aria-live="polite" style="flex-basis:100%;font:14px Arial;color:#fff" hidden></span>      </div>            <div class="cryptogram-container">        <div class="cryptogram" id="cryptogram-puzzle">          <!-- Puzzle will be generated here -->
         </div>
       </div>
 
@@ -184,6 +185,8 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
     let puzzleState = {};
     let allInputs = [];
     let hasPlayedOnFirstClick = false;
+    const MAX_HINTS = 3;
+    let hintsUsed = 0;
 
     // Initialize the puzzle
     function initializePuzzle() {
@@ -418,9 +421,10 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
 
     // Restart puzzle
     function restartPuzzle() {
-      if(!confirm('Restart this cryptogram? Your saved letters will be cleared.'))return;
-      window.PreviewStorage.local.removeItem('cryptogram-progress');
+      if(!confirm('Restart this cryptogram? Your saved letters will be cleared and your three hints reset.'))return;
+      hintsUsed = 0;
       initializePuzzle();
+      persistPuzzle();
       const popup = document.getElementById('success-popup');
       popup.classList.remove('show');
       // Reset first-click flag so audio can play again on first click
@@ -460,9 +464,44 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
     document.head.appendChild(style);
 
 
-    function persistPuzzle(){const solved={};allInputs.forEach(i=>{if(i.classList.contains('correct'))solved[i.dataset.cipher]=i.value});window.PreviewStorage.local.setItem('cryptogram-progress',JSON.stringify(solved));document.getElementById('puzzle-save').textContent='Letters saved on this device.';}
-    function restorePuzzle(){try{const solved=JSON.parse(window.PreviewStorage.local.getItem('cryptogram-progress')||'{}');Object.entries(solved).forEach(([c,v])=>{if(substitutionKey[c]===v)fillAllMatchingLetters(c,v)});}catch{}}
-    document.getElementById('hint-btn').addEventListener('click',()=>{const first=allInputs.find(i=>!i.classList.contains('correct'));if(first){fillAllMatchingLetters(first.dataset.cipher,first.dataset.correct);persistPuzzle();checkCompletion()}});
+    function updateHintControl() {
+      const remaining = MAX_HINTS - hintsUsed;
+      const complete = allInputs.length > 0 && allInputs.every(i => i.classList.contains('correct'));
+      const button = document.getElementById('hint-btn');
+      button.disabled = remaining === 0 || complete;
+      button.textContent = complete ? 'Puzzle solved' : remaining === 0 ? 'No hints left' : `Reveal a letter · ${remaining} left`;
+      document.getElementById('hint-status').textContent = complete ? 'You cracked the code.' : remaining === 0 ? 'All 3 hints used. The rest is yours to solve.' : `${remaining} of 3 hints left. Each reveals one letter everywhere it appears.`;
+    }
+
+    function persistPuzzle() {
+      const solved = {};
+      allInputs.forEach(i => { if (i.classList.contains('correct')) solved[i.dataset.cipher] = i.value; });
+      window.PreviewStorage.local.setItem('cryptogram-progress', JSON.stringify({version:2, solved, hintsUsed}));
+      document.getElementById('puzzle-save').textContent = 'Progress saved on this device.';
+      updateHintControl();
+    }
+
+    function restorePuzzle() {
+      try {
+        const saved = JSON.parse(window.PreviewStorage.local.getItem('cryptogram-progress') || '{}');
+        const solved = saved && saved.version === 2 ? saved.solved || {} : saved || {};
+        hintsUsed = saved && saved.version === 2 && Number.isInteger(saved.hintsUsed) ? Math.max(0, Math.min(MAX_HINTS, saved.hintsUsed)) : 0;
+        Object.entries(solved).forEach(([cipher, letter]) => {
+          if (Object.prototype.hasOwnProperty.call(substitutionKey, cipher) && substitutionKey[cipher] === letter) fillAllMatchingLetters(cipher, letter);
+        });
+      } catch { hintsUsed = 0; }
+      updateHintControl();
+    }
+
+    document.getElementById('hint-btn').addEventListener('click', () => {
+      if (hintsUsed >= MAX_HINTS) return;
+      const first = allInputs.find(i => !i.classList.contains('correct'));
+      if (!first) return;
+      hintsUsed += 1;
+      fillAllMatchingLetters(first.dataset.cipher, first.dataset.correct);
+      persistPuzzle();
+      checkCompletion();
+    });
 
     // Event listeners
     document.getElementById('restart-btn').addEventListener('click', restartPuzzle);
