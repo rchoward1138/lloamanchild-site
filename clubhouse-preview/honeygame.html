@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="The Belief Collector — help Bea gather sweetness, find shelter, and bring sunshine back to the garden.">
+    <meta name="lloamc-build" content="bee-leaf-belief-journey-2026.11.01-responsive-r1">
+    <title>The Belief Collector - Bee-Leaf Mini Game</title>
+    <style>
+        :root {
+            --ink: #17233c;
+            --cream: #fffaf0;
+            --leaf: #4f9a57;
+            --leaf-dark: #28633d;
+            --honey: #ffc54d;
+            --honey-dark: #a86216;
+            --sky: #68c7e8;
+            --violet: #6542a5;
+            --cyan: #39eef2;
+            --storm: #46506f;
+            --card: rgba(255, 252, 242, 0.94);
+            --shadow: 0 24px 70px rgba(18, 30, 63, 0.28);
+        }
+
+        * { box-sizing: border-box; }
+
+        html {
+            min-height: 100%;
+            scroll-padding-top: 52px;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0 18px 28px !important;
+            color: var(--ink);
+            font-family: Inter, ui-rounded, "Segoe UI", system-ui, sans-serif;
+            background:
+                radial-gradient(circle at 20% 15%, rgba(57, 238, 242, 0.16), transparent 34%),
+                radial-gradient(circle at 82% 12%, rgba(255, 197, 77, 0.23), transparent 31%),
+                linear-gradient(145deg, #e6f7fb 0%, #eef0ff 48%, #fff6d9 100%);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.24;
+            background-image: radial-gradient(circle, rgba(101, 66, 165, 0.26) 1px, transparent 1.5px);
+            background-size: 30px 30px;
+            mask-image: linear-gradient(to bottom, black, transparent 78%);
+        }
+
+        button, a { font: inherit; }
+
+        button:focus-visible, a:focus-visible {
+            outline: 4px solid rgba(57, 238, 242, 0.72);
+            outline-offset: 3px;
+        }
+
+        body .lloamc-fixed-home {
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+        }
+
+        .game-page {
+            width: min(1040px, 100%);
+            margin: 0 auto;
+            padding-top: clamp(18px, 3vw, 34px);
+        }
+
+        @media (min-width: 641px) {
+            .game-page {
+                padding-top: clamp(80px, 7vw, 96px);
+            }
+        }
+
+        .page-heading {
+            display: grid;
+            justify-items: center;
+            gap: 5px;
+            margin-bottom: 17px;
+            text-align: center;
+        }
+
+        body.game-focused .page-heading { display: none; }
+        body.game-focused .game-page { padding-top: 62px; }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            padding: 7px 12px;
+            border: 1px solid rgba(101, 66, 165, 0.24);
+            border-radius: 999px;
+            color: #5e4389;
+            background: rgba(255, 255, 255, 0.62);
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            box-shadow: 0 6px 22px rgba(73, 54, 121, 0.1);
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--honey);
+            box-shadow: 0 0 0 4px rgba(255, 197, 77, 0.2);
+        }
+
+        h1 {
+            margin: 0;
+            color: #51347d;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(2.15rem, 5.3vw, 3.7rem);
+            line-height: 1;
+            letter-spacing: -0.035em;
+            text-wrap: balance;
+            text-shadow: 0 3px 0 rgba(255, 255, 255, 0.82);
+        }
+
+        .tagline {
+            max-width: 560px;
+            margin: 3px 0 0;
+            color: #526078;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(0.98rem, 2.3vw, 1.18rem);
+            font-style: italic;
+        }
+
+        .game-shell {
+            position: relative;
+            width: 100%;
+            height: clamp(440px, 68vh, 660px);
+            height: clamp(440px, 68svh, 660px);
+            max-height: 660px;
+            overflow: hidden;
+            overscroll-behavior: contain;
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            border-radius: clamp(20px, 3.2vw, 34px);
+            background: #8abbd3;
+            box-shadow: var(--shadow), 0 0 0 1px rgba(71, 76, 125, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.48);
+            isolation: isolate;
+            touch-action: pan-y;
+        }
+
+        .game-shell::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            border-radius: inherit;
+            box-shadow: inset 0 0 90px rgba(16, 35, 75, 0.18);
+        }
+
+        .game-shell.playing {
+            height: var(--playfield-height, clamp(440px, 68svh, 660px));
+            min-height: 360px;
+            cursor: none;
+        }
+
+        .fullscreen-toggle {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            z-index: 14;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 9px 13px;
+            border: 1px solid rgba(255, 255, 255, 0.82);
+            border-radius: 999px;
+            color: white;
+            background: rgba(23, 35, 60, 0.9);
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            box-shadow: 0 8px 28px rgba(16, 31, 65, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: transform 0.18s ease, background 0.18s ease;
+        }
+
+        .fullscreen-toggle:hover {
+            transform: translateY(-2px);
+            background: rgba(45, 55, 92, 0.92);
+        }
+
+        .fullscreen-icon {
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .game-shell:fullscreen,
+        .game-shell:-webkit-full-screen,
+        .game-shell.pseudo-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            min-height: 100vh !important;
+            min-height: 100dvh !important;
+            max-height: none !important;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .game-shell.pseudo-fullscreen {
+            position: fixed;
+            inset: 0;
+            z-index: 2147483646;
+            height: 100vh !important;
+            height: 100svh !important;
+            min-height: 100vh !important;
+            min-height: 100svh !important;
+        }
+
+        body.game-expanded {
+            position: fixed;
+            top: var(--game-scroll-lock-top, 0);
+            right: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+                body.game-expanded .lloamc-fixed-home {
+            display: none !important;
+        }
+
+        canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        .hud {
+            position: absolute;
+            inset: 14px 14px auto;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+            grid-template-areas:
+                "belief shields breeze sunshine sound"
+                "meter meter meter meter meter";
+            gap: 8px;
+            opacity: 1;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+        }
+
+        .game-shell:not(.playing) .hud {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+
+        .hud-chip, .sound-toggle {
+            min-width: 0;
+            border: 1px solid rgba(255, 255, 255, 0.74);
+            border-radius: 16px;
+            color: white;
+            background: rgba(23, 35, 60, 0.88);
+            box-shadow: 0 8px 28px rgba(16, 31, 65, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .hud-chip {
+            display: grid;
+            gap: 2px;
+            padding: 8px 11px;
+        }
+
+        .hud-label {
+            overflow: hidden;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.62rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .hud-value {
+            overflow: hidden;
+            font-size: clamp(0.9rem, 2vw, 1.08rem);
+            font-weight: 900;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .hud-chip.sunshine .hud-value { color: #ffe081; }
+        .hud-chip.shields .hud-value { color: #a8f5b8; }
+        .hud-chip.belief { grid-area: belief; }
+        .hud-chip.shields { grid-area: shields; }
+        .hud-chip.breeze { grid-area: breeze; }
+        .hud-chip.sunshine { grid-area: sunshine; }
+
+        .sound-toggle {
+            grid-area: sound;
+            width: 48px;
+            min-width: 48px;
+            padding: 0;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: transform 0.18s ease, background 0.18s ease;
+        }
+
+        .sound-toggle:hover { transform: translateY(-2px); background: rgba(45, 55, 92, 0.9); }
+
+        .sun-meter {
+            grid-area: meter;
+            position: relative;
+            height: 11px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.74);
+            border-radius: 999px;
+            background: rgba(23, 35, 60, 0.54);
+            box-shadow: 0 6px 20px rgba(17, 30, 61, 0.18);
+        }
+
+        .sun-meter-fill {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #59d8ec 0%, #9be880 44%, #ffe26c 78%, #fff4b0 100%);
+            box-shadow: 0 0 20px rgba(255, 226, 108, 0.86);
+            transition: width 0.28s ease;
+        }
+
+        .game-shell:fullscreen .hud,
+        .game-shell:-webkit-full-screen .hud,
+        .game-shell.pseudo-fullscreen .hud {
+            inset: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) auto max(14px, env(safe-area-inset-left));
+        }
+
+        .game-shell:fullscreen .fullscreen-toggle,
+        .game-shell:-webkit-full-screen .fullscreen-toggle,
+        .game-shell.pseudo-fullscreen .fullscreen-toggle {
+            right: max(14px, env(safe-area-inset-right));
+            bottom: max(14px, env(safe-area-inset-bottom));
+        }
+
+        .toast {
+            position: absolute;
+            left: 50%;
+            top: 94px;
+            z-index: 7;
+            max-width: min(84%, 430px);
+            padding: 10px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.82);
+            border-radius: 999px;
+            color: white;
+            background: rgba(75, 54, 131, 0.9);
+            font-weight: 900;
+            text-align: center;
+            box-shadow: 0 10px 35px rgba(35, 25, 75, 0.28);
+            opacity: 0;
+            transform: translate(-50%, -10px) scale(0.94);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0) scale(1);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: clamp(16px, 4vw, 34px);
+            overflow-y: auto;
+            cursor: default;
+            touch-action: pan-y;
+            background:
+                linear-gradient(180deg, rgba(38, 41, 75, 0.28), rgba(26, 35, 67, 0.6)),
+                url("assets/belief-collector-spring-church.webp") center / cover no-repeat;
+        }
+
+        .overlay[hidden] { display: none; }
+
+        .overlay-card {
+            flex: 0 0 auto;
+            width: min(690px, 100%);
+            margin-block: auto;
+            padding: clamp(22px, 4.3vw, 38px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: clamp(20px, 3vw, 30px);
+            background: var(--card);
+            box-shadow: 0 28px 80px rgba(17, 29, 66, 0.34), inset 0 1px 0 white;
+            text-align: center;
+        }
+
+        .overlay-mark {
+            --bee-line: #6d4228;
+            position: relative;
+            width: 78px;
+            height: 70px;
+            margin: 22px auto 10px;
+            overflow: visible;
+            border: 2px solid rgba(115, 66, 30, 0.52);
+            border-radius: 52% 52% 47% 47%;
+            background:
+                radial-gradient(circle at 30% 24%, rgba(255, 249, 177, 0.92) 0 8%, transparent 9%),
+                linear-gradient(145deg, #ffe267 0%, #ffc83f 56%, #eca02a 100%);
+            box-shadow: 0 10px 26px rgba(113, 69, 30, 0.2), inset 0 -7px 12px rgba(178, 91, 18, 0.12), inset 0 2px 0 rgba(255, 255, 255, 0.72);
+            isolation: isolate;
+        }
+
+        .overlay-mark::before {
+            content: "";
+            position: absolute;
+            inset: 5px 7px auto;
+            z-index: 0;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0));
+            pointer-events: none;
+        }
+
+        .bee-halo,
+        .bee-antenna,
+        .bee-eye,
+        .bee-cheek,
+        .bee-smile { position: absolute; display: block; }
+
+        .bee-halo {
+            top: -24px;
+            left: 50%;
+            z-index: 1;
+            width: 50px;
+            height: 13px;
+            border: 2px solid rgba(255, 221, 92, 0.58);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255, 222, 103, 0.34);
+            transform: translateX(-50%);
+        }
+
+        .bee-antenna {
+            top: -9px;
+            z-index: 2;
+            width: 20px;
+            height: 25px;
+            border-radius: 70% 70% 0 0;
+        }
+
+        .bee-antenna::after {
+            content: "";
+            position: absolute;
+            top: -2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--bee-line);
+        }
+
+        .bee-antenna-left {
+            left: 16px;
+            border-left: 3px solid var(--bee-line);
+            transform: rotate(-22deg);
+        }
+
+        .bee-antenna-left::after { left: -4px; }
+
+        .bee-antenna-right {
+            right: 16px;
+            border-right: 3px solid var(--bee-line);
+            transform: rotate(22deg);
+        }
+
+        .bee-antenna-right::after { right: -4px; }
+
+        .bee-eye {
+            top: 25px;
+            z-index: 2;
+            width: 7px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3f342f;
+            box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.32);
+        }
+
+        .bee-eye-left { left: 22px; }
+        .bee-eye-right { right: 22px; }
+
+        .bee-cheek {
+            top: 43px;
+            z-index: 2;
+            width: 10px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(231, 104, 111, 0.35);
+        }
+
+        .bee-cheek-left { left: 12px; }
+        .bee-cheek-right { right: 12px; }
+
+        .bee-smile {
+            top: 36px;
+            left: 50%;
+            z-index: 2;
+            width: 25px;
+            height: 15px;
+            border-bottom: 3px solid var(--bee-line);
+            border-radius: 0 0 50% 50%;
+            transform: translateX(-50%);
+        }
+
+        .overlay h2 {
+            margin: 0;
+            color: #51347d;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(1.8rem, 5vw, 2.7rem);
+            line-height: 1.05;
+            letter-spacing: -0.025em;
+        }
+
+        .overlay-intro {
+            max-width: 540px;
+            margin: 8px auto 18px;
+            color: #4d5b70;
+            line-height: 1.45;
+        }
+
+        .rules {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            text-align: left;
+        }
+
+        .rule {
+            display: grid;
+            grid-template-columns: 42px 1fr;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            padding: 11px;
+            border: 1px solid rgba(80, 61, 129, 0.12);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.68);
+        }
+
+        .rule-icon {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            color: white;
+            font-weight: 900;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 14px rgba(35, 42, 76, 0.13);
+        }
+
+        .rule-icon.honey { background: linear-gradient(145deg, #ffd861, #d88a1b); }
+        .rule-icon.leaf { background: linear-gradient(145deg, #75cd79, #2e7a4a); }
+        .rule-icon.flower { background: linear-gradient(145deg, #f397c9, #aa4a97); }
+        .rule-icon.storm { background: linear-gradient(145deg, #6d7698, #343c60); }
+        .rule-icon svg { width: 27px; height: 27px; overflow: visible; }
+
+        .rule strong {
+            display: block;
+            margin-bottom: 1px;
+            color: #2a3954;
+            font-size: 0.88rem;
+        }
+
+        .rule span:last-child {
+            color: #647087;
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        .control-hint {
+            margin: 14px 0 0;
+            color: #66738a;
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .primary-button {
+            min-width: min(310px, 90%);
+            margin-top: 17px;
+            padding: 13px 24px;
+            border: 0;
+            border-radius: 999px;
+            color: white;
+            background: linear-gradient(135deg, #5aa95d, #397d54 55%, #5263a4);
+            font-weight: 900;
+            letter-spacing: 0.025em;
+            cursor: pointer;
+            box-shadow: 0 11px 0 #27523c, 0 18px 30px rgba(45, 91, 64, 0.25);
+            transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+        }
+
+        .primary-button:hover { transform: translateY(-2px); filter: saturate(1.12); box-shadow: 0 13px 0 #27523c, 0 22px 34px rgba(45, 91, 64, 0.27); }
+        .primary-button:active { transform: translateY(7px); box-shadow: 0 4px 0 #27523c, 0 10px 18px rgba(45, 91, 64, 0.22); }
+
+        .final-score {
+            display: inline-block;
+            margin: 16px auto 2px;
+            padding: 9px 15px;
+            border-radius: 999px;
+            color: #51347d;
+            background: rgba(101, 66, 165, 0.1);
+            font-weight: 900;
+        }
+
+        .verse {
+            max-width: 560px;
+            margin: 15px auto 0;
+            color: #4d5b70;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .footer-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            margin-top: 21px;
+        }
+
+        .footer-row a {
+            color: #563d82;
+            font-size: 0.82rem;
+            font-weight: 900;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+        }
+
+        .screen-reader-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 0 10px 18px !important; }
+            .game-page { padding-top: 14px; }
+            body.game-focused .game-page { padding-top: 8px; }
+            .page-heading { margin-bottom: 12px; }
+            .eyebrow { padding: 6px 10px; font-size: 0.62rem; }
+            .game-shell {
+                height: clamp(500px, 76vh, 640px);
+                height: clamp(500px, 76svh, 640px);
+                border-radius: 22px;
+            }
+            .hud {
+                inset: 9px 9px auto;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) 44px;
+                grid-template-areas:
+                    "belief shields sound"
+                    "breeze sunshine sound"
+                    "meter meter meter";
+                gap: 6px;
+            }
+            .hud-chip { padding: 6px 8px; border-radius: 12px; }
+            .sound-toggle { width: 44px; min-width: 44px; }
+            .sun-meter { height: 9px; }
+            .toast { top: 119px; font-size: 0.8rem; }
+            .overlay { padding: 12px; place-items: start center; }
+            .overlay-card { margin: auto 0; padding: 19px 15px 23px; border-radius: 20px; }
+            .overlay-mark { width: 64px; height: 58px; margin: 19px auto 7px; }
+            .bee-halo { top: -20px; width: 42px; height: 11px; }
+            .bee-antenna { top: -7px; width: 17px; height: 20px; }
+            .bee-antenna-left { left: 13px; }
+            .bee-antenna-right { right: 13px; }
+            .bee-eye { top: 20px; width: 6px; height: 9px; }
+            .bee-eye-left { left: 18px; }
+            .bee-eye-right { right: 18px; }
+            .bee-cheek { top: 36px; width: 8px; height: 5px; }
+            .bee-cheek-left { left: 10px; }
+            .bee-cheek-right { right: 10px; }
+            .bee-smile { top: 29px; width: 21px; height: 13px; }
+            .overlay-intro { margin-bottom: 12px; font-size: 0.88rem; }
+            .rules { gap: 6px; }
+            .rule { grid-template-columns: 35px 1fr; gap: 7px; padding: 8px; }
+            .rule-icon { width: 35px; height: 35px; border-radius: 11px; }
+            .rule-icon svg { width: 23px; height: 23px; }
+            .rule strong { font-size: 0.78rem; }
+            .rule span:last-child { font-size: 0.7rem; }
+            .control-hint { margin-top: 10px; font-size: 0.7rem; }
+            .primary-button { margin-top: 13px; padding: 12px 18px; }
+            .footer-row { margin-top: 17px; }
+            .fullscreen-toggle {
+                right: 10px;
+                bottom: 10px;
+                min-width: 44px;
+                min-height: 44px;
+                padding: 9px;
+            }
+            .fullscreen-label { display: none; }
+        }
+
+        @media (max-width: 430px) {
+            h1 { font-size: 2rem; }
+            .tagline { font-size: 0.9rem; }
+            .game-shell {
+                height: clamp(500px, 78vh, 620px);
+                height: clamp(500px, 78svh, 620px);
+            }
+            .rules { grid-template-columns: 1fr; }
+            .overlay h2 { font-size: 1.72rem; }
+            .overlay-mark { display: none; }
+            .rule { padding: 7px 9px; }
+            .primary-button { min-width: 86%; }
+        }
+
+        @media (max-width: 360px) {
+            .hud-label { font-size: 0.55rem; letter-spacing: 0.075em; }
+            .hud-value { font-size: 0.88rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+    <link rel="stylesheet" href="belief-journey.css?v=20261101-responsive-r1">
+<meta name="robots" content="noindex,nofollow"><script src="preview-storage.js"></script><script defer src="clubhouse.js?v=1"></script><link rel="stylesheet" href="legacy-clubhouse.css?v=1"></head>
+<body>
+<main class="game-page">
+        <header class="page-heading">
+            <p class="eyebrow">A Bee-Leaf Adventure</p>
+            <h1>The Belief Collector</h1>
+            <p class="tagline">Gather the sweetness. Find the shelter. Bring back the sun.</p>
+        </header>
+
+        <section id="gameContainer" class="game-shell" aria-label="The Belief Collector: The Unseen Thread game" data-build="bee-leaf-belief-journey-2026.11.01-responsive-r1">
+            <canvas id="gameCanvas" tabindex="-1">Guide Bea in every direction, connect the garden through four seasons, and trust the currents you cannot always see.</canvas>
+
+            <button id="fullscreenToggle" class="fullscreen-toggle" type="button" aria-label="Enter full screen" aria-pressed="false" title="Enter full screen">
+                <span class="fullscreen-icon" aria-hidden="true">⛶</span>
+                <span class="fullscreen-label">Full Screen</span>
+            </button>
+            <button id="pauseToggle" class="pause-toggle" type="button" aria-label="Pause game" aria-pressed="false" title="Pause game">Ⅱ</button>
+
+            <div class="hud" id="gameHud" inert>
+                <div class="hud-chip belief"><span class="hud-label">Belief</span><span class="hud-value" id="beliefValue">0</span></div>
+                <div class="hud-chip shields"><span class="hud-label">Hope & Shelter</span><span class="hud-value" id="shieldValue">♥♥♥ · 🍃0</span></div>
+                <div class="hud-chip breeze"><span class="hud-label">Season</span><span class="hud-value" id="speedValue">Spring</span></div>
+                <div class="hud-chip sunshine"><span class="hud-label">Purpose Thread</span><span class="hud-value" id="sunValue">0 / 12</span></div>
+                <button id="soundToggle" class="sound-toggle" type="button" aria-label="Mute game sound" title="Mute game sound">♪</button>
+                <div class="sun-meter" role="progressbar" aria-label="Purpose Thread completion" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0"><div id="sunMeterFill" class="sun-meter-fill"></div></div>
+            </div>
+
+            <div id="missionPanel" class="mission-panel" aria-live="polite" hidden>
+                <span id="missionSeason" class="mission-season">Spring</span>
+                <strong id="missionTitle">Awaken the Meadow</strong>
+                <span id="missionProgress" data-compact="0 / 3" aria-label="0 of 3 connections">0 of 3 connections</span>
+            </div>
+
+            <button id="faithButton" class="faith-button" type="button" aria-label="Use Faith Pulse. Three charges available." title="Reveal the unseen currents and Purpose Thread">
+                <span class="faith-symbol" aria-hidden="true">✦</span>
+                <span class="faith-copy"><strong>Believe</strong><small id="faithValue">3 pulses</small></span>
+            </button>
+
+            <button id="boostButton" class="boost-button" type="button" aria-label="Wing Burst empty. Catch three falling Wing Burst emblems to charge it." title="Catch three emblems, then activate Wing Burst">
+                <span class="boost-symbol" aria-hidden="true">➤</span>
+                <span class="boost-copy"><strong>Wing Burst</strong><small id="boostValue">0 / 3</small></span>
+            </button>
+
+            <div id="seasonBanner" class="season-banner" role="status" aria-live="polite" hidden>
+                <small id="seasonKicker">Season I</small>
+                <strong id="seasonName">Spring — Awakening</strong>
+                <span id="seasonLesson">Small beginnings carry living promise.</span>
+            </div>
+
+            <div id="storyCaption" class="story-caption" role="status" aria-live="polite" hidden></div>
+            <div id="pauseCurtain" class="pause-curtain" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" hidden>
+                <strong id="pauseTitle">Flight Paused</strong>
+                <span>Press P, Escape, or controller Start to continue.</span>
+                <button id="resumeFlight" class="primary-button" type="button">Resume Flight</button>
+            </div>
+
+            <div id="gameToast" class="toast" role="status" aria-live="polite"></div>
+            <div id="statusAnnouncer" class="screen-reader-only" aria-live="polite"></div>
+
+            <div id="startScreen" class="overlay">
+                <div class="overlay-card">
+                    <div class="overlay-mark" aria-hidden="true">
+                        <span class="bee-halo"></span>
+                        <span class="bee-antenna bee-antenna-left"></span>
+                        <span class="bee-antenna bee-antenna-right"></span>
+                        <span class="bee-eye bee-eye-left"></span>
+                        <span class="bee-eye bee-eye-right"></span>
+                        <span class="bee-cheek bee-cheek-left"></span>
+                        <span class="bee-cheek bee-cheek-right"></span>
+                        <span class="bee-smile"></span>
+                    </div>
+                    <p class="journey-label">The Belief Collector</p>
+                    <h2>The Unseen Thread</h2>
+                    <p class="overlay-intro">Fly with Bea through four seasons. Follow the currents, carry small gifts where they are needed, and discover how the garden remembers every faithful act.</p>
+
+                    <ul class="rules">
+                        <li class="rule">
+                            <span class="rule-icon honey" aria-hidden="true">
+                                <svg viewBox="0 0 32 32"><path fill="currentColor" d="M9 9h14l2 5v11c0 3-2 5-5 5h-8c-3 0-5-2-5-5V14l2-5Z"/><path fill="#fff4bd" d="M9 13h14v4H9z"/><path fill="#6e4315" d="M11 4h10v6H11z"/></svg>
+                            </span>
+                            <span><strong>Fly Freely</strong><span>Move Bea anywhere through a living, changing garden.</span></span>
+                        </li>
+                        <li class="rule">
+                            <span class="rule-icon leaf" aria-hidden="true">
+                                <svg viewBox="0 0 32 32"><path fill="currentColor" d="M27 4C14 5 6 11 6 20c0 5 4 8 9 7 9-2 12-12 12-23Z"/><path fill="none" stroke="#dfffe1" stroke-width="2" d="M7 27c5-8 10-12 18-19"/></svg>
+                            </span>
+                            <span><strong>Carry & Connect</strong><span>Gather each season’s gift and deliver it to its purpose.</span></span>
+                        </li>
+                        <li class="rule">
+                            <span class="rule-icon flower" aria-hidden="true">
+                                <svg viewBox="0 0 32 32"><g fill="currentColor"><ellipse cx="16" cy="7" rx="5" ry="7"/><ellipse cx="16" cy="25" rx="5" ry="7"/><ellipse cx="7" cy="16" rx="7" ry="5"/><ellipse cx="25" cy="16" rx="7" ry="5"/></g><circle cx="16" cy="16" r="6" fill="#ffe16a"/></svg>
+                            </span>
+                            <span><strong>Believe</strong><span>Faith Pulse reveals currents, destinations, and hidden connections.</span></span>
+                        </li>
+                        <li class="rule">
+                            <span class="rule-icon storm" aria-hidden="true">
+                                <svg viewBox="0 0 32 32"><path fill="currentColor" d="M8 23a6 6 0 0 1 1-12 8 8 0 0 1 15 2 5 5 0 0 1-1 10H8Z"/><path fill="#ffe25e" d="m17 19-5 8h4l-1 5 7-9h-4l2-4Z"/></svg>
+                            </span>
+                            <span><strong>Weather the Seasons</strong><span>Read the sky, gather leaf shelter, and keep hope alive.</span></span>
+                        </li>
+                    </ul>
+
+                    <label class="assist-toggle"><input id="guidingGlowToggle" type="checkbox"> <span><strong>Guiding Glow</strong> — keep currents and destinations softly visible</span></label>
+                    <p class="control-hint">Catch 3 golden Burst emblems to charge • Mobile: double-tap the garden • Laptop: click, Shift/B, or the Burst control • Controller: B/trigger • Believe: Space or A</p>
+                    <button class="primary-button" type="button" data-start-game>Begin the Journey</button>
+
+                    <nav class="footer-row" aria-label="Ready screen game links">
+                        <a href="bee-leaf.html?v=20261101-responsive-r1">Back to Bee-Leaf</a>
+                        <a href="index.html">Back to Home</a>
+                    </nav>
+                </div>
+            </div>
+
+            <div id="gameOverScreen" class="overlay" hidden>
+                <div class="overlay-card">
+                    <div class="overlay-mark" aria-hidden="true">
+                        <span class="bee-halo"></span>
+                        <span class="bee-antenna bee-antenna-left"></span>
+                        <span class="bee-antenna bee-antenna-right"></span>
+                        <span class="bee-eye bee-eye-left"></span>
+                        <span class="bee-eye bee-eye-right"></span>
+                        <span class="bee-cheek bee-cheek-left"></span>
+                        <span class="bee-cheek bee-cheek-right"></span>
+                        <span class="bee-smile"></span>
+                    </div>
+                    <h2>Rest Beneath Leif</h2>
+                    <p class="overlay-intro">The storm was strong, but nothing you helped has been lost. Catch your breath and continue from this season.</p>
+                    <p id="finalScore" class="final-score">Belief Collected: 0</p>
+                    <button class="primary-button" type="button" data-retry-season>Rise and Believe Again</button>
+                    <button class="secondary-button" type="button" data-start-game>Restart the Four Seasons</button>
+                    <nav class="footer-row" aria-label="Game over screen links">
+                        <a href="bee-leaf.html?v=20261101-responsive-r1">Back to Bee-Leaf</a>
+                        <a href="index.html">Back to Home</a>
+                    </nav>
+                </div>
+            </div>
+
+            <div id="winScreen" class="overlay credits-overlay" hidden>
+                <div class="credits-card">
+                    <header class="credits-header">
+                        <p class="journey-label">The Garden Remembers</p>
+                        <h2>You Were Never Flying Alone</h2>
+                        <p id="winScore" class="final-score">Belief Collected: 0</p>
+                    </header>
+                    <div id="creditsViewport" class="credits-viewport" tabindex="0" aria-label="End credits. Scroll to read all credits.">
+                        <div id="creditsTrack" class="credits-track">
+                            <section class="credits-beat opening-beat">
+                                <p class="credits-big">Every flower you awakened.<br>Every gift you carried.<br>Every storm you faced.</p>
+                                <p>The garden remembered.</p>
+                            </section>
+                            <section class="cast-grid" aria-label="Cast and characters">
+                                <article><span aria-hidden="true">🐝</span><strong>Bea</strong><small>Herself</small></article>
+                                <article><span aria-hidden="true">🍂</span><strong>Leif</strong><small>The Leaf Who Knew What Falling Meant</small></article>
+                                <article><span aria-hidden="true">🦉</span><strong>Solomon Owl</strong><small>The Watcher in the Branches</small></article>
+                                <article><span aria-hidden="true">🐜</span><strong>Samson Ant</strong><small>The Steady Worker</small></article>
+                                <article><span aria-hidden="true">🦋</span><strong>Esther Butterfly</strong><small>The Bearer of Beauty</small></article>
+                                <article><span aria-hidden="true">🐛</span><strong>Jonah</strong><small>The Promise Still Becoming</small></article>
+                            </section>
+                            <blockquote class="credits-verse"><p>“Now faith is the substance of things hoped for, the evidence of things not seen.”</p><cite>Hebrews 11:1 · KJV</cite></blockquote>
+                            <section class="credit-list">
+                                <h3>Created by</h3><p class="creator-name">Chris Howard</p>
+                                <p><strong>Based on “Bee-Leaf”</strong><span>by R.C. Howard</span></p>
+                                <p><strong>Game Designer</strong><span>Chris Howard</span></p>
+                                <p><strong>Director</strong><span>Chris Howard</span></p>
+                                <p><strong>Creative Director</strong><span>Chris Howard</span></p>
+                                <p><strong>Narrative Designer</strong><span>Chris Howard</span></p>
+                                <p><strong>Concept Artist</strong><span>Chris Howard</span></p>
+                                <p><strong>Programmer</strong><span>Chris Howard</span></p>
+                                <p><strong>Executive Producer</strong><span>Chris Howard</span></p>
+                                <p><strong>Keeper of the Unseen Thread</strong><span>Chris Howard</span></p>
+                                <p><strong>Director of Tiny Wings</strong><span>Chris Howard</span></p>
+                                <p><strong>Chief Pollination Officer</strong><span>Chris Howard</span></p>
+                                <p><strong>Key Grip</strong><span>Chris Howard</span></p>
+                                <p><strong>Z Fold Torture Testing</strong><span>Chris Howard</span></p>
+                                <p><strong>Digital Development Partner</strong><span>ChatGPT</span></p>
+                            </section>
+                            <blockquote class="credits-verse"><p>“And let us not be weary in well doing: for in due season we shall reap, if we faint not.”</p><cite>Galatians 6:9 · KJV</cite></blockquote>
+                            <section class="credits-beat">
+                                <p class="credits-big">Special thanks to Ivy, Dad, the nine Kitty Kids, and every small act whose impact is still unfolding.</p>
+                                <p>“She didn’t need to see her impact immediately to trust it existed.”</p>
+                            </section>
+                            <section class="credits-beat final-beat">
+                                <p class="credits-big">BELIEF BINDS US.<br>LOVE SUSTAINS US.</p>
+                                <p><strong>Mark 9:23 · KJV</strong><br>“If thou canst believe, all things are possible to him that believeth.”</p>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="credits-controls">
+                        <button id="creditsToggle" class="secondary-button" type="button">Pause Credits</button>
+                        <button class="primary-button" type="button" data-start-game>Fly Again</button>
+                    </div>
+                    <nav class="footer-row" aria-label="End credits links">
+                        <a href="bee-leaf.html?v=20261101-responsive-r1">Back to Bee-Leaf</a>
+                        <a href="index.html">Back to Home</a>
+                    </nav>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <audio id="bgMusic" preload="metadata" loop>
+        <source src="Bee%20Leaf/soft-background-music-432715.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="belief-journey.js?v=20261101-responsive-r1"></script>
+    <script src="dashboard-return.js?v=clubhouse1"></script>
+</body>
+</html>
+
+
