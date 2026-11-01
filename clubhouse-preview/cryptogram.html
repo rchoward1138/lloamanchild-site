@@ -137,10 +137,8 @@
   </style>
 <meta name="robots" content="noindex,nofollow"><script src="preview-storage.js"></script><script defer src="clubhouse.js?v=1"></script><link rel="stylesheet" href="legacy-clubhouse.css?v=1"></head><body>
 <div class="scanlines"></div>  <div class="container">    <div class="main-content">      <h1 class="title">Shall We Play a Game?</h1>      <div class="subtitle"><em>You already know the 'two letters' you need to begin this cryptogram…don't you?</em></div>            <div class="controls">        <button class="control-button" id="hint-btn">Reveal one letter</button><span id="puzzle-save" role="status" style="font:14px Arial;display:block"></span><button class="control-button" id="restart-btn">Restart Puzzle</button>        <button class="control-button sound-button" id="sound-btn">
-          Play a little chime
-          <!-- Disclaimer for Audio Use -->
-          
-        </button>      </div>            <div class="cryptogram-container">        <div class="cryptogram" id="cryptogram-puzzle">          <!-- Puzzle will be generated here -->
+          ▶ Shall we play a game?
+        </button><span id="sound-status" role="status" aria-live="polite" style="flex-basis:100%;font:14px Arial;color:#fff" hidden></span>      </div>            <div class="cryptogram-container">        <div class="cryptogram" id="cryptogram-puzzle">          <!-- Puzzle will be generated here -->
         </div>
       </div>
 
@@ -156,8 +154,10 @@
     </div>
   </div>
 
-  <!-- Audio element for WarGames sound -->
-  
+  <!-- Original voice clip retained from the author site. Playback starts on interaction. -->
+  <audio id="wargames-audio" preload="none">
+    <source src="shallweplay.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
     // Substitution key - when you see cipher letter (key), enter solution letter (value)
@@ -183,7 +183,6 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
 
     let puzzleState = {};
     let allInputs = [];
-    let hasPlayedOnPageLoad = false;
     let hasPlayedOnFirstClick = false;
 
     // Initialize the puzzle
@@ -323,7 +322,9 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
     }
 
     // Handle first click on any input field
-    function handleFirstClick() {}
+    function handleFirstClick() {
+      if (!hasPlayedOnFirstClick) playSound();
+    }
 
     // Handle keydown for better UX
     function handleKeydown(event) {
@@ -426,34 +427,25 @@ MWXPTWSZRTQOBFZPTZAIKSQOW`;
       hasPlayedOnFirstClick = false;
     }
 
-    // Audio trigger #1 & #2: Play sound with audio modifications to avoid copyright issues
-    function playSound(){
-      try{const c=new (window.AudioContext||window.webkitAudioContext)();[392,523.25].forEach((hz,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=hz;g.gain.value=.035;o.connect(g).connect(c.destination);o.start(c.currentTime+i*.14);o.stop(c.currentTime+i*.14+.13)});setTimeout(()=>c.close(),600)}catch{}
+    // Keep the original voice and its established playback speed.
+    function playSound() {
+      const audio = document.getElementById('wargames-audio');
+      const status = document.getElementById('sound-status');
+      audio.muted = false;
+      audio.currentTime = 0;
+      audio.playbackRate = 0.8;
+      status.hidden = true;
+      const playback = audio.play();
+      if (playback && typeof playback.catch === 'function') {
+        playback.then(() => { hasPlayedOnFirstClick = true; }).catch(() => {
+          status.textContent = 'The voice clip could not play. Select “Shall we play a game?” to try again.';
+          status.hidden = false;
+        });
+      }
     }
 
-    // Audio trigger #3: Play completion sound with audio modifications
-    function playCompletionSound() {}
-    // Create a simple beep sound using Web Audio API
-    function createBeepSound(frequency = 440, duration = 0.2) {
-      try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration);
-      } catch (e) {
-        console.log('Web Audio API not supported');
-      }
+    function playCompletionSound() {
+      playSound();
     }
 
     // Add confetti CSS animation
