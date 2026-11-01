@@ -295,7 +295,7 @@
       }
     }
   </style>
-<meta name="robots" content="noindex,nofollow"><script src="preview-storage.js"></script><script defer src="clubhouse.js?v=1"></script><link rel="stylesheet" href="legacy-clubhouse.css?v=1"></head>
+<meta name="robots" content="noindex,nofollow"><script src="preview-storage.js"></script><script defer src="clubhouse.js?v=2"></script><link rel="stylesheet" href="legacy-clubhouse.css?v=1"></head>
 <body>
 <div class="scanlines"></div>
   <div class="wrapper">
@@ -332,18 +332,18 @@
         </div>
       </div>
 
-      <div class="punkin-controls"><button class="btn" id="punkin-jump" type="button">Jump / hold for height</button><button class="btn" id="punkin-pause" type="button">Pause</button><button class="btn" id="punkin-sound" type="button" aria-pressed="false">Sound off</button></div><div class="footer-hint">Tip: Try to find a rhythm—Punkin loves a good tempo.</div>
+      <div class="punkin-controls"><button class="btn" id="punkin-jump" type="button">Jump / hold for height</button><button class="btn" id="punkin-pause" type="button">Pause</button><button class="btn" id="punkin-sound" type="button" aria-pressed="true">Sound on</button></div><div class="footer-hint">Tip: Try to find a rhythm—Punkin loves a good tempo.</div>
     </div>
   </div>
 
   <!-- Audio assets from Music and Sounds/ -->
-  <audio id="jumpSound" preload="auto">
+  <audio id="jumpSound" data-audio-group="punkin-game" preload="auto">
     <source src="Music and Sounds/jump-sound-14839.mp3" type="audio/mpeg" />
   </audio>
-  <audio id="hitSound" preload="auto">
+  <audio id="hitSound" data-audio-group="punkin-game" preload="auto">
     <source src="Music and Sounds/cat-meow-sound-383823.mp3" type="audio/mpeg" />
   </audio>
-  <audio id="musicLoop" preload="auto" loop>
+  <audio id="musicLoop" data-audio-group="punkin-game" preload="auto" loop>
     <source src="Music and Sounds/Vivace Momentum.mp3" type="audio/mpeg" />
   </audio>
 
@@ -675,7 +675,8 @@
     });
     
 
-    [jumpSound,hitSound,musicLoop].forEach(a=>{if(a)a.muted=true;});
+    // Preserve the original sound-on default; Start supplies the playback gesture.
+    [jumpSound,hitSound,musicLoop].forEach(a=>{if(a)a.muted=false;});
     const pauseControl=document.getElementById('punkin-pause');
     function togglePause(){if(!running)return;paused=!paused;lastTime=0;pauseControl.textContent=paused?'Resume':'Pause';if(paused){musicLoop.pause();jumpHeld=false;jumpConsumedThisPress=false;}else if(!musicLoop.muted)musicLoop.play().catch(()=>{});}
     pauseControl.addEventListener('click',togglePause);
